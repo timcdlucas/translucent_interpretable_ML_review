@@ -1,6 +1,9 @@
 ---
 title: Machine learning methods are translucent boxes
 author: Tim Lucas
+bibliography: machine_learn.bib
+fontsize: 10pt
+link-citations: true
 ---
 
 # plan
@@ -12,7 +15,7 @@ author: Tim Lucas
 1. what is it, how had it been used what are its flaws
 - what is Machine learning (predictive)
 - machine learning is easy
-- how has it been used in ecology (SDM @[elith2006novel, golding2018zoon], id @[mac2018bat, waldchen2018machine], red list @[bland2015predicting], behaviour @[browning2018predicting].
+- how has it been used in ecology (SDM [@elith2006novel, @golding2018zoon], id [@mac2018bat, @waldchen2018machine], red list [@bland2015predicting], behaviour [@browning2018predicting].
 - but it has a reputation as being black box
 
 1b. why is it a black box
@@ -22,14 +25,14 @@ correlated covariates
 little statistical backing e.g. se of linear terms
 
 2. why we would want to interpret machine learning models
-- mostly interpretable machine learning is part of model verification/robustness/regulation @[ molnar]
+- mostly interpretable machine learning is part of model verification/robustness/regulation [@ molnar]
 - this is useful in ecology
 - policy requires robust models etc.
 - biases could affect conservation outcomes
 
 
 3. but within ecology, the greater use is to use it for interpretation per se
-- typical statistics is not at interpretable as we often pretend. m closed etc. @[Simpson? gelman? lyddon2018nonparametric]
+- typical statistics is not at interpretable as we often pretend. m closed etc. [@Simpson? gelman? @lyddon2018nonparametric]
 - partially a move from prediction to exploration or inference
 - why do this with machine learning?
   - non parametric variable selection is important!
@@ -59,7 +62,7 @@ little statistical backing e.g. se of linear terms
      - unseen values
      - control Vs use in prediction
      - shared power
-  - understudied but some work @[eo2014tree, hajjem2014mixed, hajjem2017generalized, miller2017gradient]
+  - understudied but some work [@eo2014tree, @hajjem2014mixed, @hajjem2017generalized, @miller2017gradient]
      - mean zero
      - unseen values
      - control Vs use in prediction
@@ -69,7 +72,7 @@ little statistical backing e.g. se of linear terms
   - hard
   - large, seperate literature
   - zero expectation that features in image analysis relate to nature's model.
-@[mac2018bat, waldchen2018machine]
+[@mac2018bat, @waldchen2018machine]
 
 
 8. plan for the paper
@@ -86,16 +89,16 @@ we will fit three models with differing degrees of interpretability.
 
 ## body
 
-pantheria @[jones2009pantheria] and litter size
+pantheria [@jones2009pantheria] and litter size
 
-3 models via caret @[caret]
+3 models via caret [@caret]
 typical ecological modelling
 
 regularised regression
 
- gp @[rasmussen2004gaussian]
+ gp [@rasmussen2004gaussian]
 
-random forest @[wright2015ranger, breiman2001random]
+random forest [@wright2015ranger, @breiman2001random]
 
 
 2 or 3 questions.
@@ -133,11 +136,11 @@ random forest @[wright2015ranger, breiman2001random]
       
 
   - examine correlation structure (variable level)
-     - preprocess, thinning, independent contrasts. @[garland1992procedures]
-     - mixed effect model. easy for reg regression or stat non parametric @[ diggle1998model, bolker2009generalized] more work elsewhere. 
-     - build correlation in as covariate. t-1, distance to data. @[ hengl2018random]
+     - preprocess, thinning, independent contrasts. [@garland1992procedures]
+     - mixed effect model. easy for reg regression or stat non parametric [@ diggle1998model, @bolker2009generalized] more work elsewhere. 
+     - build correlation in as covariate. t-1, distance to data. [@hengl2018random]
 
-      - new approach, fit model then mixed effects. @[bhatt2017improved]
+      - new approach, fit model then mixed effects. [@bhatt2017improved]
 
      - random effects are under studied
 
@@ -153,7 +156,7 @@ random forest @[wright2015ranger, breiman2001random]
 
 
   - understand individual points
-    - lime @[lime]
+    - lime [@lime, @ribeiro2016should]
 
 
 
