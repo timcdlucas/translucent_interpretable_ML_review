@@ -12,7 +12,7 @@ author: Tim Lucas
 1. what is it, how had it been used what are its flaws
 - what is Machine learning (predictive)
 - machine learning is easy
-- how has it been used in ecology (SDM, id, red list)
+- how has it been used in ecology (SDM, id, red list) \cite{
 - but it has a reputation as being black box
 
 1b. why is it a black box
