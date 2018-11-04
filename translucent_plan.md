@@ -23,9 +23,10 @@ non linear
 arbitrary depth interactions
 correlated covariates
 little statistical backing e.g. se of linear terms
+stochastic values
 
 2. why we would want to interpret machine learning models
-- mostly interpretable machine learning is part of model verification/robustness/regulation [@ molnar]
+- mostly interpretable machine learning is part of model verification/robustness/regulation [@molnar, @ribeiro2016should]
 - this is useful in ecology
 - policy requires robust models etc.
 - biases could affect conservation outcomes
@@ -126,6 +127,7 @@ random forest [@wright2015ranger, @breiman2001random]
       - results
 
     - ice and PDP
+      - define pdp then ice
       - results
 
    - clustered ice
@@ -157,9 +159,13 @@ random forest [@wright2015ranger, @breiman2001random]
 
   - understand individual points
     - lime [@lime, @ribeiro2016should]
+    - explain
+    - results
 
+# other models
 
-
+- rrf
+- monotonic constraints
 
 
 ## future directions and conclusions
