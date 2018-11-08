@@ -20,7 +20,7 @@ link-citations: true
 
 Machine learning is a connection of techniques that focuses on making accurate predictions from data.
 It differs from the broader field of statistics in two aspects: 1) the estimation of parameters that relate to the real world is less emphasised than in much of statistics and 2) the driver of the predictions are expected to be the data rather than expert opinion or careful selection of plausible mechanistic models.
-High-level machine learning libraries that aid the full machine learning pipeline [@caret, @sciki, @maxent, @biomod] has made machine learning easy to use.
+High-level machine learning libraries that aid the full machine learning pipeline [@caret, @scikit, @maxent, @biomod] has made machine learning easy to use.
 These techniques have therefore become popular, particularly in the fields of species distribution modelling [@maxent, @biomod, @elith2006novel, @golding2018zoon] and species identification from images or acoustic detectors [@mac2018bat, @waldchen2018machine].
 Other uses include any study where prediction rather than inference is the focus such as predicting the conservation status of species [@bland2015predicting] and predictive behaviours [@browning2018predicting].
 However, machine learning methods have a reputation as being a black box; inscrutable and mindlessly applied.
