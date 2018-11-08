@@ -56,6 +56,13 @@ stochastic values
   - good uncertainty, poor scaling
 - non statistical non parametric
 
+
+7. a note on image analysis and deep learning
+  - hard
+  - large, seperate literature
+  - zero expectation that features in image analysis relate to nature's model.
+[@mac2018bat, @waldchen2018machine]
+
 6. iid
   - typically assumed, more so in CV
   - eg least squares doesn't assume iid. Max like and se does.
@@ -69,11 +76,6 @@ stochastic values
      - control Vs use in prediction
      - shared power
 
-7. a note on image analysis and deep learning
-  - hard
-  - large, seperate literature
-  - zero expectation that features in image analysis relate to nature's model.
-[@mac2018bat, @waldchen2018machine]
 
 
 8. plan for the paper
@@ -101,6 +103,8 @@ regularised regression
 
 random forest [@wright2015ranger, @breiman2001random]
 
+no reason effects for now. assuming iid.
+
 
 2 or 3 questions.
 
@@ -111,6 +115,7 @@ random forest [@wright2015ranger, @breiman2001random]
 
      - complexity
         - look at mtry, coefs retained, sigma
+        - sigma is 0.04 = lengthscale of 0.0032? But this is in multidimensional space I think.
 
      - r2
         - compare R2 of apriri model
@@ -122,9 +127,8 @@ random forest [@wright2015ranger, @breiman2001random]
       - easy with caret
       - results
 
-    - interaction importance
+    - interaction importance just a note?
       - what is?
-      - results
 
     - ice and PDP
       - define pdp then ice
@@ -138,24 +142,32 @@ random forest [@wright2015ranger, @breiman2001random]
       
 
   - examine correlation structure (variable level)
-     - preprocess, thinning, independent contrasts. [@garland1992procedures]
+   - why?
+        - control Vs use in prediction
+        - shared power
+        - regularised categorical
+
+
+     - fit phylogeny a priori model. this is the standard.
      - mixed effect model. easy for reg regression or stat non parametric [@ diggle1998model, @bolker2009generalized] more work elsewhere. 
+     not widely implemented else where but some work [@hajj].
+
+     just add as covariate is difficult.
+       - sometimes works
+            - random slopes are regularised interactions. dealt with fairly natively by RF.
+        - mean zero
+        - unseen values
+         - shared power
+
+        - preprocess, thinning, independent contrasts. [@garland1992procedures]
      - build correlation in as covariate. t-1, distance to data. [@hengl2018random]
 
-      - new approach, fit model then mixed effects. [@bhatt2017improved]
+     - new approach 1. RF on distance to points could be applied to phylogeny.
 
-     - random effects are under studied
 
-     - mean zero
-     - unseen values
-     - control Vs use in prediction
-     - shared power
-     - feature engineering (eg t-1 value)
-     - stacked generalisation
-     - priors
-     - random slopes are regularised interactions. dealt with fairly natively by RF.
-     - RF on distance to points could be applied to phylogeny.
+      - new approach 2, fit model then mixed effects. [@bhatt2017improved]
 
+     
 
   - understand individual points
     - lime [@lime, @ribeiro2016should]
