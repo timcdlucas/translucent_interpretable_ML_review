@@ -1,9 +1,13 @@
 ---
 title: A translucent box&#58; interpretable machine learning
-author: Tim Lucas
+author: Tim C. D. Lucas
 bibliography: machine_learn.bib
 fontsize: 10pt
 link-citations: true
+csl: mee.csl
+output:
+  pdf_document:
+    fig_caption: yes
 ---
 
 # plan
@@ -89,7 +93,7 @@ Phylogeny building is I've such task; the analyst takes genetic or phenotypic co
 The other common, unsupervised analysis is principle component analysis; the analyst takes covariates (ignoring any response variables) and transforms them so that they are linearly independent.
 Finally, reinforcement learning is similar to supervised learning in that the task is to predict a response variable.
 However, in reinforcement learning, the algorithm can collect new data as part of the learning process.
-This task is rare in biology but includes high profile machine learning achievements such as alpha go [@alphago]; the alpha go program played go against itself and in this way collected new data as part of the learning process.
+This task is rare in biology but includes high profile machine learning achievements such as alpha go [@silver2016mastering]; the alpha go program played go against itself and in this way collected new data as part of the learning process.
 As supervised learning applies to the tasks most commonly encountered in biology it will be the focus of this review.
 However, there are many models within  supervised learning that differ greatly in how statistical and interpretable they are.
 
