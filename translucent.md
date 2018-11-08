@@ -70,14 +70,28 @@ However, there are further reasons to interpret machine learning models that app
 The same traits that make machine learning models good at prediction and difficult to interpret also makes them potentially useful in exploratory analysis before more formal statistical modeling.
 The nonparametric nature of many machine learning models means they can discover nonlinear relationships and interactions without specifying then a priori as would be required in more statistical modeling.
 Furthermore, the lack of expert knowledge needed to fit an effective machine learning model means they can be useful as a baseline to compare how well a mechanistic model performs.
-Finally it is worth noting that standard statistical models are often not as interpretable as they seem; understanding the results from a statistical model is made more difficult in the presence of colinearity between covariates or when nature's true model is not in the set of models being considered [@Simpson? gelman? @lyddon2018nonparametric, @
-yao2017using].
+Finally it is worth noting that standard statistical models are often not as interpretable as they seem; understanding the results from a statistical model is made more difficult in the presence of colinearity between covariates or when nature's true model is not in the set of models being considered [@Simpson? gelman? @lyddon2018nonparametric, @yao2017using].
 Therefore, in some cases it might be better to fit a more predictive model and sacrifice some, but not all, interpretability.
 
 4. deeper overview of machine learning
 - supervised, unsupervised, reinforcement
 - unsupervised dimension reduction commonly used, clustering less so.
 - mostly focus on supervised
+
+Before examining how machine learning models can be interpreted it is worth reviewing the tasks commonly performed and having an overview of the types of models used.
+There are three broad tasks in massive learning: supervised learning, unsupervised learning and  learning.
+Supervised learning is the archetypal modelling found in biology.
+The analyst has some response data and possibly done covariates and the task is to predict the response data.
+Therefore models such as generalised linear models, mixed effects models and time series modelling would come under supervised learning.
+Unsupervised learning is the situation where the analyst only has covariates and wishes to group similar data points together, create a measure of how similar different datapoints are or create useful transformations of the covariates.
+There are many fewer situations where biologists use unsupervised learning.
+Phylogeny building is I've such task; the analyst takes genetic or phenotypic covariates and creates a a phylogeny that represents which data points are more or less similar.
+The other common, unsupervised analysis is principle component analysis; the analyst takes covariates (ignoring any response variables) and transforms them so that they are linearly independent.
+Finally, reinforcement learning is similar to supervised learning in that the task is to predict a response variable.
+However, in reinforcement learning, the algorithm can collect new data as part of the learning process.
+This task is rare in biology but includes high profile machine learning achievements such as alpha go [@alphago]; the alpha go program played go against itself and in this way collected new data as part of the learning process.
+As supervised learning applies to the tasks most commonly encountered in biology it will be the focus of this review.
+However, there are many models within  supervised learning that differ greatly in how statistical and interpretable they are.
 
 5. the range of supervised learning.
 - linear regression
@@ -187,8 +201,8 @@ no reason effects for now. assuming iid.
 
 
      - fit phylogeny a priori model. this is the standard.
-     - mixed effect model. easy for reg regression or stat non parametric [@ diggle1998model, @bolker2009generalized] more work elsewhere. 
-     not widely implemented else where but some work [@hajj].
+     - mixed effect model. easy for reg regression or stat non parametric [@diggle1998model, @bolker2009generalized] more work elsewhere. 
+     not widely implemented else where but some work [@hajjem2014mixed, @hajjem2017generalized, @eo2014tree, @miller2017gradient, @REEMtree].
 
      just add as covariate is difficult.
        - sometimes works
