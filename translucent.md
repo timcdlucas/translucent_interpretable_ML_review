@@ -129,12 +129,12 @@ While there are many different ways you could classify machine learning models, 
 i) Parametric, statistical models include many models commonly used by biologists. They are parametric because their functional form, or the shapes that the relationships between covariates and response variables can take are defined in advance. They are statistical because they will include some kind of likelihood function that relate the model to probabilities. Therefore generalised linear models are included in this category; the functional forms are defined before hand (linear terms, squared terms, interaction terms etc.) and the model is fitted by maximum likelihood based which finds the parameters that are most likely given the predefined likelihood function for the response variable.
 However, if we recall the definition of machine learning from the first paragraph, the emphasis of fitting these models in a machine learning is prediction accuracy rather than estimating parameters to accurately reflect the real world.
 A common technique to improve prediction is regularisation that biases parameter estimates (towards zero in the case of a linear model) to give a simpler model.
-Methods for regularisation include the LASSO [@] and elasticnet [@elasticnet], as used by maxent [@maxent] fit example, stepwise selection, or Bayesian priors putting a bias towards zero [@Bayespriors].
-ii) Non-parametric, statistical models are fitted in a formal statistical framework as above the functional form is not defined in advance. Instead, flexible curves are fitted. This group includes splines (and GAMs which combine splines and other linear terms) and Gaussian processes [@rasmussen].
+Methods for regularisation include the LASSO [@tibshirani1996regression] and elasticnet [@zou2005regularization], as used by maxent [@maxent] fit example, stepwise selection, or Bayesian priors putting a bias towards zero [@park2008bayesian].
+ii) Non-parametric, statistical models are fitted in a formal statistical framework as above the functional form is not defined in advance. Instead, flexible curves are fitted. This group includes splines (and GAMs which combine splines and other linear terms) and Gaussian processes [@rasmussen2004gaussian].
 These methods retain the principled uncertainty estimates due to being statistical.
 Furthermore, while the non-parametric components are often not represented by a small number of interpretable parameters, they are often controlled by a small number of hyperparameters.
 If these hyperparameters are fitted in an hierarchical framework (as is common) then they are can be interpreted with associated uncertainty.
-Finally, non-statistical, non-parametric methods encompass many more algorithmic methods such as decision trees (and ensembles of trees like Random Forests [@brieman] and boosted regression trees [@elith, @boostedtrees]).
+Finally, non-statistical, non-parametric methods encompass many more algorithmic methods such as decision trees (and ensembles of trees like Random Forests [@breiman2001random] and boosted regression trees [@elith2008working, @friedman2001greedy]).
 The group that a given model should be classed in can be subtle.
 For example, a neural network can be fitted by maximum likelihood if defined with a probabilistic loss function (a Bernoulli likelihood for classification for example) which would place it in the statistical, non-parametric group.
 However, a neural network with the same architecture but with a non-probabolistic loss function (such as a hinge loss) would be placed in the non-statistical, non-parametric group.
@@ -149,9 +149,9 @@ However, a neural network with the same architecture but with a non-probabolisti
 
 Neural networks (in particular, deep convolutional neutral networks) have recieved a lot of attention recently due largely to their role in image and video analysis [@waldchen2018machine].
 The nature of image classification for identification of species or individuals means it is quite clear there is little to be learned about nature by appraising these models.
-In most cases the task is to identify a species or individual that a human could visually identify [waldchen2018machine,@mac2018bat] therefore there is likely nothing new in the model.
+In most cases the task is to identify a species or individual that a human could visually identify [@waldchen2018machine, @mac2018bat] therefore there is likely nothing new in the model.
 Therefore, the main reason for interpreting deep convolutional networks is for model verification and to have an additional check for predictions made with the model.
-This fact and the fact that the interpretation of deep neural networks has its own, large literature [samek2017explainable, @montavon2017methods] means it won't be covered in depth in this review.
+This fact and the fact that the interpretation of deep neural networks has its own, large literature [@samek2017explainable, @montavon2017methods] means it won't be covered in depth in this review.
 
 ### Issues with machine learning in biology
 
@@ -205,9 +205,24 @@ no reason effects for now. assuming iid.
      - predictability
         - overall how good is prediction?
 
+    ![Predicted vs observed for the a priori selected model](figs/a_priori_var_selection-1.pdf "Predicted vs observed for the a priori selected model.")
+
+    ![Predicted vs observed for the a priori selected model](figs/elastic_net-2.pdf "Predicted vs observed for the a priori selected model.")
+
+    ![Predicted vs observed for the Gaussian process model](figs/gp?-2.pdf "Predicted vs observed for the a priori selected model.")
+
+    ![Predicted vs observed for the Random Forest model](figs/ranger-2.pdf "Predicted vs observed for the a priori selected model.")
+
+
      - complexity
         - look at mtry, coefs retained, sigma
         - sigma is 0.04 = lengthscale of 0.0032? But this is in multidimensional space I think.
+
+    ![Hyperparameter selection for the elastic net model](figs/elastic_net-1.pdf "Hyperparameter selection for the elastic net model.")
+
+    ![Hyperparameter selection for the Gaussian proces model](figs/gp?-1.pdf "Hyperparameter selection for the Gaussian proces model.")
+
+    ![Hyperparameter selection for the Random Forest model](figs/ranger-1.pdf "Hyperparameter selection for the Random Forest model.")
 
      - r2
         - compare R2 of apriri model
@@ -229,12 +244,30 @@ no reason effects for now. assuming iid.
       - define pdp then ice
       - results
 
+   ![PDP plot for Gestation Length in the Gaussian process model.](figs/pdp_gest-1.pdf "PDP plot for Gestation Length in the Gaussian process model.")
+
+   ![PDP plot for Gestation Length in the Random Forest model.](figs/pdp_gest-2.pdf "PDP plot for Gestation Length in the Random Forest model.")
+
+   ![2D PDP plot for Gestation Length and PET in the Gaussian process model.](figs/pdp_gest_pet-1.pdf "2D PDP plot for Gestation Length and PET in the Gaussian process model.")
+
+   ![2D PDP plot for Gestation Length and PET in the Random Forest model.](figs/pdp_gest_pet-2.pdf "2D PDP plot for Gestation Length and PET in the Random Forest model.")
+
+
+
+
+
+   ![ICE plot for Gestation Length in the Gaussian process model.](figs/ice-1.pdf "ICE plot for Gestation Length in the Gaussian process model.")
+
+   ![ICE plot for Gestation Length in the Random Forest model.](figs/ice-2.pdf "ICE plot for Gestation Length in the Random Forest model.")
+
    - clustered ice
      - method description
      - results
 
    
-      
+   ![Clustered ICE plot for latitude in the Gaussian process model.](figs/clustered_ice_lat-1.pdf "Clustered ICE plot for latitude in the Gaussian process model.")
+
+   ![Clustered ICE plot for latitude in the Random Forest model.](figs/clustered_ice_lat-2.pdf "Clustered ICE plot for latitude in the Random Forest model.")
 
   - examine correlation structure (variable level)
    - why?
