@@ -10,13 +10,12 @@ output:
     fig_caption: yes
 ---
 
-# plan
 
-## abstract
+## Abstract
 
 ## Introduction
 
-### Macgine bearning in biology
+### Machine learning in biology
 
 <!--
 1. what is it, how had it been used what are its flaws
@@ -270,13 +269,13 @@ no reason effects for now. assuming iid.
     - explain
     - results
 
-# other models
+### other models
 
 - rrf
 - monotonic constraints
 
 
-## future directions and conclusions
+## Future directions and conclusions
 
 - broad encorporation into ecology
 - clear distinction between predictions and inference
@@ -285,30 +284,6 @@ no reason effects for now. assuming iid.
 - human experiments of interprability [@bastani2017interpreting].
 
 
-
-
-# notes
-
-Change of focus. 
-Typically question is "I have a machine learning model, now can I interpret this."
-But I'm more interested in "can we use machine learning for interpretation of data."
-So, moving from prediction to exploration and inference.
-
-
-pantheria.
-a priori and linear regression Vs lasso Vs xgboost
-
-use xgboost to test R2
-use lasso to broaden search
-use xgboost in its own
-
-missing data?
-
-- lime
-- variable importance
-- plots
-- marginal effects plot
-- many conditional effects curves
 
 
 
