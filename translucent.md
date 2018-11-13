@@ -84,6 +84,7 @@ The nonparametric nature of many machine learning models means they can discover
 Furthermore, the lack of expert knowledge needed to fit an effective machine learning model means they can be useful as a baseline to compare how well a mechanistic model performs.
 Finally it is worth noting that standard statistical models are often not as interpretable as they seem; understanding the results from a statistical model is made more difficult in the presence of colinearity between covariates or when nature's true model is not in the set of models being considered [@Simpson? gelman? @lyddon2018nonparametric, @yao2017using].
 Therefore, in some cases it might be better to fit a more predictive model and sacrifice some, but not all, interpretability.
+Alternatively, it might be useful to use a highly predictive model to create hypotheses which could then be tested in a more formal statistical framework.
 
 
 <!--
@@ -109,7 +110,7 @@ iii) Finally, reinforcement learning is similar to supervised learning in that t
 However, in reinforcement learning, the algorithm can collect new data as part of the learning process.
 This task is rare in biology but includes high profile machine learning achievements such as alpha go [@silver2016mastering]; the alpha go program played go against itself and in this way collected new data as part of the learning process.
 As supervised learning applies to the tasks most commonly encountered in biology it will be the focus of this review.
-However, there are many models within  supervised learning that differ greatly in how statistical and interpretable they are.
+However, there are many models within  supervised learning that differ greatly in how statistically and interpretable they are.
 
 <!--
 5. the range of supervised learning.
@@ -126,10 +127,10 @@ However, there are many models within  supervised learning that differ greatly i
 -->
 
 While there are many different ways you could classify machine learning models, one that is useful for discussions of interpretability is to split models into three groups: i) parametric, statistical models, ii) non-parametric statistical models and iii) non-statistical, non-parametric models.
-i) Parametric, statistical models include many models commonly used by biologists. They are parametric because their functional form, or the shapes that the relationships between covariates and response variables can take are defined in advance. They are statistical because they will include some kind of likelihood function that relate the model to probabilities. Therefore generalised linear models are included in this category; the functional forms are defined before hand (linear terms, squared terms, interaction terms etc.) and the model is fitted by maximum likelihood based which finds the parameters that are most likely given the predefined likelihood function for the response variable.
+i) Parametric, statistical models include many models commonly used by biologists. They are parametric because their functional form, or the shapes that the relationships between covariates and response variables can take are defined in advance. They are statistical because they will include some kind of likelihood function that relate the model to probabilities. Therefore generalised linear models are included in this category; the functional forms are defined before hand (linear terms, squared terms, interaction terms etc.) and the model is fitted by maximum likelihood which finds the parameters that are most likely given the predefined likelihood function for the response variable.
 However, if we recall the definition of machine learning from the first paragraph, the emphasis of fitting these models in a machine learning is prediction accuracy rather than estimating parameters to accurately reflect the real world.
 A common technique to improve prediction is regularisation that biases parameter estimates (towards zero in the case of a linear model) to give a simpler model.
-Methods for regularisation include the LASSO [@tibshirani1996regression] and elasticnet [@zou2005regularization], as used by maxent [@maxent] fit example, stepwise selection, or Bayesian priors putting a bias towards zero [@park2008bayesian].
+Methods for regularisation of linear models include the LASSO and other penalties [@tibshirani1996regression, @zou2005regularization, @xu2017generalized, @fan2001variable], as used by maxent [@maxent] for example, stepwise selection [@hocking1976biometrics], or Bayesian priors putting a bias towards zero [@park2008bayesian, @liu2018bayesian, @carvalho2009handling].
 ii) Non-parametric, statistical models are fitted in a formal statistical framework as above the functional form is not defined in advance. Instead, flexible curves are fitted. This group includes splines (and GAMs which combine splines and other linear terms) and Gaussian processes [@rasmussen2004gaussian].
 These methods retain the principled uncertainty estimates due to being statistical.
 Furthermore, while the non-parametric components are often not represented by a small number of interpretable parameters, they are often controlled by a small number of hyperparameters.
@@ -151,10 +152,10 @@ Neural networks (in particular, deep convolutional neutral networks) have reciev
 The nature of image classification for identification of species or individuals means it is quite clear there is little to be learned about nature by appraising these models.
 In most cases the task is to identify a species or individual that a human could visually identify [@waldchen2018machine, @mac2018bat] therefore there is likely nothing new in the model.
 Therefore, the main reason for interpreting deep convolutional networks is for model verification and to have an additional check for predictions made with the model.
-This fact and the fact that the interpretation of deep neural networks has its own, large literature [@samek2017explainable, @montavon2017methods] means it won't be covered in depth in this review.
+The interpretation of deep neural networks has its own, large literature [@samek2017explainable, @montavon2017methods].
+As the focus of this review is using machine learning for interogating natural systems I will not cover image analysis and related tasks.
 
-### Issues with machine learning in biology
-
+<!--
 6. iid
   - typically assumed, more so in CV
   - eg least squares doesn't assume iid. Max like and se does.
@@ -167,11 +168,20 @@ This fact and the fact that the interpretation of deep neural networks has its o
      - unseen values
      - control Vs use in prediction
      - shared power
+-->
 
-
+A major shift in the statistical analysis of ecological and evolutionary data in recent decades is the acknowledgement that observational, biological data rarely conform to assumptions of independence due to phylogeny [@], space [@@diggle1998model], time [@] or other categorical variables [@bolker2009generalized].
+This issue of autocorrelation is largely underappreciated in the machine learning literature and only recently and rarely have random effects been explicitely built into typical machine learning models [@eo2014tree, @hajjem2014mixed, @hajjem2017generalized, @miller2017gradient].
+Most machine learning models make some assumption of independence and certainly estimates of out-of-sample predictive ability are biased if cross-validation is used without accounting for autocorrelatoon.
+There are however a number of strategies to mitigate biases caused by autocorrelation and for gaining insight into the random effects.
+These include simple methods such as using random effects as normal covariates or preprocessing the data to remove autocorrelation [@].
+Further methods include the creation of new covariates that encode the autocorrelation in more useful ways,
+ stratified cross-validation [@le2014spatial] or using a mixed model to "stack" multiple machibe learning models post-hoc [@bhatt2017improved].
+These methods will be examined in more detail in the body of the review.
 
 8. plan for the paper
 
+<!--
 in this review we will use pantheria as an example.
 we will fit three models with differing degrees of interpretability.
 
@@ -181,11 +191,28 @@ we will fit three models with differing degrees of interpretability.
 - r squared baseline as new method
 - clustering of ice plots as new method
 
+--->
+
+In this review I will present an illustrative analysis on the Pantheria dataset [@jones2009pantheria] which contains life history traits for many mammals.
+I fitted four models, with variations, that span the range of interpretable.
+As a point of comparison I fitted a typical model used by biologists; a simple linear model with a priori variable selection.
+I also fitted a parametric statistical model, a non-parametric statistical model and a non-parametric non-statistical model.
+For each of these models I demonstrate how they can be interpreted.
+The full analysis is included as a reproducible R [@R] script that reads data directly from online repositories.
 
 ## Example analysis
 
-pantheria [@jones2009pantheria] and litter size
+### Data
+The PanTheria database is a dataset of mammalian life history traits collected from the published literature  [@jones2009pantheria].
+Overall it contains Todo species and information on Todo traits, complimented by a further Todo variables calculated from IUCN shapefiles for each species and remotely sensed data.
+There is large amounts of missing data for many of the life history traits.
+Furthermore, due to each data row being a species, the data are not independent, with species with more recent common ancestors being more likely to share life history traits.
+While methods for analysing this type of data vary [@gay, others], the cornerstone in most analyses would be phylogenetic regression that uses a seperately estimated phylogeny, converted to a covariance matrix, and included as a random effect [@bolker, @pgls].
+In this illustrative analysis I will use use this dataset to examine potential factors relating to the log of the average litter size (plus one to deal with zeroes).
 
+### Model fitting
+
+<!--
 3 models via caret [@caret]
 typical ecological modelling
 
@@ -196,10 +223,19 @@ regularised regression
 random forest [@wright2015ranger, @breiman2001random]
 
 no reason effects for now. assuming iid.
+-->
+
+#### A priori variable selection
+
+The standard approach for modelling in ecology and comparative biology is to carefully select a relatively small suite of covariates based on \emph{a priori} knowledge of the system.
+As a model to commpare to, I fitted a linear model with \emph{a priori} variable selection.
+I chose body size [@leutenegger1979evolution, @tuomi1980mammalian], gestation length [@okkens1993influence, @bielby2007fast], metabolic rate [@white2004does], litters per year [@white2004does] and longevity [@wilkinson2002life, @zammuto1986life].
+While a specialist in 
 
 
 2 or 3 questions.
 
+### Global properties
   - gain some understanding of a system
 
      - predictability
@@ -228,6 +264,8 @@ no reason effects for now. assuming iid.
         - compare R2 of apriri model
 
     - fit simpler model iml package
+
+### Variable level properties
 
   - generate hypotheses (variable level)
 
@@ -269,6 +307,8 @@ no reason effects for now. assuming iid.
 
    ![Clustered ICE plot for latitude in the Random Forest model.](figs/clustered_ice_lat-2.pdf "Clustered ICE plot for latitude in the Random Forest model.")
 
+### Handling non-independent data
+
   - examine correlation structure (variable level)
    - why?
         - control Vs use in prediction
@@ -292,26 +332,35 @@ no reason effects for now. assuming iid.
 
      - new approach 1. RF on distance to points could be applied to phylogeny.
 
-
+      - Non random CV.
       - new approach 2, fit model then mixed effects. [@bhatt2017improved]
 
      
+### Data point level properties
 
   - understand individual points
     - lime [@lime, @ribeiro2016should, @lundberg2017unified , @ribeiro2016nothing]
     - explain
     - results
 
+
+
+   ![LIME analysis of predictions of five points from the Gaussian process model.](figs/lime-2.pdf "LIME analysis of predictions of five points from the Gaussian process model..")
+
+   ![LIME analysis of predictions of five points from the Random Forest model.](figs/lime-3.pdf "LIME analysis of predictions of five points from the Random Forest model.")
+
+
 ### other models
 
 - rrf
 - monotonic constraints
-
+- [@ryo2017statistically] conditional trees (stats test before split), model based trees (linear model in the tree or something?) and bootstrap tests of significance for random forest variable selection. not great but worth mentioning.
 
 ## Future directions and conclusions
 
 - broad encorporation into ecology
 - clear distinction between predictions and inference
+- suggest workflow of split, explore, test.
 - viz of surface
 - Bayesian bootstrap, boosted mech models.
 - human experiments of interprability [@bastani2017interpreting].
