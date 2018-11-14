@@ -172,11 +172,11 @@ As the focus of this review is using machine learning for interogating natural s
 
 A major shift in the statistical analysis of ecological and evolutionary data in recent decades is the acknowledgement that observational, biological data rarely conform to assumptions of independence due to phylogeny [@], space [@@diggle1998model], time [@] or other categorical variables [@bolker2009generalized].
 This issue of autocorrelation is largely underappreciated in the machine learning literature and only recently and rarely have random effects been explicitely built into typical machine learning models [@eo2014tree, @hajjem2014mixed, @hajjem2017generalized, @miller2017gradient].
-Most machine learning models make some assumption of independence and certainly estimates of out-of-sample predictive ability are biased if cross-validation is used without accounting for autocorrelatoon.
-There are however a number of strategies to mitigate biases caused by autocorrelation and for gaining insight into the random effects.
+Most machine learning models make some assumption of independence and certainly estimates of out-of-sample predictive ability are biased if cross-validation is used without accounting for autocorrelation.
+There are however a number of strategies to mitigate biases caused by autocorrelation and for gaining insight into the random effects themselves.
 These include simple methods such as using random effects as normal covariates or preprocessing the data to remove autocorrelation [@].
 Further methods include the creation of new covariates that encode the autocorrelation in more useful ways,
- stratified cross-validation [@le2014spatial] or using a mixed model to "stack" multiple machibe learning models post-hoc [@bhatt2017improved].
+ stratified cross-validation [@le2014spatial] or using a mixed model to "stack" multiple machine learning models post-hoc [@bhatt2017improved].
 These methods will be examined in more detail in the body of the review.
 
 8. plan for the paper
@@ -193,7 +193,7 @@ we will fit three models with differing degrees of interpretability.
 
 --->
 
-In this review I will present an illustrative analysis on the Pantheria dataset [@jones2009pantheria] which contains life history traits for many mammals.
+In this review I will present an illustrative analysis on the PanTHERIA dataset [@jones2009pantheria] which contains life history traits for many mammals.
 I fitted four models, with variations, that span the range of interpretable.
 As a point of comparison I fitted a typical model used by biologists; a simple linear model with a priori variable selection.
 I also fitted a parametric statistical model, a non-parametric statistical model and a non-parametric non-statistical model.
@@ -203,11 +203,11 @@ The full analysis is included as a reproducible R [@R] script that reads data di
 ## Example analysis
 
 ### Data
-The PanTheria database is a dataset of mammalian life history traits collected from the published literature  [@jones2009pantheria].
+The PanTHERIA database is a dataset of mammalian life history traits collected from the published literature  [@jones2009pantheria].
 Overall it contains Todo species and information on Todo traits, complimented by a further Todo variables calculated from IUCN shapefiles for each species and remotely sensed data.
 There is large amounts of missing data for many of the life history traits.
 Furthermore, due to each data row being a species, the data are not independent, with species with more recent common ancestors being more likely to share life history traits.
-While methods for analysing this type of data vary [@gay, others], the cornerstone in most analyses would be phylogenetic regression that uses a seperately estimated phylogeny, converted to a covariance matrix, and included as a random effect [@bolker, @pgls].
+While methods for analysing this type of data vary [@gay2014parasite, others], the cornerstone in most analyses would be phylogenetic regression that uses a seperately estimated phylogeny, converted to a covariance matrix, and included as a random effect [@magnusson2017glmmtmb, @caper].
 In this illustrative analysis I will use use this dataset to examine potential factors relating to the log of the average litter size (plus one to deal with zeroes).
 
 ### Model fitting
@@ -308,6 +308,33 @@ While a specialist in
    ![Clustered ICE plot for latitude in the Random Forest model.](figs/clustered_ice_lat-2.pdf "Clustered ICE plot for latitude in the Random Forest model.")
 
 ### Handling non-independent data
+
+The PanTHERIA data is an example of data that strongly violates assumptions of independently sampled data.
+The autocorrelation here arises due to common ancestors of species; two species that recently diverged from a common ancestor are likely to be more similar than species whose common ancestor is in the deep past.
+This autocorrelation is typically handled with a phylogenetic random effect while other sources of autocorrelation such as time or space can be similarly handled with appropriate reason effects.
+The most commonly used random effect in ecological and evolutionary analyses is categorical random effects that can be used to model a wide variety of sources of autocorrelation such as multiple samples from a single individual, site or lab for example.
+The naïve approach to including random effects within machine learning models would be to simply include them as covariates: categorical fixed effects as normal categorical covariates, space or time as continuous variables for example.
+However to understand when this approach is or is not appropriate, we have to examine three factors as to why these effects are not just included as fixed effects in typical mixed effects models.
+
+Firstly, we expect to extrapolate continuous random effects and expect unseen categories in categorical random effects.
+Many machine learning models extrapolate poorly, for example tree based models will extrapolate in a flat line from the prediction at the extreme of the data range. 
+For an effect such as space this is undesirable and we would instead typically wish the spatial prediction to return to the mean of the data.
+Similarly, a categorical variable would often be encoded as a one-hot dummy variable and unseen categories would be implicitly predicted using the fitted value for the first category.
+
+Secondly, we often have many categories and little data per category in a categorical random effect and wish to share power across groups.
+This sharing of power might apply to the slope coefficients in a linear model (a random effects model with random slopes).
+In both cases this can be reframed as a regularisation problem. 
+For many categories with few data points per category we are simply estimating a lot of parameters and need to regularised accordingly.
+Similarly, a random slopes model is fitting the interaction term between a continuous variable and a categorical variable with many categories.
+Again, this is a regularisation problem.
+This framing of random effects as a regularisation problem can be seen explicitely in the Bayesian formulation of random effects models using hierarchical models [@].
+
+Finally, random effects are often included as a way to control for autocorrelation raster than being part of the expected predicted model.
+For example, if all future predictions are to be for unseen categories of a categorical random effect or if all spatial predictions are to be made far from data, then we might want to construct our model simply so that the model is unbiased be these effects rather than using them directly in predictions.
+Similarly if the data collection was by biased with respect to a random effect, we might want to control for this without wanting to use this effect in predictions.
+For example, if data was collected by different labs or with different protocols, we might want to control for this effect but then predict the latent effect.
+If the presence of a species is measured using different methods (camera trapping, visual surveys etc.) we might want to control for this, but we aim to predict the latent state "species presence", not "species presence as measured by camera trapping".
+While this relate to the first point on predicting outside the range of the data, the methods for handling it can be different.
 
   - examine correlation structure (variable level)
    - why?
