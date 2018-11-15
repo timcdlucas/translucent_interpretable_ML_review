@@ -273,6 +273,7 @@ While a specialist in
       - what is it? 
       - easy with caret
       - results
+      - ranger importance p values. 
 
     - interaction importance
       - iml package
@@ -311,8 +312,13 @@ While a specialist in
 
 The PanTHERIA data is an example of data that strongly violates assumptions of independently sampled data.
 The autocorrelation here arises due to common ancestors of species; two species that recently diverged from a common ancestor are likely to be more similar than species whose common ancestor is in the deep past.
-This autocorrelation is typically handled with a phylogenetic random effect while other sources of autocorrelation such as time or space can be similarly handled with appropriate reason effects.
+This autocorrelation is typically handled with a phylogenetic random effect while other sources of autocorrelation such as time or space can be similarly handled with an appropriate random effects.
 The most commonly used random effect in ecological and evolutionary analyses is categorical random effects that can be used to model a wide variety of sources of autocorrelation such as multiple samples from a single individual, site or lab for example.
+
+Given the types of machine learning discussed in the introduction, we can see that including random effects with parametric or non-parametric statistical models is entirely seasons with flexible modelling packages [@stan, @inla].
+However including random effects with non-parametric, non-statistical models is difficult.
+While these models are starting to be developed [@hajjem2014mixed, @hajjem2017generalized, @eo2014tree, @miller2017gradient, @REEMtree], they are not available on R packages and are only implemented for a small subset of machine learning algorithms and don't necessarily benefit from the computational improvements implemented in the most up-to-date packages [@ranger, @xgboost].
+Therefore, generic methods for handling random effects, that can be used with any machine learning algorithm, are useful.
 The naïve approach to including random effects within machine learning models would be to simply include them as covariates: categorical fixed effects as normal categorical covariates, space or time as continuous variables for example.
 However to understand when this approach is or is not appropriate, we have to examine three factors as to why these effects are not just included as fixed effects in typical mixed effects models.
 
@@ -329,12 +335,39 @@ Similarly, a random slopes model is fitting the interaction term between a conti
 Again, this is a regularisation problem.
 This framing of random effects as a regularisation problem can be seen explicitely in the Bayesian formulation of random effects models using hierarchical models [@].
 
-Finally, random effects are often included as a way to control for autocorrelation raster than being part of the expected predicted model.
+Finally, random effects are often included as a way to control for autocorrelation rather than being part of the expected predicted model.
 For example, if all future predictions are to be for unseen categories of a categorical random effect or if all spatial predictions are to be made far from data, then we might want to construct our model simply so that the model is unbiased be these effects rather than using them directly in predictions.
 Similarly if the data collection was by biased with respect to a random effect, we might want to control for this without wanting to use this effect in predictions.
 For example, if data was collected by different labs or with different protocols, we might want to control for this effect but then predict the latent effect.
 If the presence of a species is measured using different methods (camera trapping, visual surveys etc.) we might want to control for this, but we aim to predict the latent state "species presence", not "species presence as measured by camera trapping".
 While this relate to the first point on predicting outside the range of the data, the methods for handling it can be different.
+
+Given these issues we can consider how to include random effects into machine learning models and then examine the results when these are applied to the PanTHERIA analysis.
+As discussed above, the phylogenetic effect is the clearest in the PanTHERIA dataset.
+One way of including phylogenetic information in an analysis is to treat a taxonomic level such as genus as a categorical reason effect.
+While this is less principled than properly including the phylogeny, it is simple and makes it possible to demonstrate categorical random effects with the PanTHERIA database.
+
+First considering the case of using genus as a categorical random effect to encapsulate some phylogenetic information, the first issue is that by default, new genera will have predictions that implicitly they are of the reference genus in the one-hot encoded dummy variables. 
+Instead we can give every genus it's own dummy variable.
+While this would cause identifiability with the intercept in a linear model, the random columns and greedy splitting of random forests means this will not cause problems.
+The second issue above was that of regularisation.
+Random Forest will automatically consider all interactions between our covariates and genus effect.
+Random Forest is natively regularised by the bootstrap aggregation, and the complexity of the model is further controlled by hyper parameters as in figure xx.
+The new model can therefore be fitted in the same way as the old model.
+However, given that I have added many covariates, I increased the range of the mtry parameter.
+A alternative approach available in ranger (but not in randomForest) is to weight columns.
+I also ran a model where the probability of including one of the genus columns was scaled by the number of genera.
+The final consideration above was the case where we expect all predictions to be made on new categories.
+This does not particularly apply in this analysis because we may well want to make predictions for a species not in the dataset but whose genus is.
+Furthermore, in the case of random forest, the above methods are suitable even if this wasn't the case.
+However, given a model that cannot regularise as effectively, we might want to control for genus without including it as a covariate in the model.
+In this case we can simply weight the data so that each genus is equally represented or so that each genus represented proportionally to three number of species in each genus in the full prediction set, which could be for example all mammals.
+Many models in caret accept a weight argument so this is a very general solution.
+
+If however, we wish to include the full phylogeny in our model, we need different methods.
+
+
+Space is a covariate, and no time. but here's how above methods apply to those effects.
 
   - examine correlation structure (variable level)
    - why?
