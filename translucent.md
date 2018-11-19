@@ -178,10 +178,10 @@ These include simple methods such as using random effects as normal covariates o
 Further methods include the creation of new covariates that encode the autocorrelation in more useful ways,
  stratified cross-validation [@le2014spatial] or using a mixed model to "stack" multiple machine learning models post-hoc [@bhatt2017improved].
 These methods will be examined in more detail in the body of the review.
-
+<!--
 8. plan for the paper
 
-<!--
+
 in this review we will use pantheria as an example.
 we will fit three models with differing degrees of interpretability.
 
