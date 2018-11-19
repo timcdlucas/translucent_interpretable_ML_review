@@ -25,7 +25,7 @@ output:
 - but it has a reputation as being black box
 -->
 
-Machine learning is a collection of techniques that focuses on making accurate predictions from data.
+Machine learning is a collection of techniques that focuses on making accurate predictions from data [@crisci2012review].
 It differs from the broader field of statistics in two aspects: 1) the estimation of parameters that relate to the real world is less emphasised than in much of statistics and 2) the driver of the predictions are expected to be the data rather than expert opinion or careful selection of plausible mechanistic models.
 High-level machine learning libraries that aid the full machine learning pipeline [@caret, @scikit, @maxent, @biomod] has made machine learning easy to use.
 These techniques have therefore become popular, particularly in the fields of species distribution modelling [@maxent, @biomod, @elith2006novel, @golding2018zoon] and species identification from images or acoustic detectors [@mac2018bat, @waldchen2018machine].
@@ -47,7 +47,7 @@ They therefore estimate nonlinear relationships between covariates and response 
 Furthermore, these relationships are often not summarised in a small number of interpretable parameters as would be found in a polynomial or mechanistic model.
 Parameters in machine learning models often don't come with estimates of uncertainty.
 Therefore, even if a model's parameters could be interpreted, distinguishing noise from signal can be difficult.
-Secondly, they often fit deep interactions between covariates.
+Secondly, they often fit deep interactions between covariates [@lunetta2004screening].
 Even simple, two-way interactions in linear models cause confusion [@] and deep, nonlinear interactions are difficult to visualise or understand.
 Thirdly, fitting machine learning models is often stochastic [@] and sometimes fitting the same model with different starting values will give a totally different model (though perhaps with similar predictive performance).
 However, while interpretation of machine learning models can be difficult, there is plenty of insight to be gained by fitting and appraising these models, as will be seen in this review.
@@ -96,8 +96,8 @@ Alternatively, it might be useful to use a highly predictive model to create hyp
 
 ### An overview of machine learning
 
-Before examining how machine learning models can be interpreted it is worth reviewing the tasks commonly performed and having an overview of the types of models used.
-There are three broad tasks in massive learning: i) supervised learning, ii) unsupervised learning and iii) reinforcement learning.
+Before examining how machine learning models can be interpreted it is worth reviewing the tasks commonly performed and having an overview of the types of models used [@crisci2012review].
+There are three broad tasks in machine learning: i) supervised learning, ii) unsupervised learning and iii) reinforcement learning.
 i) Supervised learning is the archetypal modelling found in biology.
 The analyst has some response data and possibly done covariates and the task is to predict the response data.
 Therefore models such as generalised linear models, mixed effects models and time series modelling would come under supervised learning.
@@ -212,6 +212,12 @@ In this illustrative analysis I will use use this dataset to examine potential f
 
 ### Model fitting
 
+I fitted four classes of model (with variations) to the data: a linear model with a priori variable selection, a regularised linear model, a statistical, non-parametric Gaussian process model and a non-statistical random forest model with is an ensemble of decision trees with bootstraps of the input data and a reason subset of the covariates used to fit each tree.
+I used five-fold cross-validation to test model accuracy and select hyperparameters for the models with hyperparameters.
+Given the very different levels of flexibility in the models, this out-of-sample test of accuracy is important and given the non-statistical nature of the random forest, statistical, within sample model comparisons such as AIC are not possible.
+All models were fitted with caret [@caret] in R [@R].
+One make benefit of caret is that most of the procedures presented later for interpreting the models are immediately useable with over 200 machine learning models including up-to-date implementations of various models such add xgboost, h2o and keras [@]. 
+
 <!--
 3 models via caret [@caret]
 typical ecological modelling
@@ -230,16 +236,61 @@ no reason effects for now. assuming iid.
 The standard approach for modelling in ecology and comparative biology is to carefully select a relatively small suite of covariates based on \emph{a priori} knowledge of the system.
 As a model to commpare to, I fitted a linear model with \emph{a priori} variable selection.
 I chose body size [@leutenegger1979evolution, @tuomi1980mammalian], gestation length [@okkens1993influence, @bielby2007fast], metabolic rate [@white2004does], litters per year [@white2004does] and longevity [@wilkinson2002life, @zammuto1986life].
-While a specialist in 
+While a specialist in the field may well have chosen different variables, this is a reasonable starting point.
 
+#### Statistical, parametric models
+
+If we have many covariates relative to sample size and have minimal a priori knowledge of the system we may wish to include all the covariates in a linear model but regularise the coefficients.
+Similarly, if we want to include many interactions or transformed variables, the number of covariates can grow rapidly and regularisation becomes vital.
+This approach is also sensible if we care more about prediction than about unbiased estimates of parameters.
+The simplest regularised linear models are ridge regression [@], that includes a penalty on the square of the coefficients, and LASSO [@] that penalises the absolute value of the coefficients and therefore more strongly penalises smaller values.
+A common model is the elastic net that includes both the ridge penalty and the lasso penalty.
+This is the model I fitted to the PanTHERIA dataset.
+The total strength of the penalty, and the relative contribution of the two penalties were selected using cross-validation (figure xx).
+
+
+#### Non-parametric, statistical models
+
+Given the parametric nature of the elastic net model, the way to include nonlinear responses and interactions is to define them manually before model fitting.
+This however still imposes important restrictions as it is difficult to know which nonlinear are potential useful and the model is still ultimately constrained by the effects we can think of to include (typically polynomials, log and exponential transforms and perhaps sine transforms).
+In contrast, non-parametric models like Gaussian processes [@rasmussen2004gaussian]  require no pro-specification of functional forms and instead the overall flexibility of the model is controlled with a hyperparameter.
+Given their statistical nature, the uncertainty estimates around predictions are a natural part of the model and we would hope for them to be quite well calibrated even if we extrapolated far from the data.
+I have fitted a Gaussian process model with a radial basis kernel [@kernlab], selecting the scale hyperparameter using cross-validation.
+
+
+#### Non-parametric, non-statistical models
+
+Finally, I fitted a random forest model [@brieman2001, @ranger] as an example of a non-statistical, non-parametric model.
+Random forests tend to be easy to use with few hyperparameters and are less likely to overfit than other tree models like single decision trees or boosted regression trees.
+Random forests using the ranger package via caret have three hyperparameters.
+Split rule, which I kept constant at 'variance'.
+The maximum number of data points at a leaf, which can be used to prevent overfitting was selected by cross-validation.
+Finally, the number of randomly selected covariates to be used to build each tree was also selected by cross-validation.
 
 2 or 3 questions.
 
 ### Global properties
+
+<!---
   - gain some understanding of a system
 
      - predictability
         - overall how good is prediction?
+
+--->
+
+The first level of interpretation we can examine is the global level; what do the fitted models tell us about the system as a whole.
+One global property of interest is how predictable the system is.
+This can be assessed using scatter plots of observed versus out-of-sample predictions (figure Todo) as well as metrics such as $r^2$ or the root mean squared error.
+Random forests are effective here as they are fast to fit, robust and need relatively little tuning.
+If a random forest has poor predictive performance then it is likely that either vital covariates are missing from the dataset or that the response is in fact very noisy.
+The random forest model fitted here has fairly good predictive performance (figure Todo) with an $r^2$ of Todo.
+However, it can be seen that certain species, particularly those with very large litters, are predicted quite poorly.
+We can be fairly sure that this trait is not noisy as the evolutionary consequences of litter size are large.
+Therefore we are probably missing some crucial covariates.
+
+We can also use predictive performance of models like Random forest to scale our expectations for how well a more statistical or mechanistic model fits the data.
+Here, the linear model with a priori variable selection had lettuce performance
 
     ![Predicted vs observed for the a priori selected model](figs/a_priori_var_selection-1.pdf "Predicted vs observed for the a priori selected model.")
 
@@ -365,9 +416,23 @@ In this case we can simply weight the data so that each genus is equally represe
 Many models in caret accept a weight argument so this is a very general solution.
 
 If however, we wish to include the full phylogeny in our model, we need different methods.
+The first method is to include all the phylogenetic information in covariates [@hengl2018random].
+Given the data set of todo datapoints we can do this by defining Todo new covariates that measure the phylogenetic distance between datapoints.
+That is, the first new covariate is the phylogenetic distance between every datapoint and the first datapoint, then this is repeated to create todo new covariates.
+This method is relatively untested but is general and can work with any machine learning algorithm.
+However, interpretable of the strength of the phylogeny will be relatively difficult as it is encoded as Todo different covariates.
+
+The second method involves fitting multiple machine learning models and then using phylogenetic regression to 'stack' them. 
+We fit a number of machine learning algorithms and make out of sample predictions within the cross-validation framework.
+We then fit a phylogenetic mixed-effects model using the out-of-sample predictions as covariates and constraining the regression coefficients to be positive.
+This method is likely to be very effective at prediction and the phylogenetic component of the regression is interpretable as it would be in any normal phylogenetic regression.
+However, this method only corrects for the biases from autocorrelated data after the fact; while it may still be possible to interpret the machine learning models as we have done previously, the computed nonlinear relationships remain biased.
 
 
-Space is a covariate, and no time. but here's how above methods apply to those effects.
+While I can demonstrate the handling of spatial or temporal autocorrelation with this dataset it is worth some brief discussion.
+Spatial random effects can be handled in the same ways as the phylogenetic effects, in fact both of the methods proposed come from the spatial literature [@hengl2018random, @bhatt2017improved].
+Temporal effects are easier to handle as they are one dimensional with causation only able to occur in one direction.
+For today time series we can typically busy include covariates created from the lagged response variable while for irregular time series we can create covariates like "mean response within X units of time previous to this datapoint".
 
   - examine correlation structure (variable level)
    - why?
