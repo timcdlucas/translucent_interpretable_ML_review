@@ -260,7 +260,7 @@ I have fitted a Gaussian process model with a radial basis kernel [@kernlab], se
 
 #### Non-parametric, non-statistical models
 
-Finally, I fitted a random forest model [@brieman2001, @ranger] as an example of a non-statistical, non-parametric model.
+Finally, I fitted a random forest model [@breiman2001random, @wright2015ranger] as an example of a non-statistical, non-parametric model.
 Random forests tend to be easy to use with few hyperparameters and are less likely to overfit than other tree models like single decision trees or boosted regression trees.
 Random forests using the ranger package via caret have three hyperparameters.
 Split rule, which I kept constant at 'variance'.
@@ -368,7 +368,7 @@ The most commonly used random effect in ecological and evolutionary analyses is 
 
 Given the types of machine learning discussed in the introduction, we can see that including random effects with parametric or non-parametric statistical models is entirely seasons with flexible modelling packages [@stan, @inla].
 However including random effects with non-parametric, non-statistical models is difficult.
-While these models are starting to be developed [@hajjem2014mixed, @hajjem2017generalized, @eo2014tree, @miller2017gradient, @REEMtree], they are not available on R packages and are only implemented for a small subset of machine learning algorithms and don't necessarily benefit from the computational improvements implemented in the most up-to-date packages [@ranger, @xgboost].
+While these models are starting to be developed [@hajjem2014mixed, @hajjem2017generalized, @eo2014tree, @miller2017gradient, @REEMtree], they are not available on R packages and are only implemented for a small subset of machine learning algorithms and don't necessarily benefit from the computational improvements implemented in the most up-to-date packages [@wright2015ranger, @xgboost].
 Therefore, generic methods for handling random effects, that can be used with any machine learning algorithm, are useful.
 The naïve approach to including random effects within machine learning models would be to simply include them as covariates: categorical fixed effects as normal categorical covariates, space or time as continuous variables for example.
 However to understand when this approach is or is not appropriate, we have to examine three factors as to why these effects are not just included as fixed effects in typical mixed effects models.
