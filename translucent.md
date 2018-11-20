@@ -296,13 +296,13 @@ However, the fact that random forest performs much better than the a priori line
 It is important to be clear that this is not a suggestion to go back and add these variables to our a priori model. 
 This would amount to quite severe data snooping and would bias any significance tests performed on the a priori model.
 
-    ![Predicted vs observed for the a priori selected model](figs/a_priori_var_selection-1.pdf "Predicted vs observed for the a priori selected model.")
+![Predicted vs observed for the a priori selected model](figs/a_priori_var_selection-1.pdf "Predicted vs observed for the a priori selected model.")
 
-    ![Predicted vs observed for the a priori selected model](figs/elastic_net-2.pdf "Predicted vs observed for the a priori selected model.")
+![Predicted vs observed for the a priori selected model](figs/elastic_net-2.pdf "Predicted vs observed for the a priori selected model.")
 
-    ![Predicted vs observed for the Gaussian process model](figs/gp?-2.pdf "Predicted vs observed for the a priori selected model.")
+![Predicted vs observed for the Gaussian process model](figs/gp?-2.pdf "Predicted vs observed for the a priori selected model.")
 
-    ![Predicted vs observed for the Random Forest model](figs/ranger-2.pdf "Predicted vs observed for the a priori selected model.")
+![Predicted vs observed for the Random Forest model](figs/ranger-2.pdf "Predicted vs observed for the a priori selected model.")
 
 <!---
      - complexity
@@ -316,11 +316,11 @@ Here we have Todo.
 Similarly, the length scale, $\sigma$, in the Gaussian process model is a cruise measure of complexity, with small values implying the the functional relationships are highly non linear.
 Finally, 
 
-    ![Hyperparameter selection for the elastic net model](figs/elastic_net-1.pdf "Hyperparameter selection for the elastic net model.")
+![Hyperparameter selection for the elastic net model](figs/elastic_net-1.pdf "Hyperparameter selection for the elastic net model.")
 
-    ![Hyperparameter selection for the Gaussian proces model](figs/gp?-1.pdf "Hyperparameter selection for the Gaussian proces model.")
+![Hyperparameter selection for the Gaussian proces model](figs/gp?-1.pdf "Hyperparameter selection for the Gaussian proces model.")
 
-    ![Hyperparameter selection for the Random Forest model](figs/ranger-1.pdf "Hyperparameter selection for the Random Forest model.")
+![Hyperparameter selection for the Random Forest model](figs/ranger-1.pdf "Hyperparameter selection for the Random Forest model.")
 
      - r2
         - compare R2 of apriri model
@@ -345,30 +345,30 @@ Finally,
       - define pdp then ice
       - results
 
-   ![PDP plot for Gestation Length in the Gaussian process model.](figs/pdp_gest-1.pdf "PDP plot for Gestation Length in the Gaussian process model.")
+![PDP plot for Gestation Length in the Gaussian process model.](figs/pdp_gest-1.pdf "PDP plot for Gestation Length in the Gaussian process model.")
 
-   ![PDP plot for Gestation Length in the Random Forest model.](figs/pdp_gest-2.pdf "PDP plot for Gestation Length in the Random Forest model.")
+![PDP plot for Gestation Length in the Random Forest model.](figs/pdp_gest-2.pdf "PDP plot for Gestation Length in the Random Forest model.")
 
-   ![2D PDP plot for Gestation Length and PET in the Gaussian process model.](figs/pdp_gest_pet-1.pdf "2D PDP plot for Gestation Length and PET in the Gaussian process model.")
+![2D PDP plot for Gestation Length and PET in the Gaussian process model.](figs/pdp_gest_pet-1.pdf "2D PDP plot for Gestation Length and PET in the Gaussian process model.")
 
-   ![2D PDP plot for Gestation Length and PET in the Random Forest model.](figs/pdp_gest_pet-2.pdf "2D PDP plot for Gestation Length and PET in the Random Forest model.")
-
-
+![2D PDP plot for Gestation Length and PET in the Random Forest model.](figs/pdp_gest_pet-2.pdf "2D PDP plot for Gestation Length and PET in the Random Forest model.")
 
 
 
-   ![ICE plot for Gestation Length in the Gaussian process model.](figs/ice-1.pdf "ICE plot for Gestation Length in the Gaussian process model.")
 
-   ![ICE plot for Gestation Length in the Random Forest model.](figs/ice-2.pdf "ICE plot for Gestation Length in the Random Forest model.")
+
+![ICE plot for Gestation Length in the Gaussian process model.](figs/ice-1.pdf "ICE plot for Gestation Length in the Gaussian process model.")
+
+![ICE plot for Gestation Length in the Random Forest model.](figs/ice-2.pdf "ICE plot for Gestation Length in the Random Forest model.")
 
    - clustered ice
      - method description
      - results
 
    
-   ![Clustered ICE plot for latitude in the Gaussian process model.](figs/clustered_ice_lat-1.pdf "Clustered ICE plot for latitude in the Gaussian process model.")
+![Clustered ICE plot for latitude in the Gaussian process model.](figs/clustered_ice_lat-1.pdf "Clustered ICE plot for latitude in the Gaussian process model.")
 
-   ![Clustered ICE plot for latitude in the Random Forest model.](figs/clustered_ice_lat-2.pdf "Clustered ICE plot for latitude in the Random Forest model.")
+![Clustered ICE plot for latitude in the Random Forest model.](figs/clustered_ice_lat-2.pdf "Clustered ICE plot for latitude in the Random Forest model.")
 
 ### Handling non-independent data
 
@@ -445,6 +445,7 @@ Spatial random effects can be handled in the same ways as the phylogenetic effec
 Temporal effects are easier to handle as they are one dimensional with causation only able to occur in one direction.
 For today time series we can typically busy include covariates created from the lagged response variable while for irregular time series we can create covariates like "mean response within X units of time previous to this datapoint".
 
+<!---
   - examine correlation structure (variable level)
    - why?
         - control Vs use in prediction
@@ -471,7 +472,9 @@ For today time series we can typically busy include covariates created from the 
       - Non random CV.
       - new approach 2, fit model then mixed effects. [@bhatt2017improved]
 
-     
+--->     
+
+
 ### Data point level properties
 
   - understand individual points
@@ -481,9 +484,9 @@ For today time series we can typically busy include covariates created from the 
 
 
 
-   ![LIME analysis of predictions of five points from the Gaussian process model.](figs/lime-2.pdf "LIME analysis of predictions of five points from the Gaussian process model..")
+![LIME analysis of predictions of five points from the Gaussian process model.](figs/lime-2.pdf "LIME analysis of predictions of five points from the Gaussian process model..")
 
-   ![LIME analysis of predictions of five points from the Random Forest model.](figs/lime-3.pdf "LIME analysis of predictions of five points from the Random Forest model.")
+![LIME analysis of predictions of five points from the Random Forest model.](figs/lime-3.pdf "LIME analysis of predictions of five points from the Random Forest model.")
 
 
 ### other models
