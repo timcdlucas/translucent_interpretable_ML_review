@@ -289,8 +289,12 @@ However, it can be seen that certain species, particularly those with very large
 We can be fairly sure that this trait is not noisy as the evolutionary consequences of litter size are large.
 Therefore we are probably missing some crucial covariates.
 
-We can also use predictive performance of models like Random forest to scale our expectations for how well a more statistical or mechanistic model fits the data.
-Here, the linear model with a priori variable selection had lettuce performance
+We can also use predictive performance of models like Random forest or elastic net to scale our expectations for how well a more statistical or mechanistic model fits the data.
+Here, the linear model with a priori variable selection had performance not much worse than the elastic net model but considerably worse than the random forest.
+The similarity between the elastic net model and a priori selection implies that the a priori variable selection was fairly good given the covariates available.
+However, the fact that random forest performs much better than the a priori linear model suggests that there are nonlinearities or interactions that paint should have been in the a priori model.
+It is important to be clear that this is not a suggestion to go back and add these variables to our a priori model. 
+This would amount to quite severe data snooping and would bias any significance tests performed on the a priori model.
 
     ![Predicted vs observed for the a priori selected model](figs/a_priori_var_selection-1.pdf "Predicted vs observed for the a priori selected model.")
 
@@ -300,10 +304,17 @@ Here, the linear model with a priori variable selection had lettuce performance
 
     ![Predicted vs observed for the Random Forest model](figs/ranger-2.pdf "Predicted vs observed for the a priori selected model.")
 
-
+<!---
      - complexity
         - look at mtry, coefs retained, sigma
         - sigma is 0.04 = lengthscale of 0.0032? But this is in multidimensional space I think.
+--->
+
+We can also attempt to interpret the hyperparameters of our models to try to understand something about the complexity of the system.
+For the elastic net model, the lambda parameter, and the number of non zero coefficients give us some idea of the systems complexity; if very few variables are retained and we get good predictive performance this suggests a simple system.
+Here we have Todo.
+Similarly, the length scale, $\sigma$, in the Gaussian process model is a cruise measure of complexity, with small values implying the the functional relationships are highly non linear.
+Finally, 
 
     ![Hyperparameter selection for the elastic net model](figs/elastic_net-1.pdf "Hyperparameter selection for the elastic net model.")
 
