@@ -284,7 +284,7 @@ One global property of interest is how predictable the system is.
 This can be assessed using scatter plots of observed versus out-of-sample predictions (figure Todo) as well as metrics such as $r^2$ or the root mean squared error.
 Random forests are effective here as they are fast to fit, robust and need relatively little tuning.
 If a random forest has poor predictive performance then it is likely that either vital covariates are missing from the dataset or that the response is in fact very noisy.
-The random forest model fitted here has fairly good predictive performance (figure Todo) with an $r^2$ of Todo.
+The random forest model fitted here has fairly good predictive performance (figure Todo) with an $r^2$ of 0.67.
 However, it can be seen that certain species, particularly those with very large litters, are predicted quite poorly.
 We can be fairly sure that this trait is not noisy as the evolutionary consequences of litter size are large.
 Therefore we are probably missing some crucial covariates.
@@ -314,7 +314,16 @@ We can also attempt to interpret the hyperparameters of our models to try to und
 For the elastic net model, the lambda parameter, and the number of non zero coefficients give us some idea of the systems complexity; if very few variables are retained and we get good predictive performance this suggests a simple system.
 Here we have Todo.
 Similarly, the length scale, $\sigma$, in the Gaussian process model is a cruise measure of complexity, with small values implying the the functional relationships are highly non linear.
-Finally, 
+Finally, the random forest model has two hyperparameters; mtry is the number of randomly selected covariates to build each tree with and min.node.size is the maximum number of datapoints that can be in a leaf node of a tree.
+min.node.size protects against overfitting and gives an indication of how much noise relative to signal there is.
+Here, the smallest value of min.node.size tested gets elected which implies there is not much noise in the data relative to signal.
+The selected value for mtry was 20.
+mtry can be difficult to interpret and depends on the number of covariates included in the model.
+Very small values imply little or no interactions between covariates while intermediate or high values indicate that there are interactions between covariates.
+However, large values like the 20 selected here does not indicate interaction depths of 20.
+Instead it more likely implies that there are many useless covariates and so 20 covariates are needed to avoid trees with no useful covariates.
+This can be examined further by fitting models with additional random covariates.
+
 
 ![Hyperparameter selection for the elastic net model](figs/elastic_net-1.pdf "Hyperparameter selection for the elastic net model.")
 
@@ -328,6 +337,20 @@ Finally,
     - fit simpler model iml package
 
 ### Variable level properties
+
+The next level that we can examine is the variable level.
+This can include random or fixed effects.
+We can examine variable importence, importance of interactions between pairs of covariates and start to examine the functional responses of covariates.
+
+Table todo shows the top five most important variables as determined by the three models.
+These importance measures are not in absolute units so they are scaled such that the most important covariate has a value of 100.
+We can see that gestation length comes top for all three models and that latitude and PET are prominent in all three as well.
+Fitting multiple models and searching for consistency is one useful way to increase confidence in results.
+It is also worth noting that the reliability of variable importence measures differs between model types.
+For example, repeatedly fitting a neural network to these data gives very different results each time (Figure Stodo).
+In contrast, the reliability with which Gaussian processes and linear find a global maximum and the randomisation inherent in random forest means they tend to give similar results each time.
+
+
 
   - generate hypotheses (variable level)
 
