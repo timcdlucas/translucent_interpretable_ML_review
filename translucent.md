@@ -281,28 +281,28 @@ Finally, the number of randomly selected covariates to be used to build each tre
 
 The first level of interpretation we can examine is the global level; what do the fitted models tell us about the system as a whole.
 One global property of interest is how predictable the system is.
-This can be assessed using scatter plots of observed versus out-of-sample predictions (figure Todo) as well as metrics such as $r^2$ or the root mean squared error.
+This can be assessed using scatter plots of observed versus out-of-sample predictions (figure @fig:enetpredobs @fig:gppredobs @fig:rfpredobs ) as well as metrics such as $r^2$ or the root mean squared error.
 Random forests are effective here as they are fast to fit, robust and need relatively little tuning.
 If a random forest has poor predictive performance then it is likely that either vital covariates are missing from the dataset or that the response is in fact very noisy.
-The random forest model fitted here has fairly good predictive performance (figure Todo) with an $r^2$ of 0.67.
+The random forest model fitted here has fairly good predictive performance (figure @fig:rfpredobs) with an $r^2$ of 0.67.
 However, it can be seen that certain species, particularly those with very large litters, are predicted quite poorly.
 We can be fairly sure that this trait is not noisy as the evolutionary consequences of litter size are large.
 Therefore we are probably missing some crucial covariates.
 
 We can also use predictive performance of models like Random forest or elastic net to scale our expectations for how well a more statistical or mechanistic model fits the data.
-Here, the linear model with a priori variable selection had performance not much worse than the elastic net model but considerably worse than the random forest.
+Here, the linear model with a priori variable selection (figure @fig:aprioripredobs) had performance not much worse than the elastic net model (figure @fig:enetpredobs) but considerably worse than the random forest (figure @fig:rfpredobs).
 The similarity between the elastic net model and a priori selection implies that the a priori variable selection was fairly good given the covariates available.
 However, the fact that random forest performs much better than the a priori linear model suggests that there are nonlinearities or interactions that paint should have been in the a priori model.
 It is important to be clear that this is not a suggestion to go back and add these variables to our a priori model. 
 This would amount to quite severe data snooping and would bias any significance tests performed on the a priori model.
 
-![Predicted vs observed for the a priori selected model](figs/a_priori_var_selection-1.pdf "Predicted vs observed for the a priori selected model.")
+![Predicted vs observed for the a priori selected model](figs/a_priori_var_selection-1.pdf "Predicted vs observed for the a priori selected model."){#fig:aprioripredobs}
 
-![Predicted vs observed for the a priori selected model](figs/elastic_net-2.pdf "Predicted vs observed for the a priori selected model.")
+![Predicted vs observed for the a priori selected model](figs/elastic_net-2.pdf "Predicted vs observed for the a priori selected model."){#fig:enetpredobs}
 
-![Predicted vs observed for the Gaussian process model](figs/gp?-2.pdf "Predicted vs observed for the a priori selected model.")
+![Predicted vs observed for the Gaussian process model](figs/gp?-2.pdf "Predicted vs observed for the a priori selected model."){#fig:gppredobs}
 
-![Predicted vs observed for the Random Forest model](figs/ranger-2.pdf "Predicted vs observed for the a priori selected model.")
+![Predicted vs observed for the Random Forest model](figs/ranger-2.pdf "Predicted vs observed for the a priori selected model."){#fig:rfpredobs}
 
 <!---
      - complexity
@@ -311,10 +311,10 @@ This would amount to quite severe data snooping and would bias any significance 
 --->
 
 We can also attempt to interpret the hyperparameters of our models to try to understand something about the complexity of the system.
-For the elastic net model, the lambda parameter, and the number of non zero coefficients give us some idea of the systems complexity; if very few variables are retained and we get good predictive performance this suggests a simple system.
+For the elastic net model, the lambda parameter and the number of non zero coefficients give us some idea of the systems complexity (figure @fig:enethyp); if very few variables are retained and we get good predictive performance this suggests a simple system.
 Here we have Todo.
-Similarly, the length scale, $\sigma$, in the Gaussian process model is a cruise measure of complexity, with small values implying the the functional relationships are highly non linear.
-Finally, the random forest model has two hyperparameters; mtry is the number of randomly selected covariates to build each tree with and min.node.size is the maximum number of datapoints that can be in a leaf node of a tree.
+Similarly, the length scale, $\sigma$, in the Gaussian process model is a crude measure of complexity, with small values implying the the functional relationships are highly non linear (figure  @fig:gphyp).
+Finally, the random forest model has two hyperparameters (figure @fig:rfhyp); mtry is the number of randomly selected covariates to build each tree with and min.node.size is the maximum number of datapoints that can be in a leaf node of a tree.
 min.node.size protects against overfitting and gives an indication of how much noise relative to signal there is.
 Here, the smallest value of min.node.size tested gets elected which implies there is not much noise in the data relative to signal.
 The selected value for mtry was 20.
@@ -325,33 +325,62 @@ Instead it more likely implies that there are many useless covariates and so 20 
 This can be examined further by fitting models with additional random covariates.
 
 
-![Hyperparameter selection for the elastic net model](figs/elastic_net-1.pdf "Hyperparameter selection for the elastic net model.")
+![Hyperparameter selection for the elastic net model](figs/elastic_net-1.pdf "Hyperparameter selection for the elastic net model."){#fig:enethyp}
 
-![Hyperparameter selection for the Gaussian proces model](figs/gp?-1.pdf "Hyperparameter selection for the Gaussian proces model.")
+![Hyperparameter selection for the Gaussian proces model](figs/gp?-1.pdf "Hyperparameter selection for the Gaussian proces model."){#fig:gphyp}
 
-![Hyperparameter selection for the Random Forest model](figs/ranger-1.pdf "Hyperparameter selection for the Random Forest model.")
+![Hyperparameter selection for the Random Forest model](figs/ranger-1.pdf "Hyperparameter selection for the Random Forest model."){#fig:rfhyp}
 
+<!---
      - r2
         - compare R2 of apriri model
 
-    - fit simpler model iml package
+  
+--->
+
+  - fit simpler model iml package
 
 ### Variable level properties
 
 The next level that we can examine is the variable level.
 This can include random or fixed effects.
 We can examine variable importence, importance of interactions between pairs of covariates and start to examine the functional responses of covariates.
+It is important however to remember that these models are not designed for inference; the following methods sour thought of as hypothesis generation and more formal, subsequent tests (on a different dataset) would be needed to confirm relationships between covariates and the response variable.
 
 Table todo shows the top five most important variables as determined by the three models.
 These importance measures are not in absolute units so they are scaled such that the most important covariate has a value of 100.
+For the regularised linear model, variable importance is given simply by the magnitude of the regression coefficients (i.e. ignoring the sign) and these raw values might be more useful than the scaled importance values.
 We can see that gestation length comes top for all three models and that latitude and PET are prominent in all three as well.
 Fitting multiple models and searching for consistency is one useful way to increase confidence in results.
+Some models also allow tests of significance on variable importance measures (table todo).
+While these come with all the normal caveats for significance testing, the scaling might be more useful interpretation than the earlier values scaled by the maximum importance values.
+
+While caret provides an easy interface to getting variable importance measures for many model types, the calculations being performed are varied.
+While this review is avoiding going into too much, model specific, detail it is important to note that there are different ways of calculating variable importance for a given model and some are more correct than others.
+For the random forest model the type of variable importance calculation is important and depends on the type of variable being used.
+Firstly, permutation variants importance values are now reliable (though computationally slower) than other methods like Gini impurity [@].
+Secondly, in the presence of a mix of continuous and categorical covariates, all methods performed on standard random forests are biased towards selecting continuous covariates.
+If accurate variable importance measures are needed, a related model, conditional inference forests, should be used instead [@].
+This is not required here because the covariates are all continuous.
+
 It is also worth noting that the reliability of variable importence measures differs between model types.
 For example, repeatedly fitting a neural network to these data gives very different results each time (Figure Stodo).
 In contrast, the reliability with which Gaussian processes and linear find a global maximum and the randomisation inherent in random forest means they tend to give similar results each time.
 
 
 
+<!--- https://www.google.co.uk/url?sa=t&source=web&rct=j&url=https://www.statistik.uni-dortmund.de/useR-2008/slides/Strobl%2BZeileis.pdf&ved=2ahUKEwj1puvJm-reAhUF_KQKHWxGDlcQFjAAegQIAxAB&usg=AOvVaw0TvuGko49w5Nk8pqQ81oAD
+--->
+
+Once some important covariates have been identified, it is useful to examine the shape of the relationship between covariate and response. 
+The simplest way to do this is a partial dependence plot (PDP) in which the model is evaluated at a range of values of the covariate of interest with all other covariates held at their mean (or mode for categorical variables).
+All responses are linear for the regularised linear model so a PDP us not useful.
+The PDPs for gestation length for the Gaussian process and random forest models are shown in figures @fig:pdpgestgp and @fig:pdpgestrf.
+It can be seen that neither response is linear and are both decreasing for low values of gestation length.
+However, the PDP for the Gaussian process model is increasing at high values of gestation length and is similar to a square curve.
+In contrast, the random forest model is flat at high values of gestation length.
+
+<!---
   - generate hypotheses (variable level)
 
     - var imp
@@ -367,32 +396,62 @@ In contrast, the reliability with which Gaussian processes and linear find a glo
     - ice and PDP
       - define pdp then ice
       - results
-
-![PDP plot for Gestation Length in the Gaussian process model.](figs/pdp_gest-1.pdf "PDP plot for Gestation Length in the Gaussian process model.")
-
-![PDP plot for Gestation Length in the Random Forest model.](figs/pdp_gest-2.pdf "PDP plot for Gestation Length in the Random Forest model.")
-
-![2D PDP plot for Gestation Length and PET in the Gaussian process model.](figs/pdp_gest_pet-1.pdf "2D PDP plot for Gestation Length and PET in the Gaussian process model.")
-
-![2D PDP plot for Gestation Length and PET in the Random Forest model.](figs/pdp_gest_pet-2.pdf "2D PDP plot for Gestation Length and PET in the Random Forest model.")
+--->
 
 
+![PDP plot for Gestation Length in the Gaussian process model.](figs/pdp_gest-1.pdf "PDP plot for Gestation Length in the Gaussian process model."){#fig:pdpgestgp}
+
+![PDP plot for Gestation Length in the Random Forest model.](figs/pdp_gest-2.pdf "PDP plot for Gestation Length in the Random Forest model."){#fig:pdpgestrf}
+
+While PDPs are evaluated at just median of the other variables, the variable importance measures calculated above are evaluated over all training data.
+There can therefore be a mismatch where a PDP looks flat while the variable importance use high.
+Relatedly, the PDP gives no information on interactions because it is only evaluated at one values of the other covariates.
+To address these issues we can calculate the interaction importance for each covariate (table todo).
+This value is given by decomposing the prediction function into contributions from just the focal covariate, contributions from everything except the focal covariate and contributions that rely on both the focal covariate and non-focal covariates together.
+
+Once we have identified covariates with important interactions we can use individual conditional expectation (ICE) plots.
+Like PDPs, ICE plots calculate the predicted response value across a range of the focal covariate.
+However, instead of holding the other covariates at their median, they evaluate and plot one curve for each data point (Figure @fig:icegestgp and @fig:icegestrf).
+In these plots we can start to see that the response curve differs depending on what value the other covariates take.
+As the number of data points increases, these plots can get very busy and so clustering the curves is useful (figure @fig:clusticelatgp and @fig:clusticelatrf).
+Here we can clearly see the range of responses that exist for a single covariate, with latitude having a positive relationship with litter size in some cases and a negative relationship in others.
 
 
 
-![ICE plot for Gestation Length in the Gaussian process model.](figs/ice-1.pdf "ICE plot for Gestation Length in the Gaussian process model.")
+![ICE plot for Gestation Length in the Gaussian process model.](figs/ice-1.pdf "ICE plot for Gestation Length in the Gaussian process model."){#fig:icegestgp}
 
-![ICE plot for Gestation Length in the Random Forest model.](figs/ice-2.pdf "ICE plot for Gestation Length in the Random Forest model.")
+![ICE plot for Gestation Length in the Random Forest model.](figs/ice-2.pdf "ICE plot for Gestation Length in the Random Forest model."){#fig:icegestrf}
 
+ 
+![Clustered ICE plot for latitude in the Gaussian process model.](figs/clustered_ice_lat-1.pdf "Clustered ICE plot for latitude in the Gaussian process model."){#fig:clusticelatgp}
+
+![Clustered ICE plot for latitude in the Random Forest model.](figs/clustered_ice_lat-2.pdf "Clustered ICE plot for latitude in the Random Forest model."){#fig:clusticelatrf}
+
+
+Gaussian process models and random forests implicit consider very deep interactions which become increasingly difficult to interpret.
+However, if we can identify important two way interactions we can start to interpret these.
+We can find the interaction strength between two features in a similar fashion to finding variable importance.
+We can examine the 2D PDP of two covariates (figure @fig:2dgestlatgp @fig2dgestlatrf) and calculate what proportion of the curve is explained by the sum of the two 1D PDPs (e.g. figure Todo).
+We can therefore take one covariate that we know has strong interactions (Todo as seen in table todo) and calculate the two-way interaction strength between that covariate and all other covariates (table todo).
+Finally, once important interactions have been identified, the 2D PDP can be examined to determine the shape of that interaction (figure @fig:2dgestlatgp and @fig:2dgestlatrf).
+Looking at the 2D PDP of gestation length and latitude for the random forest model we can see that something.
+
+
+![2D PDP plot for Gestation Length and PET in the Gaussian process model.](figs/pdp_gest_pet-1.pdf "2D PDP plot for Gestation Length and PET in the Gaussian process model."){#fig:2dgestlatgp}
+
+
+![2D PDP plot for Gestation Length and PET in the Random Forest model.](figs/pdp_gest_pet-2.pdf "2D PDP plot for Gestation Length and PET in the Random Forest model."){#fig:2dgestlatrf}
+
+
+
+
+
+<!---
    - clustered ice
      - method description
      - results
-
-   
-![Clustered ICE plot for latitude in the Gaussian process model.](figs/clustered_ice_lat-1.pdf "Clustered ICE plot for latitude in the Gaussian process model.")
-
-![Clustered ICE plot for latitude in the Random Forest model.](figs/clustered_ice_lat-2.pdf "Clustered ICE plot for latitude in the Random Forest model.")
-
+--->
+  
 ### Handling non-independent data
 
 The PanTHERIA data is an example of data that strongly violates assumptions of independently sampled data.
