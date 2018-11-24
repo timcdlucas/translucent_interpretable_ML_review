@@ -17,6 +17,12 @@ output:
 
 ### Machine learning in biology
 
+<!---
+compile with
+pandoc -o translucent.pdf  --filter pandoc-fignos --filter pandoc-citeproc translucent.md
+
+--->
+
 <!--
 1. what is it, how had it been used what are its flaws
 - what is Machine learning (predictive)
@@ -246,7 +252,7 @@ This approach is also sensible if we care more about prediction than about unbia
 The simplest regularised linear models are ridge regression [@], that includes a penalty on the square of the coefficients, and LASSO [@] that penalises the absolute value of the coefficients and therefore more strongly penalises smaller values.
 A common model is the elastic net that includes both the ridge penalty and the lasso penalty.
 This is the model I fitted to the PanTHERIA dataset.
-The total strength of the penalty, and the relative contribution of the two penalties were selected using cross-validation (figure @fing:enethyp).
+The total strength of the penalty, and the relative contribution of the two penalties were selected using cross-validation (figure @fig:enethyp).
 
 
 #### Non-parametric, statistical models
@@ -431,7 +437,7 @@ Here we can clearly see the range of responses that exist for a single covariate
 Gaussian process models and random forests implicit consider very deep interactions which become increasingly difficult to interpret.
 However, if we can identify important two way interactions we can start to interpret these.
 We can find the interaction strength between two features in a similar fashion to finding variable importance.
-We can examine the 2D PDP of two covariates (figure @fig:2dgestlatgp @fig2dgestlatrf) and calculate what proportion of the curve is explained by the sum of the two 1D PDPs (e.g. figure @fig:pdpgestgp).
+We can examine the 2D PDP of two covariates (figure @fig:2dgestlatgp @fig:2dgestlatrf) and calculate what proportion of the curve is explained by the sum of the two 1D PDPs (e.g. figure @fig:pdpgestgp).
 We can therefore take one covariate that we know has strong interactions (Todo as seen in table todo) and calculate the two-way interaction strength between that covariate and all other covariates (table todo).
 Finally, once important interactions have been identified, the 2D PDP can be examined to determine the shape of that interaction (figure @fig:2dgestlatgp and @fig:2dgestlatrf).
 Looking at the 2D PDP of gestation length and latitude for the random forest model we can see that something.
