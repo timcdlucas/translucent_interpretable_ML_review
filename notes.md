@@ -23,3 +23,8 @@ https://www.sciencedirect.com/science/article/pii/S0304380012001081
 https://academic.oup.com/bioinformatics/article/34/14/2449/4866010
 
 
+http://www.jmlr.org/papers/v3/guyon03a.html
+
+
+https://www.sciencedirect.com/science/article/pii/S0304380003002217
+
