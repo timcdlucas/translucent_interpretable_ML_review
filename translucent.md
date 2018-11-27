@@ -273,7 +273,6 @@ Split rule, which I kept constant at 'variance'.
 The maximum number of data points at a leaf, which can be used to prevent overfitting was selected by cross-validation.
 Finally, the number of randomly selected covariates to be used to build each tree was also selected by cross-validation (figure @fig:rfhyp).
 
-2 or 3 questions.
 
 ### Global properties
 
@@ -460,8 +459,8 @@ Looking at the 2D PDP of gestation length and latitude for the random forest mod
   
 ### Handling non-independent data
 
-The PanTHERIA data is an example of data that strongly violates assumptions of independently sampled data.
-The autocorrelation here arises due to common ancestors of species; two species that recently diverged from a common ancestor are likely to be more similar than species whose common ancestor is in the deep past.
+The PanTHERIA dataset is an example of data that strongly violates assumptions of independently sampled data.
+The autocorrelation here arises due to common ancestry of species; two species that recently diverged from a common ancestor are likely to be more similar than species whose common ancestor is in the deep past.
 This autocorrelation is typically handled with a phylogenetic random effect while other sources of autocorrelation such as time or space can be similarly handled with an appropriate random effects.
 The most commonly used random effect in ecological and evolutionary analyses is categorical random effects that can be used to model a wide variety of sources of autocorrelation such as multiple samples from a single individual, site or lab for example.
 
@@ -502,17 +501,17 @@ Instead we can give every genus it's own dummy variable.
 While this would cause identifiability with the intercept in a linear model, the random columns and greedy splitting of random forests means this will not cause problems.
 The second issue above was that of regularisation.
 Random Forest will automatically consider all interactions between our covariates and genus effect.
-Random Forest is natively regularised by the bootstrap aggregation, and the complexity of the model is further controlled by hyper parameters as in figure xx.
+Random Forest is natively regularised by the bootstrap aggregation, and the complexity of the model is further controlled by hyper parameters as in figure @fig:rfhyp.
 The new model can therefore be fitted in the same way as the old model.
 However, given that I have added many covariates, I increased the range of the mtry parameter.
-A alternative approach available in ranger (but not in randomForest) is to weight columns.
+An alternative approach available in ranger (but not in randomForest) is to weight columns.
 I also ran a model where the probability of including one of the genus columns was scaled by the number of genera.
 The final consideration above was the case where we expect all predictions to be made on new categories.
 This does not particularly apply in this analysis because we may well want to make predictions for a species not in the dataset but whose genus is.
 Furthermore, in the case of random forest, the above methods are suitable even if this wasn't the case.
 However, given a model that cannot regularise as effectively, we might want to control for genus without including it as a covariate in the model.
-In this case we can simply weight the data so that each genus is equally represented or so that each genus represented proportionally to three number of species in each genus in the full prediction set, which could be for example all mammals.
-Many models in caret accept a weight argument so this is a very general solution.
+In this case we can simply weight the data so that each genus is equally represented or so that each genus is represented proportionally to three number of species in each genus in the full prediction set, which could be for example all mammals.
+Many models in caret accept a weight argument so this is a fairly general solution.
 
 If however, we wish to include the full phylogeny in our model, we need different methods.
 The first method is to include all the phylogenetic information in covariates [@hengl2018random].
@@ -530,9 +529,18 @@ However, this method only corrects for the biases from autocorrelated data after
 
 While I cannot demonstrate the handling of spatial or temporal autocorrelation with this dataset it is worth some brief discussion.
 Spatial random effects can be handled in the same ways as the phylogenetic effects, in fact both of the methods proposed come from the spatial literature [@hengl2018random, @bhatt2017improved].
+Another common approach to with spatial data is "thinning" and is conceptually similar to the weighting method for categorical data [@].
+In its simplest form, thinning, involves simply removing data points so that each pixel had at most one instance [@elith2010art].
+This is equivalent to considering they pixel as a categorical variable and subsampling as above until each pixel is equally represented (noting that each pixel is represented equally in the prediction dataset i.e. once).
+Also note that in the context of present only data, this is equivalent to weighting the data but in cases where the response isn't always a presence (e.g. presence absence data or continuous response data), weighting is a better way to include all the data rather than throwing some out.
+
+In this method, a distance within which data is autocorrelated is decided ei Todo.
+This method is conceptually simple for presence only species distribution modelling as all the datapoints have to same response value (i.e. presence or a one), but it becomes less clear how it should be used for other types of data.
+However, due to the continuous nature of spatial data it is less easy to simply weight the data.
 Temporal effects are easier to handle as they are one dimensional with causation only able to occur in one direction.
 Furthermore, they have been studied in detail in the machine learning literature [@jeong2008non].
 For regular time series we can typically include covariates created from the lagged response variable while for irregular time series we can create covariates like "mean response within X units of time previous to this datapoint".
+
 
 <!---
   - examine correlation structure (variable level)
