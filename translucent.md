@@ -149,9 +149,9 @@ However, a neural network with the same architecture but with a non-probabolisti
 <!--
 7. a note on image analysis and deep learning
   - hard
-  - large, seperate literature [@samek2017explainable, @montavon2017methods]
+  - large, seperate literature [@samek2017explainable; @montavon2017methods]
   - zero expectation that features in image analysis relate to nature's model.
-[@mac2018bat, @waldchen2018machine]
+[@mac2018bat; @waldchen2018machine]
 -->
 
 Neural networks (in particular, deep convolutional neutral networks) have recieved a lot of attention recently due largely to their role in image and video analysis [@waldchen2018machine].
@@ -169,7 +169,7 @@ As the focus of this review is using machine learning for interogating natural s
      - unseen values
      - control Vs use in prediction
      - shared power
-  - understudied but some work [@eo2014tree, @hajjem2014mixed, @hajjem2017generalized, @miller2017gradient]
+  - understudied but some work [@eo2014tree; @hajjem2014mixed; @hajjem2017generalized; @miller2017gradient]
      - mean zero
      - unseen values
      - control Vs use in prediction
@@ -232,7 +232,7 @@ regularised regression
 
  gp [@rasmussen2004gaussian]
 
-random forest [@wright2015ranger, @breiman2001random]
+random forest [@wright2015ranger; @breiman2001random]
 
 no reason effects for now. assuming iid.
 -->
@@ -356,7 +356,7 @@ Table todo shows the top five most important variables as determined by the thre
 These importance measures are not in absolute units so they are scaled such that the most important covariate has a value of 100.
 For the regularised linear model, variable importance is given simply by the magnitude of the regression coefficients (i.e. ignoring the sign) and these raw values might be more useful than the scaled importance values.
 We can see that gestation length comes top for all three models and that latitude and PET are prominent in all three as well.
-Fitting multiple models and searching for consistency is one useful way to increase confidence in results.
+Fitting multiple models and searching for consistency is one useful way to increase confidence in results (as in @appelhans2015evaluating).
 Some models also allow tests of significance on variable importance measures (table todo).
 While these come with all the normal caveats for significance testing, the scaling might be more useful interpretation than the earlier values scaled by the maximum importance values.
 
@@ -528,15 +528,15 @@ However, this method only corrects for the biases from autocorrelated data after
 
 
 While I cannot demonstrate the handling of spatial or temporal autocorrelation with this dataset it is worth some brief discussion.
-Spatial random effects can be handled in the same ways as the phylogenetic effects, in fact both of the methods proposed come from the spatial literature [@hengl2018random, @bhatt2017improved].
+Spatial random effects can be handled in the same ways as the phylogenetic effects, in fact both of the methods proposed come from the spatial literature [@hengl2018random; @bhatt2017improved; @appelhans2015evaluating].
 Another common approach to with spatial data is "thinning" and is conceptually similar to the weighting method for categorical data [@].
-In its simplest form, thinning, involves simply removing data points so that each pixel had at most one instance [@elith2010art].
+In its simplest form, thinning, involves removing data points so that each pixel had at most one instance [@elith2010art; @verbruggen2013improving].
 This is equivalent to considering they pixel as a categorical variable and subsampling as above until each pixel is equally represented (noting that each pixel is represented equally in the prediction dataset i.e. once).
 Also note that in the context of present only data, this is equivalent to weighting the data but in cases where the response isn't always a presence (e.g. presence absence data or continuous response data), weighting is a better way to include all the data rather than throwing some out.
+More subtle methods involve removing data based on the local density [@verbruggen2013improving].
+In this method, a kernel bandwidth is chosen either a priori out by cross-validation, then data a public probabilistically removed based on the density of data geographically near them and a threshold which is also chosen a priori or by cross-validation.
+Again, weighting the data may be more satisfactory.
 
-In this method, a distance within which data is autocorrelated is decided ei Todo.
-This method is conceptually simple for presence only species distribution modelling as all the datapoints have to same response value (i.e. presence or a one), but it becomes less clear how it should be used for other types of data.
-However, due to the continuous nature of spatial data it is less easy to simply weight the data.
 Temporal effects are easier to handle as they are one dimensional with causation only able to occur in one direction.
 Furthermore, they have been studied in detail in the machine learning literature [@jeong2008non].
 For regular time series we can typically include covariates created from the lagged response variable while for irregular time series we can create covariates like "mean response within X units of time previous to this datapoint".
@@ -551,8 +551,8 @@ For regular time series we can typically include covariates created from the lag
 
 
      - fit phylogeny a priori model. this is the standard.
-     - mixed effect model. easy for reg regression or stat non parametric [@diggle1998model, @bolker2009generalized] more work elsewhere. 
-     not widely implemented else where but some work [@hajjem2014mixed, @hajjem2017generalized, @eo2014tree, @miller2017gradient, @REEMtree].
+     - mixed effect model. easy for reg regression or stat non parametric [@diggle1998model; @bolker2009generalized] more work elsewhere. 
+     not widely implemented else where but some work [@hajjem2014mixed; @hajjem2017generalized; @eo2014tree; @miller2017gradient; @REEMtree].
 
      just add as covariate is difficult.
        - sometimes works
@@ -575,7 +575,7 @@ For regular time series we can typically include covariates created from the lag
 ### Data point level properties
 
   - understand individual points
-    - lime [@lime, @ribeiro2016should, @lundberg2017unified , @ribeiro2016nothing]
+    - lime [@lime; @ribeiro2016should; @lundberg2017unified ; @ribeiro2016nothing]
     - explain
     - results
 
