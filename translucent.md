@@ -84,7 +84,7 @@ This idea of interpreting machine learning models as part of model verification 
 -->
 
 
-However, there are further reasons to interpret machine learning models that apply to fields that are further removed from policy decisions.
+However, there are further reasons to interpret machine learning models that apply to fields that are further removed from policy decisions [@elith2009species].
 The same traits that make machine learning models good at prediction and difficult to interpret also makes them potentially useful in exploratory analysis before more formal statistical modeling.
 The nonparametric nature of many machine learning models means they can discover nonlinear relationships and interactions without specifying then a priori as would be required in more statistical modeling.
 Furthermore, the lack of expert knowledge needed to fit an effective machine learning model means they can be useful as a baseline to compare how well a mechanistic model performs.
@@ -240,7 +240,8 @@ no reason effects for now. assuming iid.
 #### A priori variable selection
 
 The standard approach for modelling in ecology and comparative biology is to carefully select a relatively small suite of covariates based on \emph{a priori} knowledge of the system.
-As a model to commpare to, I fitted a linear model with \emph{a priori} variable selection.
+This process ensures that all variables are reasonably likely to be casually important, keeps the model acceptably small. 
+As a model to compare to, I fitted a linear model with \emph{a priori} variable selection.
 I chose body size [@leutenegger1979evolution; @tuomi1980mammalian], gestation length [@okkens1993influence; @bielby2007fast], metabolic rate [@white2004does], litters per year [@white2004does] and longevity [@wilkinson2002life; @zammuto1986life].
 While a specialist in the field may well have chosen different variables, this is a reasonable starting point.
 
@@ -349,10 +350,10 @@ This can be examined further by fitting models with additional random covariates
 
 The next level that we can examine is the variable level.
 This can include random or fixed effects.
-We can examine variable importence, importance of interactions between pairs of covariates and start to examine the functional responses of covariates.
-It is important however to remember that these models are not designed for inference; the following methods sour thought of as hypothesis generation and more formal, subsequent tests (on a different dataset) would be needed to confirm relationships between covariates and the response variable.
+We can examine variable importence [@oppel2009alternative], importance of interactions between pairs of covariates and start to examine the functional responses of covariates.
+It is important however to remember that these models are not designed for inference; the following methods should thought of as hypothesis generation and more formal, subsequent tests (on a different dataset) would be needed to confirm relationships between covariates and the response variable.
 
-Table todo shows the top five most important variables as determined by the three models.
+Table todo shows the top five most important variables as determined by the three models [@oppel2009alternative].
 These importance measures are not in absolute units so they are scaled such that the most important covariate has a value of 100.
 For the regularised linear model, variable importance is given simply by the magnitude of the regression coefficients (i.e. ignoring the sign) and these raw values might be more useful than the scaled importance values.
 We can see that gestation length comes top for all three models and that latitude and PET are prominent in all three as well.
@@ -363,14 +364,17 @@ While these come with all the normal caveats for significance testing, the scali
 While caret provides an easy interface to getting variable importance measures for many model types, the calculations being performed are varied.
 While this review is avoiding going into too much, model specific, detail it is important to note that there are different ways of calculating variable importance for a given model and some are more correct than others.
 For the random forest model the type of variable importance calculation is important and depends on the type of variable being used.
-Firstly, permutation variants importance values are now reliable (though computationally slower) than other methods like Gini impurity [@].
+Firstly, permutation variants importance values are more reliable (though computationally slower) than other methods like Gini impurity [@].
 Secondly, in the presence of a mix of continuous and categorical covariates, all methods performed on standard random forests are biased towards selecting continuous covariates.
 If accurate variable importance measures are needed, a related model, conditional inference forests, should be used instead [@].
 This is not required here because the covariates are all continuous.
 
-It is also worth noting that the reliability of variable importence measures differs between model types.
+It is also worth noting that the reliability of variable importence measures differs between model types and depends on the data.
 For example, repeatedly fitting a neural network to these data gives very different results each time (Figure S1todo).
 In contrast, the reliability with which Gaussian processes and linear find a global maximum and the randomisation inherent in random forest means they tend to give similar results each time.
+Furthermore, variable importance in the presence of colinearity is less reliable [@dormann2013collinearity].
+Given two colinear variables, some models such as random forest will share the variable importance between them potentially masking an important variable.
+In contrast, other models such as stepwise regression might put all the variable importance into one variable but might easily get the wrong variable.
 
 
 
@@ -464,7 +468,7 @@ The autocorrelation here arises due to common ancestry of species; two species t
 This autocorrelation is typically handled with a phylogenetic random effect while other sources of autocorrelation such as time or space can be similarly handled with an appropriate random effects.
 The most commonly used random effect in ecological and evolutionary analyses is categorical random effects that can be used to model a wide variety of sources of autocorrelation such as multiple samples from a single individual, site or lab for example.
 
-Given the types of machine learning discussed in the introduction, we can see that including random effects with parametric or non-parametric statistical models is entirely seasons with flexible modelling packages [@stan; @inla].
+Given the types of machine learning discussed in the introduction, we can see that including random effects within parametric or non-parametric statistical models is entirely possible with flexible modelling packages [@stan; @inla].
 However including random effects with non-parametric, non-statistical models is difficult.
 While these models are starting to be developed [@hajjem2014mixed; @hajjem2017generalized; @eo2014tree; @miller2017gradient;@REEMtree], they are not available on R packages and are only implemented for a small subset of machine learning algorithms and don't necessarily benefit from the computational improvements implemented in the most up-to-date packages [@wright2015ranger; @xgboost].
 Therefore, generic methods for handling random effects, that can be used with any machine learning algorithm, are useful.
@@ -527,9 +531,11 @@ This method is likely to be very effective at prediction and the phylogenetic co
 However, this method only corrects for the biases from autocorrelated data after the fact; while it may still be possible to interpret the machine learning models as we have done previously, the computed nonlinear relationships remain biased.
 
 
-While I cannot demonstrate the handling of spatial or temporal autocorrelation with this dataset it is worth some brief discussion.
-Spatial random effects can be handled in the same ways as the phylogenetic effects, in fact both of the methods proposed come from the spatial literature [@hengl2018random; @bhatt2017improved; @appelhans2015evaluating].
-Another common approach to with spatial data is "thinning" and is conceptually similar to the weighting method for categorical data [@].
+While I cannot demonstrate the handling of spatial or temporal autocorrelation with this dataset it is worth some brief discussion [@elith2009species].
+Spatial random effects can be handled in the same ways as the phylogenetic effects, in fact both of the methods proposed come from the spatial literature [@hengl2018random; @bhatt2017improved].
+An analogous method to using  genus as a categorical variable, the space could be split into regions and the region used as a categorical variable [@appelhans2015evaluating]. check this is correct.
+This approach is commonly used with predefined spatial units such as countries.
+Another common approach with spatial data is "thinning" and is conceptually similar to the weighting method for categorical data [@].
 In its simplest form, thinning, involves removing data points so that each pixel had at most one instance [@elith2010art; @verbruggen2013improving].
 This is equivalent to considering they pixel as a categorical variable and subsampling as above until each pixel is equally represented (noting that each pixel is represented equally in the prediction dataset i.e. once).
 Also note that in the context of present only data, this is equivalent to weighting the data but in cases where the response isn't always a presence (e.g. presence absence data or continuous response data), weighting is a better way to include all the data rather than throwing some out.
@@ -574,16 +580,39 @@ For regular time series we can typically include covariates created from the lag
 
 ### Data point level properties
 
+<!---
   - understand individual points
     - lime [@lime; @ribeiro2016should; @lundberg2017unified ; @ribeiro2016nothing]
     - explain
     - results
 
+--->
 
 
-![LIME analysis of predictions of five points from the Gaussian process model.](figs/lime-2.pdf "LIME analysis of predictions of five points from the Gaussian process model..")
+The final level at which we can try to interpret models is the individual prediction [@lime; @ribeiro2016should; @lundberg2017unified; @ribeiro2016nothing].
+Model interpretation at a single point is a much easier task than interpreting the global model at a small enough scale the response curve is either flat or monotonically increasing or decreasing so humped curves do not need to be considered.
+<!---And interactions behave differently?-->
 
-![LIME analysis of predictions of five points from the Random Forest model.](figs/lime-3.pdf "LIME analysis of predictions of five points from the Random Forest model.")
+However, when we have have datapoints it is difficult to examine the model at all points.
+Therefore we much focus our analysis on a few, interesting points.
+Points with the highest out lowest predicted values may tell us something about what factors makes these points be extreme.
+Alternatively, we might be more interested in a subset of points for an external reason.
+In the PanTHERIA case we might be particularly interested in one group.
+Or we might be particularly interested in a prediction at the point when it is about to be used, for example if we made predictions about a particular species and were about to start making conservation decisions based on the prediction, understanding why the model predicted what it did is an important robustness check.
+
+The method Local Individual Model Evaluation (LIME) examines the behaviour of a model at a point by generating a new dataset by permuting the covariates slightly around the point and making predictions from the model using these points [@lime; @ribeiro2016should; @lundberg2017unified ; @ribeiro2016nothing].
+Then a simple, interpretable model, such as LASSO, is fitted to this dataset.
+As we do not need to consider non-monotonic relationships, this simpler model should accurately describe the behaviour.
+
+In figures @fig:limegp and @fig:limerf we can see the outputs of a LIME analysis for the five top predicted datapoints for the Gaussian process and random forest model.
+However, it's important to note that as we know the true litter size values for these species we can see that the top-predicted data are not actually the species with the highest litter size.
+This reminds us not to interpret these as "what factor imply the highest litter size" but rather "why are these particular species predicted as large litter size".
+Although the species with the highest observed litter size are predicted poorly, the species with the highest predicted litter size have predictions quite close to their true value (figures @fig:gppredobs - @
+fig:RF).
+
+![LIME analysis of predictions of five points from the Gaussian process model.](figs/lime-2.pdf "LIME analysis of predictions of five points from the Gaussian process model.."){#fig:limegp}
+
+![LIME analysis of predictions of five points from the Random Forest model.](figs/lime-3.pdf "LIME analysis of predictions of five points from the Random Forest model."){#fig:limerf}
 
 
 ### other models
@@ -615,6 +644,20 @@ Finally, being clear about the aims allows sensible planning on how data will be
 If the aim is to discover some relationships and then formally test them, the best use of a given dataset may be too split it and use half for disovery and half for hypothesis testing.
 This workflow would not occur to an analyst who was unclear about their task.
 
+A major hurdle in interpreting these models is the ability to visualise high dimensional surfaces.
+Here I have demonstrated a number of methods for visualising response curves but they all rely on selecting a few dimensions to focus on.
+While visualising high dimensional surfaces is an unsolvable problem, any methods is software that aid the exploration of this fundemental property of a fitted model would be extremely useful.
+
+While the methods here have been generic machine learning methods, there are a number of approaches for combining mechanistic models and non-parametric models.
+These include using a mechanistic model as the mean function of a Gaussian process [@rasmussen] or using a mechanistic model as a regularising prior for a non-parametric model [@holmes].
+These methods have great potential for gaining the interpretability is mechanistic models and the interpolative predictive ability from non-parametric models while retaining the extrapolative benefits of mechanistic models.
+
+Finally, as with all modelling, interpretation of machine learning models requires human input.
+While many algorithms are objectively tested for various properties, very few have been tested for their ability to aid the human interpreter.
+Studies that do specifically test this aspect are very welcome [@bastani2017interpreting].
+This algorithm-psychology interface is an important area of future research.
+
+In conclusion, machine learning is great.
 
 
 
