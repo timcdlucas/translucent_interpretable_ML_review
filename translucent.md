@@ -33,8 +33,8 @@ pandoc -o translucent.pdf  --filter pandoc-fignos --filter pandoc-citeproc trans
 
 Machine learning is a collection of techniques that focuses on making accurate predictions from data [@crisci2012review].
 It differs from the broader field of statistics in two aspects: 1) the estimation of parameters that relate to the real world is less emphasised than in much of statistics and 2) the driver of the predictions are expected to be the data rather than expert opinion or careful selection of plausible mechanistic models.
-High-level machine learning libraries that aid the full machine learning pipeline [@caret; @scikit; @maxent; @biomod] has made machine learning easy to use.
-These techniques have therefore become popular, particularly in the fields of species distribution modelling [@maxent; @biomod; @elith2006novel; @golding2018zoon] and species identification from images or acoustic detectors [@mac2018bat; @waldchen2018machine].
+High-level machine learning libraries that aid the full machine learning pipeline [@caret; @scikit; @maxent; @biomod] have made machine learning easy to use.
+These techniques have therefore become popular, particularly in the fields of species distribution modelling [@maxent; @biomod; @elith2006novel; @golding2018zoon] and species identification from images or acoustic detectors [@mac2018bat; @waldchen2018machine; @shamir2014classification; @xue2017automatic].
 Other uses include any study where prediction rather than inference is the focus such as predicting the conservation status of species [@bland2015predicting] and predictive behaviours [@browning2018predicting].
 However, machine learning methods have a reputation as being a black box; inscrutable and mindlessly applied.
 
@@ -68,7 +68,7 @@ However, while interpretation of machine learning models can be difficult, there
 
 Given the black box reputation one might wonder why we should bother interpreting machine learning models; if the predictions are good, then the objective has been achieved.
 However, any predictions that may be used to make decisions (i.e. any prediction of any interest) should be examined.
-Particular examples of this include predictions used for conservation policy or health care.
+Particular examples of this include predictions used for conservation policy or health care [@vayena2018machine].
 Careless predictions can have severe affects on the entity for which the predictions are being made (an endangered species or a person at risk of a disease for example) and can more generally erode trust between modellers, policy makers and other stakeholders.
 In regulated fields such as healthcare, these considerations come with legal backing.
 This idea of interpreting machine learning models as part of model verification has been the primary driver of work on interpretable machine learning so far 
@@ -617,9 +617,35 @@ fig:RF).
 
 ### other models
 
+<!---
 - rrf
 - monotonic constraints
 - [@ryo2017statistically] conditional trees (stats test before split), model based trees (linear model in the tree or something?) and bootstrap tests of significance for random forest variable selection. not great but worth mentioning.
+--->
+
+In the illustrative example above I have restricted the analysis to three well known, very accessible, models: elastic net, Gaussian process regression and random forest.
+In particular these models are all available via caret which ensures that most of the methods for interpretation are also easily available.
+However, there is a huge diversity of Maine learning algorithms (both a blessing and a curse) and some of these provide further possibilities for interpretation.
+
+Regularised random forest [@rrf] is a random forest variant that and to reduce the number of important variables in the final fitted model.
+When choosing a variable for the next split, regularised random forest preferentially chooses variables that have already been used in that tree.
+The strength of this preference is an additional hyperparameter that might be chosen by cross-validation or by a subjective balance between cross-validation performance and examination of the histogram of variable importance values for example.
+
+Similarly, conditional inference trees perform a statistical significance test before making a split [@condinf].
+This achieves two goals.
+Firstly it reduces overfitting by requiring a minimal amount if statistical evidence before making a split.
+Secondly, it means that variable importence is not biased by different variable types (i.e. continuous or categorical).
+It is however much slower than other random forest models.
+
+Finally, xgboost [@xgboost] is a cutting edge package for boosted regression trees.
+In this method, multiple trees are fitted sequentially but in each tree fit, the data are weighted by how poorly they were predicted by the previous trees.
+In general, boosted regression trees can have better predictive performance then random forests but require more hyperparameter tuning, are more prone to overfitting and are slower.
+However, xgboost has an option to force variables to be monotonically increasing or decreasing which makes interpretation much simpler.
+However, as it must be chosen a priori whether a variable is increasing or decreasing this is not trivial to use.
+One sensible pipeline might be too fit an unconstrained model first.
+Then for each of a few important variables two models could be fitted, one with the variable positively constrained and I've with the variable negatively constrained.
+Selecting the model with the better performance and comparing the performance to the unconstrained model will give enough insight to decide whether the variable can be considered increasing, decreasing it irreducibly non-monotonic.
+
 
 ## Future directions and conclusions
 
