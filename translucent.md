@@ -31,10 +31,10 @@ pandoc -o translucent.pdf  --filter pandoc-fignos --filter pandoc-citeproc trans
 - but it has a reputation as being black box
 -->
 
-Machine learning is a collection of techniques that focuses on making accurate predictions from data [@crisci2012review].
-It differs from the broader field of statistics in two aspects: 1) the estimation of parameters that relate to the real world is less emphasised than in much of statistics and 2) the driver of the predictions are expected to be the data rather than expert opinion or careful selection of plausible mechanistic models.
+Machine learning is a collection of techniques that focuses on making accurate predictions from data [@crisci2012review; @breiman2001statistical].
+It differs from the broader field of statistics in two aspects: 1) the estimation of parameters that relate to the real world is less emphasised than in much of statistics and 2) the driver of the predictions are expected to be the data rather than expert opinion or careful selection of plausible mechanistic models [@breiman2001statistical].
 High-level machine learning libraries that aid the full machine learning pipeline [@caret; @scikit; @maxent; @biomod] have made machine learning easy to use.
-These techniques have therefore become popular, particularly in the fields of species distribution modelling [@maxent; @biomod; @elith2006novel; @golding2018zoon] and species identification from images or acoustic detectors [@mac2018bat; @waldchen2018machine; @shamir2014classification; @xue2017automatic].
+These techniques have therefore become popular, particularly in the fields of species distribution modelling [@maxent; @biomod; @elith2006novel; @golding2018zoon; @gobeyn2019evolutionary] and species identification from images or acoustic detectors [@mac2018bat; @waldchen2018machine; @shamir2014classification; @xue2017automatic].
 Other uses include any study where prediction rather than inference is the focus such as predicting the conservation status of species [@bland2015predicting] and predictive behaviours [@browning2018predicting].
 However, machine learning methods have a reputation as being a black box; inscrutable and mindlessly applied.
 
@@ -85,13 +85,13 @@ This idea of interpreting machine learning models as part of model verification 
 
 
 However, there are further reasons to interpret machine learning models that apply to fields that are further removed from policy decisions [@elith2009species].
-The same traits that make machine learning models good at prediction and difficult to interpret also makes them potentially useful in exploratory analysis before more formal statistical modeling.
+The same traits that make machine learning models good at prediction and difficult to interpret also makes them potentially useful in exploratory analysis before more formal statistical modeling [@zhao2017causal].
 The nonparametric nature of many machine learning models means they can discover nonlinear relationships and interactions without specifying then a priori as would be required in more statistical modeling.
-Furthermore, the lack of expert knowledge needed to fit an effective machine learning model means they can be useful as a baseline to compare how well a mechanistic model performs.
+Furthermore, the lack of expert domain knowledge needed to fit an effective machine learning model means they can be useful as a baseline to compare how well a mechanistic model performs.
 Finally it is worth noting that standard statistical models are often not as interpretable as they seem; understanding the results from a statistical model is made more difficult in the presence of colinearity between covariates or when nature's true model is not in the set of models being considered [@Simpson? @gelman? @lyddon2018nonparametric; @yao2017using].
 Therefore, in some cases it might be better to fit a more predictive model and sacrifice some, but not all, interpretability.
-Alternatively, it might be useful to use a highly predictive model to create hypotheses which could then be tested in a more formal statistical framework.
-
+Alternatively, it might be useful to use a highly predictive model to create hypotheses which could then be tested in a more formal statistical framework [@
+zhao2017causal].
 
 <!--
 4. deeper overview of machine learning
@@ -601,7 +601,7 @@ In the PanTHERIA case we might be particularly interested in one group.
 Or we might be particularly interested in a prediction at the point when it is about to be used, for example if we made predictions about a particular species and were about to start making conservation decisions based on the prediction, understanding why the model predicted what it did is an important robustness check.
 
 The method Local Individual Model Evaluation (LIME) examines the behaviour of a model at a point by generating a new dataset by permuting the covariates slightly around the point and making predictions from the model using these points [@lime; @ribeiro2016should; @lundberg2017unified ; @ribeiro2016nothing].
-Then a simple, interpretable model, such as LASSO, is fitted to this dataset.
+Then a simple, interpretable model, such as ridge regression, is fitted to this dataset.
 As we do not need to consider non-monotonic relationships, this simpler model should accurately describe the behaviour.
 
 In figures @fig:limegp and @fig:limerf we can see the outputs of a LIME analysis for the five top predicted datapoints for the Gaussian process and random forest model.
@@ -631,20 +631,20 @@ Regularised random forest [@rrf] is a random forest variant that and to reduce t
 When choosing a variable for the next split, regularised random forest preferentially chooses variables that have already been used in that tree.
 The strength of this preference is an additional hyperparameter that might be chosen by cross-validation or by a subjective balance between cross-validation performance and examination of the histogram of variable importance values for example.
 
-Similarly, conditional inference trees perform a statistical significance test before making a split [@condinf].
+Similarly, conditional inference trees perform a statistical significance test before making a split [@condinf; @ryo2017statistically].
 This achieves two goals.
 Firstly it reduces overfitting by requiring a minimal amount if statistical evidence before making a split.
 Secondly, it means that variable importence is not biased by different variable types (i.e. continuous or categorical).
 It is however much slower than other random forest models.
 
-Finally, xgboost [@xgboost] is a cutting edge package for boosted regression trees.
+Finally, xgboost [@xgboost] is a cutting edge package for boosted regression trees [@friedman2001greedy].
 In this method, multiple trees are fitted sequentially but in each tree fit, the data are weighted by how poorly they were predicted by the previous trees.
 In general, boosted regression trees can have better predictive performance then random forests but require more hyperparameter tuning, are more prone to overfitting and are slower.
-However, xgboost has an option to force variables to be monotonically increasing or decreasing which makes interpretation much simpler.
+However, xgboost has an option to force variables to be monotonically increasing or decreasing which makes interpretation much simpler [@xgboost].
 However, as it must be chosen a priori whether a variable is increasing or decreasing this is not trivial to use.
-One sensible pipeline might be too fit an unconstrained model first.
-Then for each of a few important variables two models could be fitted, one with the variable positively constrained and I've with the variable negatively constrained.
-Selecting the model with the better performance and comparing the performance to the unconstrained model will give enough insight to decide whether the variable can be considered increasing, decreasing it irreducibly non-monotonic.
+One sensible pipeline might be to fit an unconstrained model first.
+Then for each of a few important variables two models could be fitted, one with the variable positively constrained and one with the variable negatively constrained.
+Selecting the model with the better performance and comparing the performance to the unconstrained model will give enough insight to decide whether the variable can be considered increasing, decreasing or irreducibly non-monotonic if the drop in predictive performance is very large.
 
 
 ## Future directions and conclusions
@@ -675,7 +675,7 @@ Here I have demonstrated a number of methods for visualising response curves but
 While visualising high dimensional surfaces is an unsolvable problem, any methods is software that aid the exploration of this fundemental property of a fitted model would be extremely useful.
 
 While the methods here have been generic machine learning methods, there are a number of approaches for combining mechanistic models and non-parametric models.
-These include using a mechanistic model as the mean function of a Gaussian process [@rasmussen] or using a mechanistic model as a regularising prior for a non-parametric model [@holmes].
+These include using a mechanistic model as the mean function of a Gaussian process [@rasmussen2004gaussian] or using a mechanistic model as a regularising prior for a non-parametric model [@lyddon2018nonparametric].
 These methods have great potential for gaining the interpretability is mechanistic models and the interpolative predictive ability from non-parametric models while retaining the extrapolative benefits of mechanistic models.
 
 Finally, as with all modelling, interpretation of machine learning models requires human input.
