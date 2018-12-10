@@ -133,18 +133,24 @@ However, there are many models within  supervised learning that differ greatly i
 -->
 
 While there are many different ways you could classify machine learning models, one that is useful for discussions of interpretability is to split models into three groups: i) parametric, statistical models, ii) non-parametric statistical models and iii) non-statistical, non-parametric models.
-i) Parametric, statistical models include many models commonly used by biologists. They are parametric because their functional form, or the shapes that the relationships between covariates and response variables can take are defined in advance. They are statistical because they will include some kind of likelihood function that relate the model to probabilities. Therefore generalised linear models are included in this category; the functional forms are defined before hand (linear terms, squared terms, interaction terms etc.) and the model is fitted by maximum likelihood which finds the parameters that are most likely given the predefined likelihood function for the response variable.
-However, if we recall the definition of machine learning from the first paragraph, the emphasis of fitting these models in a machine learning is prediction accuracy rather than estimating parameters to accurately reflect the real world.
-A common technique to improve prediction is regularisation that biases parameter estimates (towards zero in the case of a linear model) to give a simpler model.
+
+i) Parametric, statistical models include many models commonly used by biologists. 
+They are parametric because their functional form (the shapes that the relationships between covariates and response variables can take) are defined in advance. 
+They are statistical because they will include some kind of likelihood function that makes the model probabilistic.
+Therefore generalised linear models are included in this category; the functional forms are defined before hand (linear terms, squared terms, interaction terms etc.) and the model is fitted by maximum likelihood which finds the parameters that are most likely given the predefined likelihood function for the response variable.
+However, if we recall the definition of machine learning from the first paragraph, the emphasis of fitting these models in a machine learning context is prediction accuracy rather than estimating parameters to accurately reflect the real world.
+A common technique to improve prediction is regularisation that biases parameter estimates (towards zero in the case of a linear model) to give a simpler model and avoid overfitting.
 Methods for regularisation of linear models include the LASSO and other penalties [@tibshirani1996regression; @zou2005regularization; @xu2017generalized; @fan2001variable], as used by maxent [@maxent] for example, stepwise selection [@hocking1976biometrics], or Bayesian priors putting a bias towards zero [@park2008bayesian; @liu2018bayesian; @carvalho2009handling].
+
 ii) Non-parametric, statistical models are fitted in a formal statistical framework as above the functional form is not defined in advance. Instead, flexible curves are fitted. This group includes splines (and GAMs which combine splines and other linear terms) and Gaussian processes [@rasmussen2004gaussian].
 These methods retain the principled uncertainty estimates due to being statistical.
 Furthermore, while the non-parametric components are often not represented by a small number of interpretable parameters, they are often controlled by a small number of hyperparameters.
 If these hyperparameters are fitted in an hierarchical framework (as is common) then they are can be interpreted with associated uncertainty.
-Finally, non-statistical, non-parametric methods encompass many more algorithmic methods such as decision trees (and ensembles of trees like Random Forests [@breiman2001random] and boosted regression trees [@elith2008working; @friedman2001greedy]).
+
+iii) Finally, non-statistical, non-parametric methods encompass many more algorithmic methods such as decision trees (and ensembles of trees like Random Forests [@breiman2001random] and boosted regression trees [@elith2008working; @friedman2001greedy]).
 The group that a given model should be classed in can be subtle.
 For example, a neural network can be fitted by maximum likelihood if defined with a probabilistic loss function (a Bernoulli likelihood for classification for example) which would place it in the statistical, non-parametric group.
-However, a neural network with the same architecture but with a non-probabolistic loss function (such as a hinge loss) would be placed in the non-statistical, non-parametric group.
+However, a neural network with the same architecture but with a non-probabilistic loss function (such as a hinge loss) would be placed in the non-statistical, non-parametric group.
 
 <!--
 7. a note on image analysis and deep learning
@@ -200,29 +206,34 @@ we will fit three models with differing degrees of interpretability.
 --->
 
 In this review I will present an illustrative analysis on the PanTHERIA dataset [@jones2009pantheria] which contains life history traits for many mammals.
-I fitted four models, with variations, that span the range of interpretable.
-As a point of comparison I fitted a typical model used by biologists; a simple linear model with a priori variable selection.
-I also fitted a parametric statistical model, a non-parametric statistical model and a non-parametric non-statistical model.
-For each of these models I demonstrate how they can be interpreted.
-The full analysis is included as a reproducible R [@R] script that reads data directly from online repositories.
+I fitted four models, with variations, that span the range of interpretability:
+i) a typical model used by biologists; a simple linear model with a priori variable selection ii) a parametric statistical model, the elastic net [@zou2005regularization] iii) a non-parametric statistical model, Gaussian process regression [@rasmussen2004gaussian] and iv) a non-parametric, non-statistical model, Random Forest [@breiman2001random].
+For each of these models I demonstrate how they can be interpreted with methods that are applicable to a wide variety of machine learning models.
+The full analysis is included as a reproducible R [@R] script that reads data directly from online repositories (S1).
+<!--- edited 1 --->
+
 
 ## Example analysis
 
 ### Data
 The PanTHERIA database is a dataset of mammalian life history traits collected from the published literature  [@jones2009pantheria].
 Overall it contains Todo species and information on Todo traits, complimented by a further Todo variables calculated from IUCN shapefiles for each species and remotely sensed data.
-There is large amounts of missing data for many of the life history traits.
-Furthermore, due to each data row being a species, the data are not independent, with species with more recent common ancestors being more likely to share life history traits.
-While methods for analysing this type of data vary [@gay2014parasite, others], the cornerstone in most analyses would be phylogenetic regression that uses a seperately estimated phylogeny, converted to a covariance matrix, and included as a random effect [@magnusson2017glmmtmb; @caper].
-In this illustrative analysis I will use use this dataset to examine potential factors relating to the log of the average litter size (plus one to deal with zeroes).
+There are large amounts of missing data for many of the life history traits and these gaps were filled with median imputation as this method is both simple and conservative.
+In this illustrative analysis I will use use this dataset to examine potential factors relating to the average litter size (with a log (x+1) transform due to the strong left skew and presence of zeroes).
+As each data row represents a species, the data are not independent; species with more recent common ancestors are likely to have similar life history traits.
+Most analyses of this type of data  [@gay2014parasite, @others] would use phylogenetic regression which includes a estimated phylogeny, converted to a covariance matrix, as a random effect [@magnusson2017glmmtmb; @caper].
+Methods for handling non-independence while using machine learning models are demonstrated in Section Todo.
+<!--- edited 1--->
 
 ### Model fitting
 
-I fitted four classes of model (with variations) to the data: a linear model with a priori variable selection, a regularised linear model, a statistical, non-parametric Gaussian process model and a non-statistical random forest model with is an ensemble of decision trees with bootstraps of the input data and a reason subset of the covariates used to fit each tree.
-I used five-fold cross-validation to test model accuracy and select hyperparameters for the models with hyperparameters.
-Given the very different levels of flexibility in the models, this out-of-sample test of accuracy is important and given the non-statistical nature of the random forest, statistical, within sample model comparisons such as AIC are not possible.
+I fitted four classes of model (with variations) to the data: a linear model with a priori variable selection, a regularised linear model, a statistical, non-parametric Gaussian process model and a non-statistical random forest model.
+I used five-fold cross-validation to test model accuracy and select hyperparameters.
+Given the very different levels of flexibility in the models, this out-of-sample test of accuracy is important and given the non-statistical nature of the random forest, statistical, within-sample model comparisons such as AIC are not possible.
 All models were fitted with caret [@caret] in R [@R].
-One make benefit of caret is that most of the procedures presented later for interpreting the models are immediately useable with over 200 machine learning models including up-to-date implementations of various models such add xgboost, h2o and keras [@]. 
+One major benefit of caret is that most of the procedures presented later for interpreting the models are immediately useable with over 200 machine learning models including up-to-date implementations of various models such as xgboost, h2o and keras [@xgboost; @h20; @keras]. 
+
+<!--- edited 1--->
 
 <!--
 3 models via caret [@caret]
@@ -239,41 +250,45 @@ no reason effects for now. assuming iid.
 
 #### A priori variable selection
 
-The standard approach for modelling in ecology and comparative biology is to carefully select a relatively small suite of covariates based on \emph{a priori} knowledge of the system.
-This process ensures that all variables are reasonably likely to be casually important, keeps the model acceptably small. 
-As a model to compare to, I fitted a linear model with \emph{a priori} variable selection.
+The standard approach for modelling in ecology and comparative biology is to carefully select a relatively small set of covariates based on \emph{a priori} knowledge of the system [@fanklstein].
+This process ensures that all variables are reasonably likely to be casually important, reduces overfitting and keeps the number of parameters small. 
+As a baseline model, I fitted a linear model, selecting covariates that the literature suggests relates to litter size.
 I chose body size [@leutenegger1979evolution; @tuomi1980mammalian], gestation length [@okkens1993influence; @bielby2007fast], metabolic rate [@white2004does], litters per year [@white2004does] and longevity [@wilkinson2002life; @zammuto1986life].
 While a specialist in the field may well have chosen different variables, this is a reasonable starting point.
+<!--- edited 1--->
+
 
 #### Statistical, parametric models
 
 If we have many covariates relative to sample size and have minimal a priori knowledge of the system we may wish to include all the covariates in a linear model but regularise the coefficients.
-Similarly, if we want to include many interactions or transformed variables, the number of covariates can grow rapidly and regularisation becomes vital.
+Similarly, if we want to include many interactions or transformed variables (as in maxent [@maxent] for example), the number of covariates can grow rapidly and regularisation becomes vital.
 This approach is also sensible if we care more about prediction than about unbiased estimates of parameters.
-The simplest regularised linear models are ridge regression [@], that includes a penalty on the square of the coefficients, and LASSO [@] that penalises the absolute value of the coefficients and therefore more strongly penalises smaller values.
-A common model is the elastic net that includes both the ridge penalty and the lasso penalty.
-This is the model I fitted to the PanTHERIA dataset.
+The simplest regularised linear models are ridge regression [@ridge], that includes a penalty on the square of the coefficients, and LASSO [@tibshirani1996regression] that penalises the absolute value of the coefficients and therefore more strongly penalises smaller values.
+For the PanTHERIA analysis I fitted an elastic net, a common model that includes both the ridge penalty and the lasso penalty.
 The total strength of the penalty, and the relative contribution of the two penalties were selected using cross-validation (figure @fig:enethyp).
-
+<!--- edited 1 --->
 
 #### Non-parametric, statistical models
 
 Given the parametric nature of the elastic net model, the way to include nonlinear responses and interactions is to define them manually before model fitting.
-This however still imposes important restrictions as it is difficult to know which nonlinear are potential useful and the model is still ultimately constrained by the effects we can think of to include (typically polynomials, log and exponential transforms and perhaps sine transforms).
-In contrast, non-parametric models like Gaussian processes [@rasmussen2004gaussian]  require no pro-specification of functional forms and instead the overall flexibility of the model is controlled with a hyperparameter.
-Given their statistical nature, the uncertainty estimates around predictions are a natural part of the model and we would hope for them to be quite well calibrated even if we extrapolated far from the data.
-I have fitted a Gaussian process model with a radial basis kernel [@kernlab], selecting the scale hyperparameter using cross-validation (figure @fig:gphyp).
-
+This however still imposes important restrictions as it is difficult to know which nonlinear fitness are potential useful and the model is still ultimately constrained by the effects we can think of to include (typically polynomials, log and exponential transforms and perhaps sine transforms).
+In contrast, non-parametric models like Gaussian processes [@rasmussen2004gaussian] or splines [@splines] require no pre-specification of functional forms and instead the overall flexibility of the model is controlled with a hyperparameter.
+Given their statistical nature, the uncertainty estimates around predictions are a natural part of the model and should well calibrated even if we extrapolate far from the data.
+For the PanTHERIA analysis I have fitted a Gaussian process model with a radial basis kernel [@kernlab], selecting the scale hyperparameter using cross-validation (figure @fig:gphyp).
+<!--- edited 1--->
 
 #### Non-parametric, non-statistical models
 
-Finally, I fitted a random forest model [@breiman2001random; @wright2015ranger] as an example of a non-statistical, non-parametric model.
-Random forests tend to be easy to use with few hyperparameters and are less likely to overfit than other tree models like single decision trees or boosted regression trees.
+Finally, I fitted a random forest model [@breiman2001random; @wright2015ranger] as an example of a non-statistical, non-parametric model add they tend to be easy to use, with few hyperparameters, and are robust to overfitting.
+A Random Forest is an ensemble of decision trees with each tree being fitted to a reason bootstrap sample of the input data and a random sample of the covariates.
 Random forests using the ranger package via caret have three hyperparameters.
-Split rule, which I kept constant at 'variance'.
-The maximum number of data points at a leaf, which can be used to prevent overfitting was selected by cross-validation.
-Finally, the number of randomly selected covariates to be used to build each tree was also selected by cross-validation (figure @fig:rfhyp).
-
+Split rule, which determines how the decision tree splits are chosen, was set to 'variance'.
+The maximum number of data points at a leaf, which can be used to prevent overfitting was selected by cross-validation (figure @fig:rfhyp).
+Finally, the number of randomly selected covariates to be used to build each tree (mtry) was also selected by cross-validation (figure @fig:rfhyp).
+Random Forests are however just one model out many non-statistical, non-parametric models.
+Other notable models include neural networks [@nnet], boosted decision trees [@friedman2001greedy], support vector machines [@svm] and nearest neighbour [@knn].
+Each model has benefits but the variety of massive learning methods is reviewed elsewhere [@crisci2012review].
+<!--- edited 1--->
 
 ### Global properties
 
