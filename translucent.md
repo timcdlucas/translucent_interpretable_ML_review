@@ -47,7 +47,7 @@ little statistical backing e.g. se of linear terms
 stochastic values
 -->
 
-This reputation is not totally unfounded with a number of factors making machine learning models difficult to interpret (Figure @fig:schematic).
+This reputation is not totally unfounded with a number of factors making machine learning models difficult to interpret.
 Firstly, they are often nonparametric.
 They therefore estimate nonlinear relationships between covariates and response variables which can be difficult to interpret.
 Furthermore, these relationships are often not summarised in a small number of interpretable parameters as would be found in a polynomial or mechanistic model.
@@ -88,7 +88,7 @@ However, there are further reasons to interpret machine learning models that app
 The same traits that make machine learning models good at prediction and difficult to interpret also makes them potentially useful in exploratory analysis before more formal statistical modeling [@zhao2017causal].
 The nonparametric nature of many machine learning models means they can discover nonlinear relationships and interactions without specifying then a priori as would be required in more statistical modeling.
 Furthermore, the lack of expert domain knowledge needed to fit an effective machine learning model means they can be useful as a baseline to compare how well a mechanistic model performs.
-Finally it is worth noting that standard statistical models are often not as interpretable as they seem; understanding the results from a statistical model is made more difficult in the presence of colinearity between covariates or when nature's true model is not in the set of models being considered [@Simpson? @gelman? @lyddon2018nonparametric; @yao2017using].
+Finally it is worth noting that standard statistical models are often not as interpretable as they seem; understanding the results from a statistical model is made more difficult in the presence of colinearity between covariates or when nature's true model is not in the set of models being considered [@lyddon2018nonparametric; @yao2017using].
 Therefore, in some cases it might be better to fit a more predictive model and sacrifice some, but not all, interpretability.
 Alternatively, it might be useful to use a highly predictive model to create hypotheses which could then be tested in a more formal statistical framework [@
 zhao2017causal].
@@ -231,7 +231,7 @@ I fitted four classes of model (with variations) to the data: a linear model wit
 I used five-fold cross-validation to test model accuracy and select hyperparameters.
 Given the very different levels of flexibility in the models, this out-of-sample test of accuracy is important and given the non-statistical nature of the random forest, statistical, within-sample model comparisons such as AIC are not possible.
 All models were fitted with caret [@caret] in R [@R].
-One major benefit of caret is that most of the procedures presented later for interpreting the models are immediately useable with over 200 machine learning models including up-to-date implementations of various models such as xgboost, h2o and keras [@xgboost; @h20; @keras]. 
+One major benefit of caret is that most of the procedures presented later for interpreting the models are immediately useable with over 200 machine learning models including up-to-date implementations of various models such as xgboost, h2o and keras [@xgboost; @h2o; @keras]. 
 
 <!--- edited 1--->
 
@@ -250,7 +250,7 @@ no reason effects for now. assuming iid.
 
 #### A priori variable selection
 
-The standard approach for modelling in ecology and comparative biology is to carefully select a relatively small set of covariates based on \emph{a priori} knowledge of the system [@fanklstein].
+The standard approach for modelling in ecology and comparative biology is to carefully select a relatively small set of covariates based on \emph{a priori} knowledge of the system [@whittingham2006we ].
 This process ensures that all variables are reasonably likely to be casually important, reduces overfitting and keeps the number of parameters small. 
 As a baseline model, I fitted a linear model, selecting covariates that the literature suggests relates to litter size.
 I chose body size [@leutenegger1979evolution; @tuomi1980mammalian], gestation length [@okkens1993influence; @bielby2007fast], metabolic rate [@white2004does], litters per year [@white2004does] and longevity [@wilkinson2002life; @zammuto1986life].
