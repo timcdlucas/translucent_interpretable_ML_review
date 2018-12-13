@@ -279,9 +279,9 @@ For the PanTHERIA analysis I have fitted a Gaussian process model with a radial 
 
 #### Non-parametric, non-statistical models
 
-Finally, I fitted a random forest model [@breiman2001random; @wright2015ranger] as an example of a non-statistical, non-parametric model add they tend to be easy to use, with few hyperparameters, and are robust to overfitting.
+Finally, I fitted a Random Forest model [@breiman2001random; @wright2015ranger] as an example of a non-statistical, non-parametric model as they tend to be easy to use, with few hyperparameters, and are robust to overfitting.
 A Random Forest is an ensemble of decision trees with each tree being fitted to a reason bootstrap sample of the input data and a random sample of the covariates.
-Random forests using the ranger package via caret have three hyperparameters.
+Random Forests using the ranger [@wright2015ranger] package via caret have three hyperparameters.
 Split rule, which determines how the decision tree splits are chosen, was set to 'variance'.
 The maximum number of data points at a leaf, which can be used to prevent overfitting was selected by cross-validation (figure @fig:rfhyp).
 Finally, the number of randomly selected covariates to be used to build each tree (mtry) was also selected by cross-validation (figure @fig:rfhyp).
@@ -302,20 +302,22 @@ Each model has benefits but the variety of massive learning methods is reviewed 
 
 The first level of interpretation we can examine is the global level; what do the fitted models tell us about the system as a whole.
 One global property of interest is how predictable the system is.
-This can be assessed using scatter plots of observed versus out-of-sample predictions (figure @fig:enetpredobs @fig:gppredobs @fig:rfpredobs ) as well as metrics such as $r^2$ or the root mean squared error.
-Random forests are effective here as they are fast to fit, robust and need relatively little tuning.
-If a random forest has poor predictive performance then it is likely that either vital covariates are missing from the dataset or that the response is in fact very noisy.
-The random forest model fitted here has fairly good predictive performance (figure @fig:rfpredobs) with an $r^2$ of 0.67.
+This can be assessed using scatter plots of observed versus out-of-sample predictions (figure @fig:enetpredobs @fig:gppredobs @fig:rfpredobs) as well as metrics such as $r^2$ or the root mean squared error.
+Random Forests are effective here as they are fast to fit, robust and need relatively little tuning.
+If a Random Forest has poor predictive performance then it is likely that either vital covariates are missing from the dataset or that the response is in fact very noisy.
+The Random Forest model fitted here has fairly good predictive performance (figure @fig:rfpredobs) with an $r^2$ of 0.67.
 However, it can be seen that certain species, particularly those with very large litters, are predicted quite poorly.
 We can be fairly sure that this trait is not noisy as the evolutionary consequences of litter size are large.
-Therefore we are probably missing some crucial covariates.
+Therefore we are probably missing some important covariates.
+<!--- edited 1--->
 
-We can also use predictive performance of models like Random forest or elastic net to scale our expectations for how well a more statistical or mechanistic model fits the data.
-Here, the linear model with a priori variable selection (figure @fig:aprioripredobs) had performance not much worse than the elastic net model (figure @fig:enetpredobs) but considerably worse than the random forest (figure @fig:rfpredobs).
-The similarity between the elastic net model and a priori selection implies that the a priori variable selection was fairly good given the covariates available.
-However, the fact that random forest performs much better than the a priori linear model suggests that there are nonlinearities or interactions that paint should have been in the a priori model.
+We can also use predictive performance of machine learning models to scale our expectations for how well a more statistical or mechanistic model fits the data.
+Here, the linear model with a priori variable selection (figure @fig:aprioripredobs) had performance not much worse than the elastic net model (figure @fig:enetpredobs) but considerably worse than the Random Forest (figure @fig:rfpredobs).
+The similarity between the elastic net model and a priori selection implies that the literature search did a reasonable job of selecting important covariates.
+However, the fact that Random Forest performs much better than the a priori linear model suggests that there are nonlinearities or interactions that coughs have been included in the a priori model.
 It is important to be clear that this is not a suggestion to go back and add these variables to our a priori model. 
-This would amount to quite severe data snooping and would bias any significance tests performed on the a priori model.
+This would amount to severe data snooping and would bias any significance tests performed on the a priori model.
+<!--- edited 1--->
 
 ![Predicted vs observed for the a priori selected model](figs/a_priori_var_selection-1.pdf "Predicted vs observed for the a priori selected model."){#fig:aprioripredobs}
 
@@ -332,9 +334,15 @@ This would amount to quite severe data snooping and would bias any significance 
 --->
 
 We can also attempt to interpret the hyperparameters of our models to try to understand something about the complexity of the system.
-For the elastic net model, the lambda parameter and the number of non zero coefficients give us some idea of the systems complexity (figure @fig:enethyp); if very few variables are retained and we get good predictive performance this suggests a simple system.
+For the elastic net model, the lambda parameter and the number of non-zero coefficients give us some idea of the systems complexity (figure @fig:enethyp); If very few variables are retained and we get good predictive performance this suggests a simple system.
 Here we have Todo.
-Similarly, the length scale, $\sigma$, in the Gaussian process model is a crude measure of complexity, with small values implying the the functional relationships are highly non linear (figure  @fig:gphyp).
+<!--- edited 1--->
+
+Similarly, the length scale, $\sigma$, in the Gaussian process model is a crude measure of complexity, with small values implying that the functional relationships are highly non linear (figure  @fig:gphyp).
+Here have $\sigma = Todo$ which implies there is little correlation between points further with Euclidean distance greater than Todo, in scaled and centred units.
+Todo interpret this in many dimensional space.
+<!--- edited 1--->
+
 Finally, the random forest model has two hyperparameters (figure @fig:rfhyp); mtry is the number of randomly selected covariates to build each tree with and min.node.size is the maximum number of datapoints that can be in a leaf node of a tree.
 min.node.size protects against overfitting and gives an indication of how much noise relative to signal there is.
 Here, the smallest value of min.node.size tested gets elected which implies there is not much noise in the data relative to signal.
@@ -342,9 +350,9 @@ The selected value for mtry was 20.
 mtry can be difficult to interpret and depends on the number of covariates included in the model.
 Very small values imply little or no interactions between covariates while intermediate or high values indicate that there are interactions between covariates.
 However, large values like the 20 selected here does not indicate interaction depths of 20.
-Instead it more likely implies that there are many useless covariates and so 20 covariates are needed to avoid trees with no useful covariates.
+Instead it more likely implies that there are many uninformative covariates and so 20 covariates are needed to avoid trees with no useful covariates.
 This can be examined further by fitting models with additional random covariates.
-
+<!--- edited 1--->
 
 ![Hyperparameter selection for the elastic net model](figs/elastic_net-1.pdf "Hyperparameter selection for the elastic net model."){#fig:enethyp}
 
@@ -363,33 +371,39 @@ This can be examined further by fitting models with additional random covariates
 
 ### Variable level properties
 
-The next level that we can examine is the variable level.
+We can also interpret a model at the level of the individual covariate.
 This can include random or fixed effects.
 We can examine variable importence [@oppel2009alternative], importance of interactions between pairs of covariates and start to examine the functional responses of covariates.
-It is important however to remember that these models are not designed for inference; the following methods should thought of as hypothesis generation and more formal, subsequent tests (on a different dataset) would be needed to confirm relationships between covariates and the response variable.
+It is important however to remember that these models are not designed for inference; the following methods should be thought of as hypothesis generation and more formal, subsequent tests (on a different dataset) would be needed to confirm relationships between covariates and the response variable.
+<!--- edited 1--->
 
 Table todo shows the top five most important variables as determined by the three models [@oppel2009alternative].
 These importance measures are not in absolute units so they are scaled such that the most important covariate has a value of 100.
 For the regularised linear model, variable importance is given simply by the magnitude of the regression coefficients (i.e. ignoring the sign) and these raw values might be more useful than the scaled importance values.
 We can see that gestation length comes top for all three models and that latitude and PET are prominent in all three as well.
 Fitting multiple models and searching for consistency is one useful way to increase confidence in results (as in @appelhans2015evaluating).
+The fact that gestation length is found to be important also highlights the issue of causality; it is not clear which direction causality flows between gestation length and litter size.
+Does large litter sizes force gestation length to be small or does short gestation length allow large litters?
+It could also be true that causality flows in different directions in different species.
 Some models also allow tests of significance on variable importance measures (table todo).
-While these come with all the normal caveats for significance testing, the scaling might be more useful interpretation than the earlier values scaled by the maximum importance values.
+While these come with all the normal caveats for significance testing, the probability scans might be more useful for interpretation than the earlier values scaled by the maximum importance values.
+<!--- edited 1--->
 
 While caret provides an easy interface to getting variable importance measures for many model types, the calculations being performed are varied.
-While this review is avoiding going into too much, model specific, detail it is important to note that there are different ways of calculating variable importance for a given model and some are more correct than others.
-For the random forest model the type of variable importance calculation is important and depends on the type of variable being used.
-Firstly, permutation variants importance values are more reliable (though computationally slower) than other methods like Gini impurity [@].
+In this review I am avoiding model specific, detail, however, it is important to note that there are different ways of calculating variable importance for a given model and some are more correct than others.
+For the random forest model the type of variable importance calculation is important and depends on the type of covariates being used.
+Firstly, permutation variable importance values are more reliable (though computationally slower) than other methods like Gini impurity [@].
 Secondly, in the presence of a mix of continuous and categorical covariates, all methods performed on standard random forests are biased towards selecting continuous covariates.
 If accurate variable importance measures are needed, a related model, conditional inference forests, should be used instead [@].
 This is not required here because the covariates are all continuous.
 
 It is also worth noting that the reliability of variable importence measures differs between model types and depends on the data.
 For example, repeatedly fitting a neural network to these data gives very different results each time (Figure S1todo).
-In contrast, the reliability with which Gaussian processes and linear find a global maximum and the randomisation inherent in random forest means they tend to give similar results each time.
+In contrast, the reliability with which optimisation routines find global maxima for parameters in Gaussian processes and linear models  and the repeated randomisation inherent in Random Forest means these models tend to give similar results each time.
 Furthermore, variable importance in the presence of colinearity is less reliable [@dormann2013collinearity].
 Given two colinear variables, some models such as random forest will share the variable importance between them potentially masking an important variable.
-In contrast, other models such as stepwise regression might put all the variable importance into one variable but might easily get the wrong variable.
+In contrast, other models such as stepwise regression might put all the variable importance into one variable with no guarantee that the correct variable is selected.
+<!--- edited 1--->
 
 
 
@@ -593,7 +607,7 @@ For regular time series we can typically include covariates created from the lag
 --->     
 
 
-### Data point level properties
+### Data-point level properties
 
 <!---
   - understand individual points
