@@ -221,12 +221,12 @@ The full analysis is included as a reproducible R [@R] script that reads data di
 
 ### Data
 The PanTHERIA database is a dataset of mammalian life history traits collected from the published literature  [@jones2009pantheria].
-Overall it contains Todo species and data on Todo traits, complimented by a further Todo variables calculated from IUCN shapefiles for each species and remotely sensed data.
+Overall it contains 5416 species and data on 35 traits, complimented by a further 15 variables calculated from IUCN shapefiles for each species and remotely sensed data.
 There are large amounts of missing data for many of the life history traits and these gaps were filled with median imputation as this method is both simple and conservative.
 In this illustrative analysis I will use use this dataset to examine potential factors relating to the average litter size (with a $\log(x+1)$ transform due to the strong left skew and presence of zeroes).
 As each data row represents a species, the data are not independent; species with more recent common ancestors are likely to have similar life history traits.
 Most analyses of this type of data  [@gay2014parasite, @others] would use phylogenetic regression which includes a estimated phylogeny, converted to a covariance matrix, as a random effect [@magnusson2017glmmtmb; @caper].
-Methods for handling non-independence while using machine learning models are demonstrated in Section Todo.
+Methods for handling non-independence while using machine learning models are demonstrated in the section 'Handling non-independent data'.
 <!--- edited 1--->
 
 ### Model fitting
@@ -285,7 +285,7 @@ For the PanTHERIA analysis I have fitted a Gaussian process model with a radial 
 
 Finally, I fitted a Random Forest model [@breiman2001random; @wright2015ranger] as an example of a non-statistical, non-parametric model as they tend to be easy to use, with few hyperparameters, and are robust to overfitting.
 A Random Forest is an ensemble of decision trees with each tree bring fit to a random bootstrap sample of the input data and a random sample of the covariates.
-Random Forests using the ranger [@wright2015ranger] package via caret have three hyperparameters.
+Random Forests using the ranger [@wright2015ranger] package via *caret* have three hyperparameters.
 Split rule, which determines how the decision tree splits are chosen, was set to 'variance'.
 The maximum number of data points at a leaf, which can be used to prevent overfitting was selected by cross-validation (figure @fig:rfhyp).
 Finally, the number of randomly selected covariates to be used to build each tree (mtry) was also selected by cross-validation (figure @fig:rfhyp).
@@ -338,12 +338,13 @@ This would amount to severe data snooping and would bias any significance tests 
 --->
 
 We can also attempt to interpret the hyperparameters of our models to try to understand something about the complexity of the system.
-For the elastic net model, the lambda parameter and the number of non-zero coefficients give us some idea of the systems complexity (figure @fig:enethyp); If very few variables are retained and we get good predictive performance this suggests a simple system.
-Here we have Todo.
+For the elastic net model, the lambda parameter and the number of non-zero coefficients give us some idea of the systems complexity (figure @fig:enethyp); if very few variables are retained and we get good predictive performance this suggests a simple system.
+Here we have $lambda = 0.03$ as the selected hyperparameter and only one coefficient being forced to zero.
+This gives some evidence that this is a complex system not easily explained by a few covariates.
 <!--- edited 1--->
 
 Similarly, the length scale, $\sigma$, in the Gaussian process model is a crude measure of complexity, with small values implying that the functional relationships are highly non linear (figure  @fig:gphyp).
-Here have $\sigma = Todo$ which implies there is little correlation between point separated by a Euclidean distance greater than Todo, in scaled and centred units.
+Here have $\sigma = 0.02$ which implies there is little correlation between point separated by a Euclidean distance greater than Todo, in scaled and centred units.
 Todo interpret this in many dimensional space.
 <!--- edited 1--->
 
@@ -392,8 +393,8 @@ Some models also allow tests of significance on variable importance measures (ta
 While these come with all the normal caveats for significance testing, the probability scale might be more useful for interpretation than the earlier values scaled by the maximum importance values.
 <!--- edited 1--->
 
-Caret provides an easy interface for getting variable importance measures for many model types; however the calculations being performed are varied.
-While trying to avoid model-specific detail, it is important to note that there are different ways of calculating variable importance for a given model and some are more correct than others.
+*Caret* provides an easy interface for getting variable importance measures for many model types; however the calculations being performed are varied.
+While trying to avoid model-specific detail, it is important to note that there are different ways of calculating variable importance for a given model [@seifert2019surrogate, @oppel2009alternative] and some are more correct than others.
 For the Random Forest model the type of variable importance calculation is important and depends on the type of covariates being used.
 Firstly, variable importance calculated by permutation us more reliable (though computationally slower) than other methods like Gini impurity [@].
 Secondly, in the presence of a mix of continuous and categorical covariates, all methods performed on standard random forests are biased towards selecting continuous covariates.
@@ -502,6 +503,9 @@ This autocorrelation is typically handled with a phylogenetic random effect whil
 Categorical random effects can be used to model a wide variety of sources of autocorrelation such as multiple samples from a single individual, site or lab.
 
 Including random effects within parametric or non-parametric statistical models is entirely possible with flexible modelling packages [@stan; @inla; @glmmTMB; @tmb].
+As a simple demonstration I fitted a phylogenetic linear model via INLA [@INLA]  using the *a priori* selected covariates (cross-validated $r^2 = 0.72$) and a linear model using all covariates and strong regularising priors ($r^2 = 0.74$).
+Both models, when fitted to all the data, yielded posterior means of 0.04 for the standard deviation of the phylogenetic random effect which implies a relatively weak effect.
+
 However combining random effects with non-parametric, non-statistical models is difficult.
 While these models are starting to be developed [@ngufor2019mixed; @hajjem2014mixed; @hajjem2017generalized; @eo2014tree; @miller2017gradient;@REEMtree], they are not available in R packages, are only implemented for a small subset of machine learning algorithms and do not necessarily benefit from the computational improvements implemented in the most up-to-date packages [@wright2015ranger; @xgboost].
 Therefore, generic methods for handling random effects, that can be used with any machine learning algorithm, are useful.
@@ -532,12 +536,15 @@ While this is less principled than properly including the phylogeny, it is simpl
 
 First considering the case of using genus as a categorical random effect to encapsulate some phylogenetic information, the first issue is that by default, new genera will have predictions that implicitly assume they are of the reference genus in the one-hot encoded dummy variables. 
 Instead we can give every genus its own dummy variable.
-While rank deficient form would cause identifiability issues with the intercept in a linear model, the random columns and greedy splitting of random forests means this will not cause problems.
+While rank deficient form would cause identifiability issues with the intercept in a linear model, the random columns and greedy splitting during tree building means this is handled without modifications to the standard Random Forest algorithm.
 The second issue above was that of regularisation.
 Random Forest will automatically consider all interactions between our covariates and genus effect.
 Random Forest is natively regularised by the bootstrap aggregation, and the complexity of the model is further controlled by hyper parameters as in figure @fig:rfhyp.
 The new model can therefore be fitted in the same way as the old model.
 However, given that I have added many covariates, I increased the range of the mtry parameter.
+I obtained an $r^2$ value of 0.70 for this model.
+As this is marginally better than the Random Forest model without genus as a covariate, this provides some evidence that phylogenetic effects are present.
+The best hyperparameters were mtry = 500 (which implies that many of the genera are not very useful on their own) and min.node.size = 5 which is the same as the model without genus as a covariate.
 
 The final consideration above was the case where we expect all predictions to be made on new categories.
 In the case of Random Forest, the above methods are suitable.
@@ -547,16 +554,20 @@ Many models in *caret* accept a weight argument so this is a fairly general solu
 
 If however, we wish to include the full phylogeny in our model, we need different methods.
 The first method is to include all the phylogenetic information in covariates [@hengl2018random].
-Given the data set of todo datapoints we can do this by defining Todo new covariates that measure the phylogenetic distance between datapoints.
-That is, the first new covariate is the phylogenetic distance between every datapoint and the first datapoint, then this is repeated to create todo new covariates.
+Given the data set of 2143 datapoints we can do this by defining 2143 new covariates that measure the phylogenetic distance between datapoints.
+That is, the first new covariate is the phylogenetic distance between every datapoint and the first datapoint, then this is repeated to create 2143 new covariates.
 This method is relatively untested but is general and can work with any machine learning algorithm.
-However, interpretation of the strength of the phylogeny will be relatively difficult as it is encoded as Todo different covariates.
+However, interpretation of the strength of the phylogeny will be relatively difficult as it is encoded as 2143 different covariates.
+Fitting a Random Forest to this augmented dataset was the best performing model out of all tested and gave an $r^2$ of 0.81.
 
 The second method involves fitting multiple machine learning models and then using phylogenetic regression to 'stack' them. 
 We fit a number of machine learning algorithms and make out-of-sample predictions within the cross-validation framework.
 We then fit a phylogenetic mixed-effects model using the out-of-sample predictions as covariates and constraining the regression coefficients to be positive.
 This method is likely to be very effective at prediction and the phylogenetic component of the regression is interpretable as it would be in any normal phylogenetic regression.
 However, this method only corrects for the biases from autocorrelated data after the fact; while it may still be possible to interpret the machine learning models as we have done previously, the computed nonlinear relationships remain biased.
+I fitted this model using the three original models (elastic net, Gaussian process regression and Random Forest) and fit a hierarchical phylogenetic mixed-effects model using INLA [@inla].
+I obtained a cross-validated $r^2$ of 0.72.
+Fitting the model on all the data yielded a posterior mean of 0.03 for the standard deviation of the phylogenetic random effect.
 
 
 While I cannot demonstrate the handling of spatial or temporal autocorrelation with this dataset the methods described above are equally applicable [@elith2009species].
@@ -634,7 +645,7 @@ As we do not need to consider non-monotonic relationships, this simpler model sh
 In figures @fig:limegp and @fig:limerf we can see the outputs of a LIME analysis for the datapoints with the highest predicted litter size shutting to the Gaussian process and Random Forest model.
 However, it's important to note that as we know the true litter size values for these species we can see that the top-predicted data are not actually the species with the highest litter size.
 This reminds us not to interpret these as "what factor imply the highest litter size" but rather "why are these particular species predicted as having large litters".
-Although the species with the highest observed litter size are predicted poorly, the species with the highest predicted litter size have predictions quite close to their true value (figures @fig:gppredobs - @fig:RF).
+Although the species with the highest observed litter size are predicted poorly, the species with the highest predicted litter size have predictions quite close to their true value (figures @fig:gppredobs - @fig:rfpredobs).
 
 ![LIME analysis of predictions of five points from the Gaussian process model.](figs/lime-2.pdf "LIME analysis of predictions of five points from the Gaussian process model.."){#fig:limegp}
 
