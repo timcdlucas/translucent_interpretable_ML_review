@@ -20,6 +20,7 @@ output:
 <!---
 compile with
 pandoc -o translucent.pdf  --filter pandoc-fignos --filter pandoc-citeproc translucent.md
+pandoc -o translucent.pdf  --filter pandoc-fignos --filter pandoc-citeproc --variable classoption=twocolumn translucent.md
 
 --->
 
@@ -100,7 +101,7 @@ zhao2017causal].
 
 ### An overview of machine learning
 
-Before examining how machine learning models can be interpreted it is worth reviewing the core tasks and type of models found in machine learning [@crisci2012review; @mltasks].
+Before examining how machine learning models can be interpreted it is worth reviewing the core tasks and type of models found in machine learning [@crisci2012review; @breiman2001statistical].
 There are three broad tasks in machine learning: i) supervised learning, ii) unsupervised learning and iii) reinforcement learning.
 i) Supervised learning is the archetypal modelling found in biology.
 The analyst has some response data and possibly covariates and the task is to predict the response data.
@@ -211,7 +212,7 @@ we will fit three models with differing degrees of interpretability.
 
 In this review I will present an illustrative analysis on the PanTHERIA dataset [@jones2009pantheria] which contains mammalian life history traits.
 I fitted four models, with variations, that span the range of interpretability:
-i) a typical model used by biologists; a simple linear model with a priori variable selection ii) a parametric statistical model, the elastic net [@glmnet] iii) a non-parametric statistical model, Gaussian process regression [@rasmussen2004gaussian] and iv) a non-parametric, non-statistical model, Random Forest [@breiman2001random].
+i) a typical model used by biologists; a simple linear model with a priori variable selection ii) a parametric statistical model, the elastic net [@elasticnet] iii) a non-parametric statistical model, Gaussian process regression [@rasmussen2004gaussian] and iv) a non-parametric, non-statistical model, Random Forest [@breiman2001random].
 For each of these models I demonstrate how they can be interpreted with methods that are applicable to a wide variety of machine learning models.
 The full analysis is included as a reproducible R [@R] script that reads data directly from online repositories (S1).
 <!--- edited 1 --->
@@ -290,7 +291,7 @@ Split rule, which determines how the decision tree splits are chosen, was set to
 The maximum number of data points at a leaf, which can be used to prevent overfitting was selected by cross-validation (figure @fig:rfhyp).
 Finally, the number of randomly selected covariates to be used to build each tree (mtry) was also selected by cross-validation (figure @fig:rfhyp).
 Random Forests are however just one model out many non-statistical, non-parametric models.
-Other notable models include neural networks [@nnet], boosted decision trees [@friedman2001greedy], support vector machines [@svm] and nearest neighbour [@knn].
+Other notable models include neural networks [@neuralnets], boosted decision trees [@friedman2001greedy], support vector machines [@svm] and nearest neighbour [@knn].
 Each model has benefits but the variety of machine learning methods is reviewed elsewhere [@crisci2012review].
 <!--- edited 1--->
 
@@ -502,7 +503,7 @@ The autocorrelation here arises due to common ancestry of species; two species t
 This autocorrelation is typically handled with a phylogenetic random effect while other sources of autocorrelation such as time or space can be similarly handled with an appropriate random effects term.
 Categorical random effects can be used to model a wide variety of sources of autocorrelation such as multiple samples from a single individual, site or lab.
 
-Including random effects within parametric or non-parametric statistical models is entirely possible with flexible modelling packages [@stan; @inla; @glmmTMB; @tmb].
+Including random effects within parametric or non-parametric statistical models is entirely possible with flexible modelling packages [@stan; @INLA; @glmmTMB; @tmb].
 As a simple demonstration I fitted a phylogenetic linear model via INLA [@INLA]  using the *a priori* selected covariates (cross-validated $r^2 = 0.72$) and a linear model using all covariates and strong regularising priors ($r^2 = 0.74$).
 Both models, when fitted to all the data, yielded posterior means of 0.04 for the standard deviation of the phylogenetic random effect which implies a relatively weak effect.
 
@@ -565,7 +566,7 @@ We fit a number of machine learning algorithms and make out-of-sample prediction
 We then fit a phylogenetic mixed-effects model using the out-of-sample predictions as covariates and constraining the regression coefficients to be positive.
 This method is likely to be very effective at prediction and the phylogenetic component of the regression is interpretable as it would be in any normal phylogenetic regression.
 However, this method only corrects for the biases from autocorrelated data after the fact; while it may still be possible to interpret the machine learning models as we have done previously, the computed nonlinear relationships remain biased.
-I fitted this model using the three original models (elastic net, Gaussian process regression and Random Forest) and fit a hierarchical phylogenetic mixed-effects model using INLA [@inla].
+I fitted this model using the three original models (elastic net, Gaussian process regression and Random Forest) and fit a hierarchical phylogenetic mixed-effects model using INLA [@INLA].
 I obtained a cross-validated $r^2$ of 0.72.
 Fitting the model on all the data yielded a posterior mean of 0.03 for the standard deviation of the phylogenetic random effect.
 
