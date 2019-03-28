@@ -445,7 +445,7 @@ This is not required here because the covariates are all continuous.
 <!--- edited 1 --->
 
 It is also worth noting that the reliability of variable importence measures differs between model types and depends on the data.
-For example, repeatedly fitting a neural network to these data gives very different results each time (Figure S1todo).
+For example, repeatedly fitting a neural network to these data gives very different results each time.
 In contrast,  Gaussian processes and linear models generally give the same results given different starting values and the repeated randomisation inherent in Random Forest means these models tend to give similar results each time.
 Furthermore, variable importance in the presence of colinearity is less reliable and less interpretable [@dormann2013collinearity].
 Given two colinear variables, some models such as random forest will share the variable importance between them potentially masking an important variable.
@@ -491,8 +491,26 @@ In contrast, the random forest model is flat at high values of gestation length.
 While PDPs are evaluated at just the median of the other variables, the variable importance measures calculated above are evaluated over all training data.
 There can therefore be a mismatch where a PDP looks flat while the variable importance is high.
 Relatedly, the PDP gives no information on interactions because it is only evaluated at one value of the other covariates.
-To address these issues we can calculate the interaction importance for each covariate (table todo).
+To address these issues we can calculate the interaction importance for each covariate (table @tbl:interimp).
 This value is given by decomposing the prediction function into contributions from just the focal covariate, contributions from everything except the focal covariate and contributions that rely on both the focal covariate and non-focal covariates together.
+
+
+|Model | Variable | Interaction Importance |
+|------------ |------------ |-------------| 
+| Gaussian Process| AdultBodyMass_g | 0.20 |
+|| AgeatEyeOpening_d | 0.20 |
+|| Terrestriality |0.20 |
+|| DispersalAge_d | 0.16|
+|| MaxLongevity_m | 0.11|
+| Random Forest | AdultBodyMass_g | 0.34 |
+| | GestationLen_d | 0.23 |
+|| Terrestriality |0.15 |
+|| GR_MaxLat_dd | 0.10 |
+|| PET_Mean_mm | 0.10|
+
+Table: Interaction strengths. {#tbl:interimp}
+
+
 
 Once we have identified covariates with important interactions we can use individual conditional expectation (ICE) plots.
 Like PDPs, ICE plots calculate the predicted response value across a range of the focal covariate.
@@ -517,9 +535,27 @@ Gaussian process models and Random Forests implicitly consider deep interactions
 However, if we can identify important two way interactions we can start to interpret these.
 We can find the interaction strength between two features in a similar fashion to finding variable importance.
 We can examine the 2D PDP of two covariates (figure @fig:2dgestlatgp @fig:2dgestlatrf) and calculate what proportion of the curve is explained by the sum of the two 1D PDPs (e.g. figure @fig:pdpgestgp).
-We can therefore take one covariate that we know has strong interactions (Todo as seen in table todo) and calculate the two-way interaction strength between that covariate and all other covariates (table todo).
+We can therefore take one covariate that we know has strong interactions (``GestationLength_d'' as seen in table @tbl:interimp) and calculate the two-way interaction strength between that covariate and all other covariates (table @tbl:specificinter).
 Finally, once important interactions have been identified, the 2D PDP can be examined to determine the shape of that interaction (figure @fig:2dgestlatgp and @fig:2dgestlatrf).
 Looking at the 2D PDP of gestation length and latitude for the random forest model we can see that something.
+
+
+
+|Model | Variable | Interaction Importance |
+|------------ |------------ |-------------| 
+| Gaussian Process| WeaningBodyMass_g_EXT | 0.54 |
+|| SocialGrpSize | 0.22 |
+|| WeaningBodyMass_g |0.20 |
+|| HomeRange_km2 | 0.17|
+|| AgeatFirstBirth_d | 0.16|
+| Random Forest | AdultForearmLen_mm | 0.14 |
+| | AdultBodyMass_g | 0.12 |
+|| WeaningAge_d |0.11 |
+|| GR_MidRangeLat_dd | 0.08 |
+|| Terrestriality | 0.07|
+
+Table: Specific interaction strengths between GestationLength_d and other variables. {#tbl:specificinter}
+
 
 
 ![2D PDP plot for Gestation Length and PET in the Gaussian process model.](figs/pdp_gest_pet-1.pdf "2D PDP plot for Gestation Length and PET in the Gaussian process model."){#fig:2dgestlatgp}
