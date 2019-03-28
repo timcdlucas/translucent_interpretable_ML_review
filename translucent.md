@@ -307,7 +307,7 @@ Each model has benefits but the variety of machine learning methods is reviewed 
 
 The first level of interpretation we can examine is the global level; what do the fitted models tell us about the system as a whole.
 One global property of interest is how predictable the system is.
-This can be assessed using scatter plots of observed versus out-of-sample predictions (figure @fig:enetpredobs @fig:gppredobs @fig:rfpredobs) as well as metrics such as $r^2$ or the root mean squared error.
+This can be assessed using scatter plots of observed versus out-of-sample predictions (Figure @fig:enetpredobs @fig:gppredobs @fig:rfpredobs) as well as metrics such as $r^2$ or the root mean squared error (Table @tbl:allr2).
 Random Forests are effective here as they are fast to fit, robust and need relatively little tuning.
 If a Random Forest has poor predictive performance then it is likely that either vital covariates are missing from the dataset or that the response is in fact very noisy.
 The Random Forest model fitted here has fairly good predictive performance (figure @fig:rfpredobs) with an $r^2$ of 0.67.
@@ -315,6 +315,23 @@ However, it can be seen that certain species, particularly those with very large
 We can be fairly sure that this trait is not noisy as the evolutionary consequences of litter size are large.
 Therefore we are probably missing some important covariates.
 <!--- edited 1--->
+
+
+|Model | $R^2$ |
+|------------ |------------ |
+| A priori linear |0.34 |
+| Elastic net |0.53  |
+| Gaussian Process | 0.63 |
+| Random Forest | 0.68 |
+| Random Forest w/ genus | 0.70 | 
+| A priori phylogenetic |0.72 |
+| Regularised phylogenetic | 0.74 |
+| Stacked generalisation | 0.72 |
+| Random Forest w/ phylogenetic distance |0.81 |
+
+
+Table: $R^2$ for all models. {#tbl:allr2}
+
 
 We can also use predictive performance of machine learning models to scale our expectations for how well a more statistical or mechanistic model fits the data.
 Here, the linear model with a priori variable selection (figure @fig:aprioripredobs) had performance not much worse than the elastic net model (figure @fig:enetpredobs) but considerably worse than the Random Forest (figure @fig:rfpredobs).
@@ -412,7 +429,7 @@ Fitting multiple models and searching for consistency is one useful way to incre
 The fact that gestation length is found to be important also highlights the issue of causality; it is not clear which direction causality flows between gestation length and litter size.
 Does large litter sizes force gestation length to be small or does short gestation length allow large litters?
 It could also be true that causality flows in different directions in different species.
-Some models also allow tests of significance on variable importance measures (table todo).
+Some models also allow tests of significance on variable importance measures.
 While these come with all the normal caveats for significance testing, the probability scale might be more useful for interpretation than the earlier values scaled by the maximum importance values.
 <!--- edited 1--->
 
