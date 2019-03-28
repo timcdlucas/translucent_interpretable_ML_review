@@ -19,8 +19,8 @@ output:
 
 <!---
 compile with
-pandoc -o translucent.pdf  --filter pandoc-fignos --filter pandoc-citeproc translucent.md
-pandoc -o translucent.pdf  --filter pandoc-fignos --filter pandoc-citeproc --variable classoption=twocolumn translucent.md
+pandoc -o translucent.pdf  --filter pandoc-fignos --filter pandoc-tablenos --filter pandoc-citeproc translucent.md
+pandoc -o translucent.pdf  --filter pandoc-fignos --filter pandoc-tablenos --filter pandoc-citeproc --variable classoption=twocolumn translucent.md
 
 --->
 
@@ -382,7 +382,29 @@ We can examine variable importence [@oppel2009alternative], importance of intera
 It is important however to remember that these models are not designed for inference; the following methods should be thought of as hypothesis generation and more formal, subsequent tests (on a different dataset) would be needed to confirm relationships between covariates and the response variable.
 <!--- edited 1--->
 
-Table todo shows the top five most important variables as determined by the three models [@oppel2009alternative].
+
+|Model | Variable | Importance |
+|------------ |------------ |-------------| 
+| Elastic net | GestationLen_d | 100 |
+| | AdultBodyMass_g | 70.67 |
+|| GR_MidRangeLat_dd |67.42 |
+|| GR_MinLat_dd |62.73 |
+|| PET_Mean_mm | 61.68|
+| Gaussian Process | GestationLen_d | 100 |
+| | AdultBodyMass_g | 70.67 |
+|| GR_MidRangeLat_dd |67.42 |
+|| GR_MinLat_dd |62.73 |
+|| PET_Mean_mm | 61.68|
+| Random Forest | GestationLen_d | 100 |
+| | AdultBodyMass_g | 58.065 |
+|| AdultForearmLen_mm |26.915 |
+|| GR_MidRangeLat_dd |25.800 |
+|| PET_Mean_mm | 22.957|
+
+Table: Variable importance values. {#tbl:varimp}
+
+
+Table {@tbl:varimp} shows the top five most important variables as determined by the three models [@oppel2009alternative].
 These importance measures are not in absolute units so they are scaled such that the most important covariate has a value of 100.
 For the regularised linear model, variable importance is given simply by the magnitude of the regression coefficients (i.e. ignoring the sign) and these raw values might be more useful than the scaled importance values.
 We can see that gestation length comes top for all three models and that latitude and PET are prominent in all three as well.
@@ -393,6 +415,8 @@ It could also be true that causality flows in different directions in different 
 Some models also allow tests of significance on variable importance measures (table todo).
 While these come with all the normal caveats for significance testing, the probability scale might be more useful for interpretation than the earlier values scaled by the maximum importance values.
 <!--- edited 1--->
+
+
 
 *Caret* provides an easy interface for getting variable importance measures for many model types; however the calculations being performed are varied.
 While trying to avoid model-specific detail, it is important to note that there are different ways of calculating variable importance for a given model [@seifert2019surrogate, @oppel2009alternative] and some are more correct than others.
