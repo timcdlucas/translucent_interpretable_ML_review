@@ -248,7 +248,7 @@ regularised regression
 
  gp [@rasmussen2004gaussian]
 
-random forest [@wright2015ranger; @breiman2001random]
+Random Forest [@wright2015ranger; @breiman2001random]
 
 no reason effects for now. assuming iid.
 -->
@@ -439,7 +439,7 @@ While these come with all the normal caveats for significance testing, the proba
 While trying to avoid model-specific detail, it is important to note that there are different ways of calculating variable importance for a given model [@seifert2019surrogate, @oppel2009alternative] and some are more correct than others.
 For the Random Forest model the type of variable importance calculation is important and depends on the type of covariates being used.
 Firstly, variable importance calculated by permutation us more reliable (though computationally slower) than other methods like Gini impurity [@].
-Secondly, in the presence of a mix of continuous and categorical covariates, all methods performed on standard random forests are biased towards selecting continuous covariates.
+Secondly, in the presence of a mix of continuous and categorical covariates, all methods performed on standard Random Forests are biased towards selecting continuous covariates.
 If accurate variable importance measures are needed, a related model, conditional inference forests, should be used instead [@].
 This is not required here because the covariates are all continuous.
 <!--- edited 1 --->
@@ -448,7 +448,7 @@ It is also worth noting that the reliability of variable importence measures dif
 For example, repeatedly fitting a neural network to these data gives very different results each time.
 In contrast,  Gaussian processes and linear models generally give the same results given different starting values and the repeated randomisation inherent in Random Forest means these models tend to give similar results each time.
 Furthermore, variable importance in the presence of colinearity is less reliable and less interpretable [@dormann2013collinearity].
-Given two colinear variables, some models such as random forest will share the variable importance between them potentially masking an important variable.
+Given two colinear variables, some models such as Random Forest will share the variable importance between them potentially masking an important variable.
 In contrast, other models such as stepwise regression might put all the variable importance into one variable with no guarantee that the correct variable is selected.
 <!--- edited 1--->
 
@@ -460,10 +460,10 @@ In contrast, other models such as stepwise regression might put all the variable
 Once some important covariates have been identified, it is useful to examine the shape of the relationship between covariate and response. 
 The simplest way to do this is a partial dependence plot (PDP) in which the model is evaluated at a range of values of the covariate of interest with all other covariates held at their mean (or mode for categorical variables).
 All responses are linear for the regularised linear model so a PDP us not useful.
-The PDPs for gestation length for the Gaussian process and random forest models are shown in figures @fig:pdpgestgp and @fig:pdpgestrf.
+The PDPs for gestation length for the Gaussian process and Random Forest models are shown in figures @fig:pdpgestgp and @fig:pdpgestrf.
 It can be seen that neither response is linear and are both decreasing for low values of gestation length.
 However, the PDP for the Gaussian process model is increasing at high values of gestation length and is similar to a square curve.
-In contrast, the random forest model is flat at high values of gestation length.
+In contrast, the Random Forest model is flat at high values of gestation length.
 
 <!---
   - generate hypotheses (variable level)
@@ -537,7 +537,7 @@ We can find the interaction strength between two features in a similar fashion t
 We can examine the 2D PDP of two covariates (figure @fig:2dgestlatgp @fig:2dgestlatrf) and calculate what proportion of the curve is explained by the sum of the two 1D PDPs (e.g. figure @fig:pdpgestgp).
 We can therefore take one covariate that we know has strong interactions (``GestationLength_d'' as seen in table @tbl:interimp) and calculate the two-way interaction strength between that covariate and all other covariates (table @tbl:specificinter).
 Finally, once important interactions have been identified, the 2D PDP can be examined to determine the shape of that interaction (figure @fig:2dgestlatgp and @fig:2dgestlatrf).
-Looking at the 2D PDP of gestation length and latitude for the random forest model we can see that something.
+Looking at the 2D PDP of gestation length and latitude for the Random Forest model we can see that something.
 
 
 
@@ -749,7 +749,7 @@ However, it currently remains used almost solely for purely predictive purposes.
 Their full potential us therefore not being realised.
 One important step for this to occur is for ecologists to be more clear about the purposes of their analyses; is a well defined hypothesis being tested, is a dataset being explored for potential relationships to drive hypothesis generation, or is prediction the main focus.
 This clarity makes it possible to be clear about the trade-offs in any statistical analysis and to use the most effective tools given the desired outcomes.
-Using simple linear models is often not optimal if discovery of relationships or predictions are the aim; if a formal hypothesis is being tested random forests are unlikely to be the best choice.
+Using simple linear models is often not optimal if discovery of relationships or predictions are the aim; if a formal hypothesis is being tested Random Forests are unlikely to be the best choice.
 Finally, being clear about the aims allows sensible planning on how data will be used in the longer term.
 If the aim is to discover some relationships and then formally test them, the best use of a given dataset may be to split it and use half for disovery and half for hypothesis testing.
 This workflow would not occur to an analyst who was unclear about their task.
