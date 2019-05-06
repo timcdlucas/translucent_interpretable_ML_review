@@ -440,7 +440,7 @@ While trying to avoid model-specific detail, it is important to note that there 
 For the Random Forest model the type of variable importance calculation is important and depends on the type of covariates being used.
 Firstly, variable importance calculated by permutation us more reliable (though computationally slower) than other methods like Gini impurity [@].
 Secondly, in the presence of a mix of continuous and categorical covariates, all methods performed on standard Random Forests are biased towards selecting continuous covariates.
-If accurate variable importance measures are needed, a related model, conditional inference forests, should be used instead [@].
+If accurate variable importance measures are needed, a related model, conditional inference forests [@hothorn2006unbiased] or the maxstat split rule in ranger [@wright2017unbiased], should be used instead.
 This is not required here because the covariates are all continuous.
 <!--- edited 1 --->
 
