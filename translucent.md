@@ -185,7 +185,7 @@ As the focus of this review is using machine learning for interogating natural s
      - shared power
 -->
 
-A major shift in the statistical analysis of ecological and evolutionary data in recent decades is the acknowledgement that observational, biological data rarely conform to assumptions of independence due to phylogeny [@], space [@diggle1998model], time [@] or other categorical, grouping variables [@bolker2009generalized].
+A major shift in the statistical analysis of ecological and evolutionary data in recent decades is the acknowledgement that observational, biological data rarely conform to assumptions of independence due to phylogeny [@], space [@diggle1998model, @redding2017evaluating], time [@] or other categorical, grouping variables [@bolker2009generalized, @harrison2018brief].
 This issue of autocorrelation is largely underappreciated in the machine learning literature and only recently have random effects been explicitely built into typical machine learning models [@eo2014tree; @hajjem2014mixed; @hajjem2017generalized; @miller2017gradient].
 Most machine learning models make some assumption of independence and certainly estimates of out-of-sample predictive ability can be biased if cross-validation is used without accounting for autocorrelation.
 There are however a number of strategies to mitigate biases caused by autocorrelation and for gaining insight into the random effects themselves.
