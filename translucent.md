@@ -458,12 +458,15 @@ In contrast, other models such as stepwise regression might put all the variable
 --->
 
 Once some important covariates have been identified, it is useful to examine the shape of the relationship between covariate and response. 
-The simplest way to do this is a partial dependence plot (PDP) in which the model is evaluated at a range of values of the covariate of interest with all other covariates held at their mean (or mode for categorical variables).
-All responses are linear for the regularised linear model so a PDP us not useful.
+The simplest way to do this is a partial dependence plot (PDP) [@Friedman2001]. 
+This plot is calculated by evaluating the model n times for each data point using n equally spaced values of the covariate of interest.
+The mean response for each value of the covariates of interest is plotted.
+All responses are linear for the regularised linear model so a PDP is not useful.
 The PDPs for gestation length for the Gaussian process and Random Forest models are shown in figures @fig:pdpgestgp and @fig:pdpgestrf.
 It can be seen that neither response is linear and are both decreasing for low values of gestation length.
-However, the PDP for the Gaussian process model is increasing at high values of gestation length and is similar to a square curve.
+However, the PDP for the Gaussian process model is increasing at high values of gestation length and is similar to a squared curve.
 In contrast, the Random Forest model is flat at high values of gestation length.
+<!--- edited 1--->
 
 <!---
   - generate hypotheses (variable level)
@@ -488,12 +491,12 @@ In contrast, the Random Forest model is flat at high values of gestation length.
 
 ![PDP plot for Gestation Length in the Random Forest model.](figs/pdp_gest-2.pdf "PDP plot for Gestation Length in the Random Forest model."){#fig:pdpgestrf}
 
-While PDPs are evaluated at just the median of the other variables, the variable importance measures calculated above are evaluated over all training data.
+While PDPs are computed as the mean of the response over the dataset, the variable importance measures calculated above are evaluated over all training data.
 There can therefore be a mismatch where a PDP looks flat while the variable importance is high.
-Relatedly, the PDP gives no information on interactions because it is only evaluated at one value of the other covariates.
+Relatedly, the PDP gives no information on interactions because it is only plotted at one value of the other covariates.
 To address these issues we can calculate the interaction importance for each covariate (table @tbl:interimp).
 This value is given by decomposing the prediction function into contributions from just the focal covariate, contributions from everything except the focal covariate and contributions that rely on both the focal covariate and non-focal covariates together.
-
+<!--- edited 1--->
 
 |Model | Variable | Interaction Importance |
 |------------ |------------ |-------------| 
@@ -514,11 +517,11 @@ Table: Interaction strengths. {#tbl:interimp}
 
 Once we have identified covariates with important interactions we can use individual conditional expectation (ICE) plots.
 Like PDPs, ICE plots calculate the predicted response value across a range of the focal covariate.
-However, instead of holding the other covariates at their median, they evaluate and plot one curve for each data point (Figure @fig:icegestgp and @fig:icegestrf).
+However, instead of averaging over the dataset, they plot one curve for each data point (Figure @fig:icegestgp and @fig:icegestrf).
 In these plots we can start to see that the response curve differs depending on what value the other covariates take.
 As the number of data points increases, these plots can get very busy and so clustering the curves is useful (figure @fig:clusticelatgp and @fig:clusticelatrf).
 Here we can clearly see the range of responses that exist for a single covariate, with latitude having a positive relationship with litter size in some cases and a negative relationship in others.
-
+<!--- edited 1--->
 
 
 ![ICE plot for Gestation Length in the Gaussian process model.](figs/ice-1.pdf "ICE plot for Gestation Length in the Gaussian process model."){#fig:icegestgp}
@@ -537,8 +540,8 @@ We can find the interaction strength between two features in a similar fashion t
 We can examine the 2D PDP of two covariates (figure @fig:2dgestlatgp @fig:2dgestlatrf) and calculate what proportion of the curve is explained by the sum of the two 1D PDPs (e.g. figure @fig:pdpgestgp).
 We can therefore take one covariate that we know has strong interactions (``GestationLength_d'' as seen in table @tbl:interimp) and calculate the two-way interaction strength between that covariate and all other covariates (table @tbl:specificinter).
 Finally, once important interactions have been identified, the 2D PDP can be examined to determine the shape of that interaction (figure @fig:2dgestlatgp and @fig:2dgestlatrf).
-Looking at the 2D PDP of gestation length and latitude for the Random Forest model we can see that something.
-
+Looking at the 2D PDP of gestation length and latitude for the Random Forest model we can see that something. todo
+<!--- edited 1--->
 
 
 |Model | Variable | Interaction Importance |
@@ -578,27 +581,34 @@ Table: Specific interaction strengths between GestationLength_d and other variab
 The PanTHERIA dataset is an example of data that strongly violates assumptions of independent data.
 The autocorrelation here arises due to common ancestry of species; two species that recently diverged from a common ancestor are likely to be more similar than species whose common ancestor is in the deep past.
 This autocorrelation is typically handled with a phylogenetic random effect while other sources of autocorrelation such as time or space can be similarly handled with an appropriate random effects term.
-Categorical random effects can be used to model a wide variety of sources of autocorrelation such as multiple samples from a single individual, site or lab.
+Categorical random effects can be used to model a wide variety of sources of autocorrelation such as multiple samples from a single individual, study site or lab.
+<!--- edited 1--->
 
 Including random effects within parametric or non-parametric statistical models is entirely possible with flexible modelling packages [@stan; @INLA; @glmmTMB; @tmb].
-As a simple demonstration I fitted a phylogenetic linear model via INLA [@INLA]  using the *a priori* selected covariates (cross-validated $r^2 = 0.72$) and a linear model using all covariates and strong regularising priors ($r^2 = 0.74$).
+As a simple demonstration I fitted a phylogenetic linear model via INLA [@INLA]  using the *a priori* selected covariates (cross-validated $r^2 = 0.72$) and a phylogenetic linear model using all covariates and strong regularising priors ($r^2 = 0.74$).
 Both models, when fitted to all the data, yielded posterior means of 0.04 for the standard deviation of the phylogenetic random effect which implies a relatively weak effect.
+<!--- edited 1--->
 
-However combining random effects with non-parametric, non-statistical models is difficult.
+However, combining random effects with non-parametric, non-statistical models is more difficult.
 While these models are starting to be developed [@ngufor2019mixed; @hajjem2014mixed; @hajjem2017generalized; @eo2014tree; @miller2017gradient;@REEMtree], they are not available in R packages, are only implemented for a small subset of machine learning algorithms and do not necessarily benefit from the computational improvements implemented in the most up-to-date packages [@wright2015ranger; @xgboost].
 Therefore, generic methods for handling random effects, that can be used with any machine learning algorithm, are useful.
-The naïve approach to including random effects within machine learning models would be to simply include them as covariates: categorical random effects as categorical covariates, space or time as continuous variables for example.
-However to understand when this approach is or is not appropriate, we have to examine three factors as to why these effects are not just included as fixed effects in typical mixed effects models.
+The naïve approach to including random effects within machine learning models would be to simply include them as covariates; categorical random effects as categorical covariates, space or time as continuous variables for example.
+However to understand when this approach is or is not appropriate, we have to examine three factors as to why these effects are not just included as fixed effects in typical mixed-effects models.
+<!--- edited 1--->
 
-Firstly, we expect to extrapolate continuous random effects and expect unseen categories in during prediction even using categorical random effects.
+Firstly, we expect to extrapolate continuous random effects and expect unseen categories during prediction when using categorical random effects.
 Many machine learning models extrapolate poorly, for example tree based models will predict a flat response curve outside the range of the data. 
 For an effect such as space this is undesirable and we would instead typically wish the spatial prediction to return to the mean of the data [@gpmean?].
-A categorical variable would often be encoded as a one-hot dummy variable and unseen categories would be implicitly predicted using the fitted value for the first category.
-This is again not how we would wish the model to behave.
+Predicting unseen categories of a categorical variable presents problems as well.
+A categorical variable might often be encoded as a full-rank one-hot dummy variable (one dummy variable less than the number of categories) and unseen categories would be implicitly predicted using the fitted value for the first category.
+This is not how we would wish the model to behave.
+Alternatively, for some models, such as certain tree algorithms, that can natively use categorical variables, the prediction of missing categories is implemented using a heuristic that may cover poor performance [@missingscats].
+<!--- edited 1--->
 
 Secondly, we often have many categories and little data per category in a categorical random effect and wish to share power across groups.
 This low ratio of data to parameters can be reframed as a regularisation problem. 
 The regularisation can be seen explicitely in the Bayesian formulation of random effects models (hierarchical models) where the random parameters are regularised by a zero centered prior, the strength of which is in turn learned from the data  [@].
+<!--- edited 1--->
 
 Finally, random effects are often included as a way to control for autocorrelation rather than being part of the desired predictive model.
 For example, if all future predictions are to be for unseen categories of a categorical random effect or if all spatial predictions are to be made far from data, then we might want to construct our model simply so that the model is unbiased by these autocorrelations rather than using them directly in predictions.
@@ -606,29 +616,35 @@ Similarly if the data collection was biased with respect to a random effect, we 
 For example, if data was collected by different labs or with different protocols, we might want to control for this effect but then predict the latent effect.
 If the presence of a species is measured using different methods (camera trapping, visual surveys etc.) we might want to control for this, but we aim to predict the latent state "species presence", not "species presence as measured by camera trapping".
 While this relate to the first point on predicting outside the range of the data, the methods for handling it can be different.
+<!--- edited 1--->
 
 Given these issues we can consider how to include random effects into machine learning models and then examine the results when these are applied to the PanTHERIA analysis.
 As discussed above, the phylogenetic effect is the clearest in the PanTHERIA dataset.
 One way of including phylogenetic information in an analysis is to treat a taxonomic level such as genus as a categorical reason effect.
-While this is less principled than properly including the phylogeny, it is simple and makes it possible to demonstrate categorical random effects with the PanTHERIA database.
+While this is less principled than properly including the phylogeny, it is simple.
+This method also allows a demonstration of categorical random effects.
+<!--- edited 1--->
 
-First considering the case of using genus as a categorical random effect to encapsulate some phylogenetic information, the first issue is that by default, new genera will have predictions that implicitly assume they are of the reference genus in the one-hot encoded dummy variables. 
-Instead we can give every genus its own dummy variable.
-While rank deficient form would cause identifiability issues with the intercept in a linear model, the random columns and greedy splitting during tree building means this is handled without modifications to the standard Random Forest algorithm.
+If we use genus as a categorical random effect to encapsulate some phylogenetic information, the first issue to is that we must be careful that the software does not automatically encode the data as a full-rank one-hot dummy variable.
+While less-than-full-rank form would cause identifiability issues with the intercept in a linear model, the random columns and greedy splitting during tree building means this is handled without modifications to the standard Random Forest algorithm.
+Furthermore, we must check how the algorithm we are using handles missing categories; ranger does this and that is or is not ok.
+Therefore, I have fitted Random Forest with a standard categorical variable and by explicitly encoding the category as a less-than-full-rank dummy variable. todo
+
 The second issue above was that of regularisation.
 Random Forest will automatically consider all interactions between our covariates and genus effect.
 Random Forest is natively regularised by the bootstrap aggregation, and the complexity of the model is further controlled by hyper parameters as in figure @fig:rfhyp.
 The new model can therefore be fitted in the same way as the old model.
-However, given that I have added many covariates, I increased the range of the mtry parameter.
-I obtained an $r^2$ value of 0.70 for this model.
-As this is marginally better than the Random Forest model without genus as a covariate, this provides some evidence that phylogenetic effects are present.
-The best hyperparameters were mtry = 500 (which implies that many of the genera are not very useful on their own) and min.node.size = 5 which is the same as the model without genus as a covariate.
+However, given that, in creating the one-hot dummy variables, I have added many covariates I increased the range of the mtry parameter.
 
 The final consideration above was the case where we expect all predictions to be made on new categories.
 In the case of Random Forest, the above methods are suitable.
 However, given a model that cannot regularise as effectively, we might want to control for genus without including it as a covariate in the model at all.
 In this case we can simply weight the data so that each genus is equally represented or so that each genus is represented proportionally to the number of species in each genus in the full prediction set, which could be for example all mammals.
 Many models in *caret* accept a weight argument so this is a fairly general solution.
+
+I obtained an $r^2$ value of something the model that uses the raw categorical variable directly and $r^2 = 0.70$ for the model with one-hot dummy variables.
+As this is marginally better than the Random Forest model without genus as a covariate, this provides some evidence that phylogenetic effects are present.
+The best hyperparameters were mtry = 500 (which implies that many of the genera are not very useful on their own) and min.node.size = 5 which is the same as the model without genus as a covariate.
 
 If however, we wish to include the full phylogeny in our model, we need different methods.
 The first method is to include all the phylogenetic information in covariates [@hengl2018random].
@@ -642,14 +658,14 @@ The second method involves fitting multiple machine learning models and then usi
 We fit a number of machine learning algorithms and make out-of-sample predictions within the cross-validation framework.
 We then fit a phylogenetic mixed-effects model using the out-of-sample predictions as covariates and constraining the regression coefficients to be positive.
 This method is likely to be very effective at prediction and the phylogenetic component of the regression is interpretable as it would be in any normal phylogenetic regression.
-However, this method only corrects for the biases from autocorrelated data after the fact; while it may still be possible to interpret the machine learning models as we have done previously, the computed nonlinear relationships remain biased.
+However, this method only corrects for the biases from autocorrelated data after the machine learning models are fitted; while it may still be possible to interpret the machine learning models as we have done previously, the computed nonlinear relationships remain biased.
 I fitted this model using the three original models (elastic net, Gaussian process regression and Random Forest) and fit a hierarchical phylogenetic mixed-effects model using INLA [@INLA].
 I obtained a cross-validated $r^2$ of 0.72.
 Fitting the model on all the data yielded a posterior mean of 0.03 for the standard deviation of the phylogenetic random effect.
 
 
 While I cannot demonstrate the handling of spatial or temporal autocorrelation with this dataset the methods described above are equally applicable [@elith2009species].
-An analogous method to using  genus as a categorical variable, space can be split into regions and the region used as a categorical variable [@appelhans2015evaluating]. 
+In a method analogous  to using  genus as a categorical variable, space can be split into regions and the region used as a categorical variable [@appelhans2015evaluating]. 
 This approach is commonly used with predefined spatial units such as countries.
 Another common approach with spatial data is "thinning" and is conceptually similar to the weighting method for categorical data [@].
 In its simplest form, thinning, involves removing data points so that each spatial pixel has at most one data instance [@elith2010art; @verbruggen2013improving].
@@ -657,7 +673,7 @@ This is equivalent to treating the pixel as a categorical variable and subsampli
 Also note that in the context of presence-only data, this is equivalent to weighting the data but with presence-absence data or continuous response data, weighting is a better way to include all the data.
 More subtle methods involve removing data based on the local density [@verbruggen2013improving].
 In this method, a kernel bandwidth is chosen either *a priori* or by cross-validation, then data is probabilistically removed based on the density of data geographically near it.
-Again, weighting the data may be more satisfactory.
+Again, weighting the data may be more principled.
 
 Temporal effects are easier to handle as they are one dimensional with causation only able to occur in one direction.
 Furthermore, they have been studied in detail in the machine learning literature [@jeong2008non].
