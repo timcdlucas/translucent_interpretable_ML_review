@@ -1,5 +1,5 @@
 ---
-title: A translucent box&#58; interpretable machine learning
+title: A translucent box&#58; interpretable machine learning in ecology
 author: Tim C. D. Lucas
 bibliography: machine_learn.bib
 fontsize: 10pt
@@ -8,6 +8,7 @@ csl: mee.csl
 output:
   pdf_document:
     fig_caption: yes
+    keep_tex: true
 ---
 
 
@@ -15,12 +16,12 @@ output:
 
 ## Introduction
 
-### Machine learning in biology
+### Machine learning in ecology
 
 <!---
 compile with
 pandoc -o translucent.pdf  --filter pandoc-fignos --filter pandoc-tablenos --filter pandoc-citeproc translucent.md
-pandoc -o translucent.pdf  --filter pandoc-fignos --filter pandoc-tablenos --filter pandoc-citeproc --variable classoption=twocolumn translucent.md
+pandoc -o translucent_2s.pdf  --filter pandoc-fignos --filter pandoc-tablenos --filter pandoc-citeproc --variable classoption=twocolumn translucent.md
 
 --->
 
@@ -627,8 +628,6 @@ This method also allows a demonstration of categorical random effects.
 
 If we use genus as a categorical random effect to encapsulate some phylogenetic information, the first issue to is that we must be careful that the software does not automatically encode the data as a full-rank one-hot dummy variable.
 While less-than-full-rank form would cause identifiability issues with the intercept in a linear model, the random columns and greedy splitting during tree building means this is handled without modifications to the standard Random Forest algorithm.
-Furthermore, we must check how the algorithm we are using handles missing categories; ranger does this and that is or is not ok.
-Therefore, I have fitted Random Forest with a standard categorical variable and by explicitly encoding the category as a less-than-full-rank dummy variable. todo
 
 The second issue above was that of regularisation.
 Random Forest will automatically consider all interactions between our covariates and genus effect.
