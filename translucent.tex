@@ -5,6 +5,12 @@
 \usepackage{fixltx2e} % provides \textsubscript
 \usepackage{subfig}
 
+\usepackage[usenames,dvipsnames]{color}
+\definecolor{boxcolour}{rgb}{1,0.98,0.8}
+
+\usepackage{geometry}
+\geometry{verbose,a4paper,tmargin=27mm,bmargin=25mm,lmargin=25mm,rmargin=25mm}
+
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
@@ -62,8 +68,8 @@
 \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
 
-\setcounter{topnumber}{1}
-\setcounter{totalnumber}{1}
+%\setcounter{topnumber}{1}
+%\setcounter{totalnumber}{1}
 
 \title{A translucent box: interpretable machine learning in ecology}
 \author{Tim C. D. Lucas}
@@ -88,21 +94,36 @@ However, there are further reasons to interpret machine learning models that app
 
 \subsubsection{An overview of machine learning}\label{an-overview-of-machine-learning}
 
-Before examining how machine learning models can be interpreted it is worth reviewing the core tasks and type of models found in machine learning \citep{crisci2012review, breiman2001statistical}. There are three broad tasks in machine learning: i) supervised learning, ii) unsupervised learning and iii) reinforcement learning. i) Supervised learning is the archetypal modelling found in biology. The analyst has some response data and possibly covariates and the task is to predict the response data. Therefore models such as generalised linear models, mixed effects models and time series modelling would come under supervised learning. If the response variable is continuous, supervised learning is referred to as regression; if the response is categorical, with two or more categories, the task is referred to as classification. ii) Unsupervised learning is the situation where the analyst only has covariates and wishes to group similar data points together, create a measure of how similar different datapoints are or create useful transformations of the covariates. There are many fewer situations where biologists use unsupervised learning. Phylogeny building is I've such task; the analyst takes genetic or phenotypic covariates and creates a a phylogeny that represents which data points are more or less similar. The other common, unsupervised analysis is principle component analysis; the analyst takes covariates (ignoring any response variables) and transforms them so that they are linearly independent. iii) Finally, reinforcement learning is similar to supervised learning in that the task is to predict a response variable. However, in reinforcement learning, the algorithm can collect new data as part of the learning process. This task is rare in biology but includes high profile machine learning achievements such as alpha go \citep{silver2016mastering} where the program plays games against itself to collect new data. As supervised learning applies to the tasks most commonly encountered in biology it will be the focus of this review. However, there are many models within supervised learning that differ greatly in how statistical and interpretable they are.
+Supervised learning is a subfield of machine learning and is the archetypal modelling found in biology. The analyst has some response data and possibly covariates and the task is to predict the response data. Therefore models such as generalised linear models, mixed effects models and time series modelling would come under supervised learning. If the response variable is continuous, supervised learning is referred to as regression; if the response is categorical, with two or more categories, the task is referred to as classification. While there are many different ways you could classify machine learning models, one that is useful for discussions of interpretability is to split models into three groups: i) parametric, statistical models, ii) non-parametric statistical models and iii) non-statistical, non-parametric models (see box 1).
 
-While there are many different ways you could classify machine learning models, one that is useful for discussions of interpretability is to split models into three groups: i) parametric, statistical models, ii) non-parametric statistical models and iii) non-statistical, non-parametric models.
 
-\begin{enumerate}
-\def\labelenumi{\roman{enumi})}
-\item
-  Parametric, statistical models include many models commonly used by biologists. They are parametric because their functional form (the shapes that the relationships between covariates and response variables can take) are defined in advance. They are statistical because they will include some kind of likelihood function that makes the model probabilistic. Therefore generalised linear models are included in this category; the functional forms are defined before hand (linear terms, squared terms, interaction terms etc.) and the model is fitted by maximum likelihood which finds the parameters that are most likely given the predefined likelihood function for the response variable. However, if we recall the definition of machine learning from the first paragraph, the emphasis of fitting models in a machine learning context is predictive performance rather than estimating parameters to accurately reflect the real world. A common technique to improve prediction is regularisation that biases parameter estimates (towards zero in the case of a linear model) to give a simpler model and avoid overfitting. Methods for regularisation of linear models include the LASSO and other penalties \citep{tibshirani1996regression, zou2005regularization, xu2017generalized, fan2001variable}, as used by maxent for example \citep{maxent}, stepwise selection \citep{hocking1976biometrics}, or Bayesian priors putting a bias towards zero \citep{park2008bayesian, liu2018bayesian, carvalho2009handling}.
-\item
-  Non-parametric, statistical models are fitted in a formal statistical framework as above but the functional form is not defined in advance. Instead, flexible curves are fitted. This group includes splines (and GAMs which combine splines and other linear terms) and Gaussian process regression \citep{rasmussen2004gaussian}. These methods have principled uncertainty estimates due to being statistical. Furthermore, while the non-parametric components are often not represented by a small number of interpretable parameters, they are often controlled by a small number of hyperparameters. If these hyperparameters are fitted in an hierarchical framework (as is common) then they are can be interpreted with associated uncertainty.
-\item
-  Finally, non-statistical, non-parametric methods encompass many more algorithmic methods \citep{crisci2012review} such as decision trees, ensembles of trees like Random Forests \citep{breiman2001random} and boosted regression trees \citep{elith2008working, friedman2001greedy}, neural networks \citep{neuralnets} and support vector machines \citep{svm}. These methods are not fully probabilistic, and often have large numbers of parameters that do not have uncertainty estimates.
-\end{enumerate}
+
+\begin{figure*}[t]
+\centering
+\colorbox{boxcolour}{
+\begin{minipage}{1\textwidth}
+
+
+\setlength{\parindent}{3mm}
+\noindent\textsf{\textbf{Box 1: Types of machine learning model}}\footnotesize
+
+\vspace{-2mm}
+\subsection{Parametric, statistical models}
+This group include many models commonly used by biologists. They are parametric because their functional form (the shapes that the relationships between covariates and response variables can take) are defined in advance. They are statistical because they will include some kind of likelihood function that makes the model probabilistic. Therefore generalised linear models are included in this category; the functional forms are defined before hand (linear terms, squared terms, interaction terms etc.) and the model is fitted by maximum likelihood which finds the parameters that are most likely given the predefined likelihood function for the response variable. However, if we recall the definition of machine learning from the first paragraph, the emphasis of fitting models in a machine learning context is predictive performance rather than estimating parameters to accurately reflect the real world. A common technique to improve prediction is regularisation that biases parameter estimates (towards zero in the case of a linear model) to give a simpler model and avoid overfitting. Methods for regularisation of linear models include the LASSO and other penalties \citep{tibshirani1996regression, zou2005regularization, xu2017generalized, fan2001variable}, as used by maxent for example \citep{maxent}, stepwise selection \citep{hocking1976biometrics}, or Bayesian priors putting a bias towards zero \citep{park2008bayesian, liu2018bayesian, carvalho2009handling}.
+\subsection{Non-parametric, statistical models}
+These models are fitted in a formal statistical framework as above but the functional form is not defined in advance. Instead, flexible curves are fitted. This group includes splines (and GAMs which combine splines and other linear terms) and Gaussian process regression \citep{rasmussen2004gaussian}. These methods have principled uncertainty estimates due to being statistical. Furthermore, while the non-parametric components are often not represented by a small number of interpretable parameters, they are often controlled by a small number of hyperparameters. If these hyperparameters are fitted in an hierarchical framework (as is common) then they are can be interpreted with associated uncertainty.
+\subsection{Non-parametric, non-statistical models}
+These methods encompass many more algorithmic methods \citep{crisci2012review} such as decision trees, ensembles of trees like Random Forests \citep{breiman2001random} and boosted regression trees \citep{elith2008working, friedman2001greedy}, neural networks \citep{neuralnets} and support vector machines \citep{svm}. These methods are not fully probabilistic, and often have large numbers of parameters that do not have uncertainty estimates.
 
 It should be noted that the group that a given model should be classed in can be subtle. For example, a neural network can be fitted by maximum likelihood if defined with a probabilistic loss function (a Bernoulli likelihood for classification for example) which would place it in the statistical, non-parametric group. However, a neural network with the same architecture but with a non-probabilistic loss function (such as a hinge loss) would be placed in the non-statistical, non-parametric group.
+
+\end{minipage}
+
+}
+\normalcolor
+\end{figure*}
+
+
 
 Neural networks (in particular, deep convolutional neutral networks) have recieved a lot of attention recently due largely to their role in image and video analysis \citep{waldchen2018machine}. The nature of image classification for identification of species or individuals means it is quite clear there is little to be learned about nature by appraising these models. In most cases the task is to identify a species or individual that a human could visually identify \citep{waldchen2018machine, mac2018bat} therefore there are likely few new insights in the model. Therefore, the main reason for interpreting deep convolutional networks is for model verification and to have an additional check for predictions made with the model. The interpretation of deep neural networks has its own, large literature \citep{samek2017explainable, montavon2017methods}. As the focus of this review is using machine learning for interogating natural systems I will not cover image analysis and related tasks.
 
