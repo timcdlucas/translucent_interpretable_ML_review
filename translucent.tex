@@ -9,7 +9,7 @@
 \definecolor{boxcolour}{rgb}{1,0.98,0.8}
 
 \usepackage{geometry}
-\geometry{verbose,a4paper,tmargin=27mm,bmargin=25mm,lmargin=25mm,rmargin=25mm}
+%\geometry{verbose,a4paper,tmargin=27mm,bmargin=25mm,lmargin=25mm,rmargin=25mm}
 
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[T1]{fontenc}
@@ -38,6 +38,7 @@
 \urlstyle{same}  % don't use monospace font for urls
 \usepackage{natbib}
 \bibliographystyle{plainnat}
+
 \usepackage{longtable,booktabs}
 \usepackage{graphicx,grffile}
 \makeatletter
@@ -68,10 +69,10 @@
 \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
 
-\setcounter{topnumber}{1}
-\setcounter{totalnumber}{1}
-\renewcommand{\topfraction}{0.6}
-\renewcommand{\textfraction}{0.3}
+%\setcounter{topnumber}{1}
+%\setcounter{totalnumber}{1}
+%\renewcommand{\topfraction}{0.6}
+%\renewcommand{\textfraction}{0.3}
 
 \title{A translucent box: interpretable machine learning in ecology}
 \author{Tim C. D. Lucas}
@@ -80,21 +81,21 @@
 \begin{document}
 \maketitle
 
-\subsection{Abstract}\label{abstract}
+\section{Abstract}\label{abstract}
 
-\subsection{Introduction}\label{introduction}
+\section{Introduction}\label{introduction}
 
-\subsubsection{Machine learning in ecology}\label{machine-learning-in-ecology}
+\subsection{Machine learning in ecology}\label{machine-learning-in-ecology}
 
 Machine learning is a collection of techniques that focuses on making accurate predictions from data \citep{crisci2012review, breiman2001statistical}. It differs from the broader field of statistics in two aspects: 1) the estimation of parameters that relate to the real world is less emphasised and 2) the driver of the predictions are expected to be the data rather than expert opinion and careful selection of plausible mechanistic models \citep{breiman2001statistical}. High-level machine learning libraries that aid the full machine learning pipeline \citep{caret, scikit, maxent, biomod} have made machine learning easy to use. These techniques have therefore become popular, particularly in the fields of species distribution modelling \citep{maxent, biomod, elith2006novel, golding2018zoon, gobeyn2019evolutionary} and species identification from images or acoustic detectors \citep{mac2018bat, waldchen2018machine, shamir2014classification, xue2017automatic}. Other uses include any study where prediction rather than inference is the focus such as predicting the conservation status of species \citep{bland2015predicting} and predicting behavioural states \citep{browning2018predicting}. However, machine learning methods have a reputation as being a black box; inscrutable and mindlessly applied.
 
-This reputation is not totally unfounded with a number of factors making machine learning models difficult to interpret. Firstly, they are often nonparametric. They therefore estimate nonlinear relationships between covariates and response variables which can be difficult to interpret. These relationships are often not summarised in a small number of interpretable parameters instead containing huge numbers of parameters without estimates of uncertainty. Secondly, they often fit deep interactions between covariates \citep{lunetta2004screening}. Even simple, two-way interactions in linear models cause confusion \citep{engqvist2005mistreatment, lamina2012visualizing} and deep, nonlinear interactions are difficult to visualise or understand. Thirdly, fitting machine learning models is often stochastic {[}@{]} and sometimes fitting the same model with different starting values will give a totally different set of fitted parameters (though perhaps with similar predictive performance). However, while interpretation of machine learning models can be difficult, there is plenty of insight to be gained by fitting and appraising these models, as will be seen in this review.
+This reputation is not totally unfounded with a number of factors making machine learning models difficult to interpret. Firstly, they are often nonparametric. They therefore estimate nonlinear relationships between covariates and response variables which can be difficult to interpret. These relationships are often not summarised in a small number of interpretable parameters instead containing huge numbers of parameters without estimates of uncertainty. Secondly, they often fit deep interactions between covariates \citep{lunetta2004screening}. Even simple, two-way interactions in linear models cause confusion \citep{engqvist2005mistreatment, lamina2012visualizing} and deep, nonlinear interactions are difficult to visualise or understand. Thirdly, fitting machine learning models is often stochastic \citep{breiman2001random, glorot2002understanding} and fitting the same model with different starting values may give a totally different set of fitted parameters (though perhaps with similar predictive performance). However, while interpretation of machine learning models can be difficult, there is plenty of insight to be gained by fitting and appraising these models, as will be seen in this review.
 
 Given the black box reputation one might wonder why we should bother interpreting machine learning models; if the predictions are good, then the objective has been achieved. However, any predictions that may be used to make decisions (i.e.~all predictions of any interest) should be examined. Particular examples of this include predictions used for conservation policy or health care \citep{vayena2018machine}. Careless predictions can have severe effects on the entity for which the predictions are being made (an endangered species or a person at risk of a disease for example) and can more generally erode trust between modellers, policy makers and other stakeholders. In regulated fields such as healthcare, these considerations come with legal backing. Interpreting machine learning models as part of model verification has been the primary driver of research in this field \citep{molnar, ribeiro2016should}.
 
 However, there are further reasons to interpret machine learning models that apply to fields that are further removed from policy decisions \citep{elith2009species}. The same traits that make machine learning models good at prediction and difficult to interpret also makes them potentially useful in exploratory analysis before more formal statistical modeling \citep{zhao2017causal}. The nonparametric nature of many machine learning models means they can discover nonlinear relationships and interactions without specifying then a priori as would be required in more statistical modeling. Furthermore, the lack of expert domain knowledge needed to fit an effective machine learning model means they can be useful as a baseline to compare how well a mechanistic model performs. Finally it is worth noting that standard statistical models are often not as interpretable as they seem; understanding the results from a statistical model is made more difficult in the presence of colinearity between covariates or when nature's true model is not in the set of models being considered \citep{lyddon2018nonparametric, yao2017using}. Therefore, in some cases it might be better to fit a more predictive model and sacrifice some, but not all, interpretability. Alternatively, it might be useful to use a highly predictive model to create hypotheses which could then be tested in a more formal statistical framework \citep{zhao2017causal}.
 
-\subsubsection{An overview of machine learning}\label{an-overview-of-machine-learning}
+\subsection{An overview of machine learning}\label{an-overview-of-machine-learning}
 
 Supervised learning is a subfield of machine learning and is the archetypal modelling found in biology. The analyst has some response data and possibly covariates and the task is to predict the response data. Therefore models such as generalised linear models, mixed effects models and time series modelling would come under supervised learning. If the response variable is continuous, supervised learning is referred to as regression; if the response is categorical, with two or more categories, the task is referred to as classification. While there are many different ways you could classify machine learning models, one that is useful for discussions of interpretability is to split models into three groups: i) parametric, statistical models, ii) non-parametric statistical models and iii) non-statistical, non-parametric models (see box 1).
 
@@ -129,37 +130,37 @@ It should be noted that the group that a given model should be classed in can be
 
 Neural networks (in particular, deep convolutional neutral networks) have recieved a lot of attention recently due largely to their role in image and video analysis \citep{waldchen2018machine}. The nature of image classification for identification of species or individuals means it is quite clear there is little to be learned about nature by appraising these models. In most cases the task is to identify a species or individual that a human could visually identify \citep{waldchen2018machine, mac2018bat} therefore there are likely few new insights in the model. Therefore, the main reason for interpreting deep convolutional networks is for model verification and to have an additional check for predictions made with the model. The interpretation of deep neural networks has its own, large literature \citep{samek2017explainable, montavon2017methods}. As the focus of this review is using machine learning for interogating natural systems I will not cover image analysis and related tasks.
 
-A major shift in the statistical analysis of ecological and evolutionary data in recent decades is the acknowledgement that observational, biological data rarely conform to assumptions of independence due to phylogeny {[}@{]}, space \citep{redding2017evaluating, diggle1998model}, time {[}@{]} or other categorical, grouping variables \citep{harrison2018brief, bolker2009generalized}. This issue of autocorrelation is largely underappreciated in the machine learning literature and only recently have random effects been explicitely built into typical machine learning models \citep{eo2014tree, hajjem2014mixed, hajjem2017generalized, miller2017gradient}. Most machine learning models make some assumption of independence and certainly estimates of out-of-sample predictive ability can be biased if cross-validation is used without accounting for autocorrelation. There are however a number of strategies to mitigate biases caused by autocorrelation and for gaining insight into the random effects themselves. These include simple methods such as using random effects as normal covariates or preprocessing the data to remove autocorrelation {[}@{]}. Further methods include the creation of new covariates that encode the autocorrelation in more useful ways, stratified cross-validation \citep{le2014spatial} or using a mixed model to ``stack'' multiple machine learning models post-hoc \citep{bhatt2017improved}. These methods will be examined in more detail in the body of the review.
+A major shift in the statistical analysis of ecological and evolutionary data in recent decades is the acknowledgement that observational, biological data rarely conform to assumptions of independence due to phylogeny \citep{felsenstein1985phylogenies, ives2006statistics}, space \citep{redding2017evaluating, diggle1998model}, time \citep{ives2006statistics} or other categorical, grouping variables \citep{harrison2018brief, bolker2009generalized}. This issue of autocorrelation is largely underappreciated in the machine learning literature and only recently have random effects been explicitely built into typical machine learning models \citep{eo2014tree, hajjem2014mixed, hajjem2017generalized, miller2017gradient}. Most machine learning models make some assumption of independence and certainly estimates of out-of-sample predictive ability can be biased if cross-validation is used without accounting for autocorrelation. There are however a number of strategies to mitigate biases caused by autocorrelation and for gaining insight into the random effects themselves. These include simple methods such as using random effects as normal covariates or preprocessing the data to reduce autocorrelation \citep{elith2010art}. Further methods include the creation of new covariates that encode the autocorrelation in more useful ways, stratified cross-validation \citep{le2014spatial} or using a mixed model to ``stack'' multiple machine learning models post-hoc \citep{bhatt2017improved}. These methods will be examined in more detail in the body of the review.
 
 In this review I will present an illustrative analysis on the PanTHERIA dataset \citep{jones2009pantheria} which contains mammalian life history traits. I fitted four models, with variations, that span the range of interpretability: i) a typical model used by biologists; a simple linear model with a priori variable selection ii) a parametric statistical model, the elastic net \citep{elasticnet} iii) a non-parametric statistical model, Gaussian process regression \citep{rasmussen2004gaussian} and iv) a non-parametric, non-statistical model, Random Forest \citep{breiman2001random}. For each of these models I demonstrate how they can be interpreted with methods that are applicable to a wide variety of machine learning models. The full analysis is included as a reproducible R \citep{R} script that reads data directly from online repositories (S1).
 
-\subsection{Example analysis}\label{example-analysis}
+\section{Example analysis}\label{example-analysis}
 
-\subsubsection{Data}\label{data}
+\subsection{Data}\label{data}
 
 The PanTHERIA database is a dataset of mammalian life history traits collected from the published literature \citep{jones2009pantheria}. Overall it contains 5416 species and data on 35 traits, complimented by a further 15 variables calculated from IUCN shapefiles for each species and remotely sensed data. There are large amounts of missing data for many of the life history traits and these gaps were filled with median imputation as this method is both simple and conservative. In this illustrative analysis I will use use this dataset to examine potential factors relating to the average litter size (with a \(\log(x+1)\) transform due to the strong left skew and presence of zeroes). As each data row represents a species, the data are not independent; species with more recent common ancestors are likely to have similar life history traits. Most analyses of this type of data \citep{gay2014parasite, pellissier2012shifts, ferguson2014colony} would use phylogenetic regression which includes an estimated phylogeny, converted to a covariance matrix, as a random effect \citep{magnusson2017glmmtmb, caper}. Methods for handling non-independence while using machine learning models are demonstrated in the section `Handling non-independent data'.
 
-\subsubsection{Model fitting}\label{model-fitting}
+\subsection{Model fitting}\label{model-fitting}
 
 I fitted four classes of model (with variations) to the data: a linear model with \emph{a priori} variable selection, a regularised linear model, a statistical, non-parametric Gaussian process model and a non-statistical Random Forest model. I used five-fold cross-validation to test model accuracy and select hyperparameters. Given the very different levels of flexibility in the models, this out-of-sample test of accuracy is important and given the non-statistical nature of the Random Forest, statistical, within-sample model comparisons such as AIC are not possible. All models were fitted within \emph{caret} \citep{caret} in R \citep{R}. One major benefit of \emph{caret} is that most of the procedures presented later for interpreting the models are immediately useable with over 200 machine learning models including up-to-date implementations of various models such as xgboost, h2o and keras \citep{xgboost, h2o, keras}.
 
-\paragraph{\texorpdfstring{\emph{A priori} variable selection}{A priori variable selection}}\label{a-priori-variable-selection}
+\subsubsection{\texorpdfstring{\emph{A priori} variable selection}{A priori variable selection}}\label{a-priori-variable-selection}
 
 The standard approach for modelling in ecology and comparative biology is to carefully select a relatively small set of covariates based on \emph{a priori} knowledge of the system \citep[ ]{whittingham2006we}. This process ensures that all variables are reasonably likely to be casually important, reduces overfitting and keeps the number of parameters small. As a baseline model, I fitted a linear model, selecting covariates that the literature suggests relates to litter size. I chose body size \citep{leutenegger1979evolution, tuomi1980mammalian}, gestation length \citep{okkens1993influence, bielby2007fast}, metabolic rate \citep{white2004does}, litters per year \citep{white2004does} and longevity \citep{wilkinson2002life, zammuto1986life}. While a specialist in the field may well have chosen different variables, this is a reasonable starting point.
 
-\paragraph{Statistical, parametric models}\label{statistical-parametric-models}
+\subsubsection{Statistical, parametric models}\label{statistical-parametric-models}
 
 If we have many covariates relative to sample size and have minimal a priori knowledge of the system we may wish to include all the covariates in a linear model but regularise the coefficients. Similarly, if we want to include many interactions or transformed variables (as in maxent \citep{maxent} for example), the number of covariates can grow rapidly and regularisation becomes vital. This approach is also sensible if we care more about prediction than about unbiased estimates of parameters. The simplest regularised linear models are ridge regression \citep{ridge}, that includes a penalty on the square of the coefficients, and LASSO \citep{tibshirani1996regression} that penalises the absolute value of the coefficients and therefore more strongly penalises smaller values. For the PanTHERIA analysis I fitted an elastic net, a common model that includes both the ridge penalty and the lasso penalty. The total strength of the penalty, and the relative contribution of the two penalties were selected using cross-validation (figure \ref{fig:enethyp}).
 
-\paragraph{Non-parametric, statistical models}\label{non-parametric-statistical-models}
+\subsubsection{Non-parametric, statistical models}\label{non-parametric-statistical-models}
 
 Given the parametric nature of the elastic net model, the way to include nonlinear responses and interactions is to define them manually before model fitting. This however still imposes important restrictions as it is difficult to know which nonlinear functions are potentially useful and the model is still ultimately constrained by the effects we can think of to include (typically polynomial terms, log and exponential transforms and sine transforms). In contrast, non-parametric models like Gaussian processes \citep{rasmussen2004gaussian} or splines \citep{splines} require no pre-specification of functional forms and instead the overall flexibility of the model is controlled with a hyperparameter. Given their statistical nature, the uncertainty estimates around predictions are a natural part of the model and should be well calibrated even if we extrapolate far from the data. For the PanTHERIA analysis I have fitted a Gaussian process model with a radial basis kernel \citep{kernlab}, selecting the scale hyperparameter using cross-validation (figure \ref{fig:gphyp}).
 
-\paragraph{Non-parametric, non-statistical models}\label{non-parametric-non-statistical-models}
+\subsubsection{Non-parametric, non-statistical models}\label{non-parametric-non-statistical-models}
 
 Finally, I fitted a Random Forest model \citep{breiman2001random, wright2015ranger} as an example of a non-statistical, non-parametric model as they tend to be easy to use, with few hyperparameters, and are robust to overfitting. A Random Forest is an ensemble of decision trees with each tree bring fit to a random bootstrap sample of the input data and a random sample of the covariates. Random Forests using the ranger \citep{wright2015ranger} package via \emph{caret} have three hyperparameters. Split rule, which determines how the decision tree splits are chosen, was set to `variance'. The maximum number of data points at a leaf, which can be used to prevent overfitting was selected by cross-validation (figure \ref{fig:rfhyp}). Finally, the number of randomly selected covariates to be used to build each tree (mtry) was also selected by cross-validation (figure \ref{fig:rfhyp}). Random Forests are however just one model out many non-statistical, non-parametric models. Other notable models include neural networks \citep{neuralnets}, boosted decision trees \citep{friedman2001greedy}, support vector machines \citep{svm} and nearest neighbour \citep{altman1992introduction}. Each model has benefits but the variety of machine learning methods is reviewed elsewhere \citep{crisci2012review}.
 
-\subsubsection{Global properties}\label{global-properties}
+\section{Global properties}\label{global-properties}
 
 The first level of interpretation we can examine is the global level; what do the fitted models tell us about the system as a whole. One global property of interest is how predictable the system is. This can be assessed using scatter plots of observed versus out-of-sample predictions (Figure \ref{fig:enetpredobs} \ref{fig:gppredobs} \ref{fig:rfpredobs}) as well as metrics such as \(r^2\) or the root mean squared error (Table \ref{tbl:allr2}). Random Forests are effective here as they are fast to fit, robust and need relatively little tuning. If a Random Forest has poor predictive performance then it is likely that either vital covariates are missing from the dataset or that the response is in fact very noisy. The Random Forest model fitted here has fairly good predictive performance (figure \ref{fig:rfpredobs}) with an \(r^2\) of 0.67. However, it can be seen that certain species, particularly those with very large litters, are predicted quite poorly. We can be fairly sure that this trait is not noisy as the evolutionary consequences of litter size are large. Therefore we are probably missing some important covariates.
 
@@ -266,7 +267,7 @@ Finally, the Random Forest model has two hyperparameters (figure \ref{fig:rfhyp}
 %\caption{Hyperparameter selection for the }
 %\end{figure}
 
-\subsubsection{Variable level properties}\label{variable-level-properties}
+\section{Variable level properties}\label{variable-level-properties}
 
 We can also interpret a model at the level of the individual covariate. This can include random or fixed effects. We can examine variable importence \citep{oppel2009alternative}, importance of interactions between pairs of covariates and start to examine the functional responses of covariates. It is important however to remember that these models are not designed for inference; the following methods should be thought of as hypothesis generation and more formal, subsequent tests (on a different dataset) would be needed to confirm relationships between covariates and the response variable.
 
@@ -374,7 +375,7 @@ Gaussian process models and Random Forests implicitly consider deep interactions
 
 
 
-\subsubsection{Handling non-independent data}\label{handling-non-independent-data}
+\section{Handling non-independent data}\label{handling-non-independent-data}
 
 The PanTHERIA dataset is an example of data that strongly violates assumptions of independent data. The autocorrelation here arises due to common ancestry of species; two species that recently diverged from a common ancestor are likely to be more similar than species whose common ancestor is in the deep past. This autocorrelation is typically handled with a phylogenetic random effect while other sources of autocorrelation such as time or space can be similarly handled with an appropriate random effects term. Categorical random effects can be used to model a wide variety of sources of autocorrelation such as multiple samples from a single individual, study site or lab.
 
@@ -440,11 +441,11 @@ If however, we wish to include the full phylogeny in our model, we need differen
 
 The second method involves fitting multiple machine learning models and then using phylogenetic regression to `stack' them. We fit a number of machine learning algorithms and make out-of-sample predictions within the cross-validation framework. We then fit a phylogenetic mixed-effects model using the out-of-sample predictions as covariates and constraining the regression coefficients to be positive. This method is likely to be very effective at prediction and the phylogenetic component of the regression is interpretable as it would be in any normal phylogenetic regression. However, this method only corrects for the biases from autocorrelated data after the machine learning models are fitted; while it may still be possible to interpret the machine learning models as we have done previously, the computed nonlinear relationships remain biased. I fitted this model using the three original models (elastic net, Gaussian process regression and Random Forest) and fit a hierarchical phylogenetic mixed-effects model using INLA \citep{INLA}. I obtained a cross-validated \(r^2\) of 0.72. Fitting the model on all the data yielded a posterior mean of 0.03 for the standard deviation of the phylogenetic random effect.
 
-While I cannot demonstrate the handling of spatial or temporal autocorrelation with this dataset the methods described above are equally applicable \citep{elith2009species}. In a method analogous to using genus as a categorical variable, space can be split into regions and the region used as a categorical variable \citep{appelhans2015evaluating}. This approach is commonly used with predefined spatial units such as countries. Another common approach with spatial data is ``thinning'' and is conceptually similar to the weighting method for categorical data {[}@{]}. In its simplest form, thinning, involves removing data points so that each spatial pixel has at most one data instance \citep{elith2010art, verbruggen2013improving}. This is equivalent to treating the pixel as a categorical variable and subsampling as above until each pixel is equally represented (noting that each pixel is represented equally in the prediction dataset i.e.~once). Also note that in the context of presence-only data, this is equivalent to weighting the data but with presence-absence data or continuous response data, weighting is a better way to include all the data. More subtle methods involve removing data based on the local density \citep{verbruggen2013improving}. In this method, a kernel bandwidth is chosen either \emph{a priori} or by cross-validation, then data is probabilistically removed based on the density of data geographically near it. Again, weighting the data may be more principled.
+While I cannot demonstrate the handling of spatial or temporal autocorrelation with this dataset the methods described above are equally applicable \citep{elith2009species}. In a method analogous to using genus as a categorical variable, space can be split into regions and the region used as a categorical variable \citep{appelhans2015evaluating}. This approach is commonly used with predefined spatial units such as countries. Another common approach with spatial data is ``thinning'' and is conceptually similar to the weighting method for categorical data \cite{elith2010art}. In its simplest form, thinning, involves removing data points so that each spatial pixel has at most one data instance \citep{elith2010art, verbruggen2013improving}. This is equivalent to treating the pixel as a categorical variable and subsampling as above until each pixel is equally represented (noting that each pixel is represented equally in the prediction dataset i.e.~once). Also note that in the context of presence-only data, this is equivalent to weighting the data but with presence-absence data or continuous response data, weighting is a better way to include all the data. More subtle methods involve removing data based on the local density \citep{verbruggen2013improving}. In this method, a kernel bandwidth is chosen either \emph{a priori} or by cross-validation, then data is probabilistically removed based on the density of data geographically near it. Again, weighting the data may be more principled.
 
 Temporal effects are easier to handle as they are one dimensional with causation only able to occur in one direction. Furthermore, they have been studied in detail in the machine learning literature \citep{jeong2008non}. For regular time series we can typically include covariates created from the lagged response variable while for irregular time series we can create covariates like ``mean response within X units of time previous to this datapoint''.
 
-\subsubsection{Data-point level properties}\label{data-point-level-properties}
+\section{Data-point level properties}\label{data-point-level-properties}
 
 Finally, we can try to interpret models at the level of the individual prediction \citep{lime, ribeiro2016should, lundberg2017unified, ribeiro2016nothing}. Model interpretation at a single point is a much easier task than interpreting the global model because at a small enough scale the response curve is either flat or monotonically increasing or decreasing so humped curves do not need to be considered.
 
@@ -454,19 +455,19 @@ The method Local Individual Model Evaluation (LIME) examines the behaviour of a 
 
 In figures \ref{fig:limegp} and \ref{fig:limerf} we can see the outputs of a LIME analysis for the datapoints with the highest predicted litter size shutting to the Gaussian process and Random Forest model. However, it's important to note that as we know the true litter size values for these species we can see that the top-predicted data are not actually the species with the highest litter size. This reminds us not to interpret these as ``what factor imply the highest litter size'' but rather ``why are these particular species predicted as having large litters''. Although the species with the highest observed litter size are predicted poorly, the species with the highest predicted litter size have predictions quite close to their true value (figures \ref{fig:gppredobs} - \ref{fig:rfpredobs}).
 
-\begin{figure}[htbp]
+\begin{figure}[t!]
 \centering
-\includegraphics{figs/lime-2.pdf}
+\includegraphics{figs/lime-2cr.pdf}
 \caption{LIME analysis of predictions of five points from the Gaussian process model.\protect\label{fig:limegp}}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[t!]
 \centering
-\includegraphics{figs/lime-3.pdf}
+\includegraphics{figs/lime-3cr.pdf}
 \caption{LIME analysis of predictions of five points from the Random Forest model.\protect\label{fig:limerf}}
 \end{figure}
 
-\subsection{Future directions and conclusions}\label{future-directions-and-conclusions}
+\section{Future directions and conclusions}\label{future-directions-and-conclusions}
 
 It is clear that machine learning is continuing to grow in popularity in ecology. However, it currently remains used almost solely for purely predictive purposes. Their full potential us therefore not being realised. One important step for this to occur is for ecologists to be more clear about the purposes of their analyses; is a well defined hypothesis being tested, is a dataset being explored for potential relationships to drive hypothesis generation, or is prediction the main focus. This clarity makes it possible to be clear about the trade-offs in any statistical analysis and to use the most effective tools given the desired outcomes. Using simple linear models is often not optimal if discovery of relationships or predictions are the aim; if a formal hypothesis is being tested Random Forests are unlikely to be the best choice. Finally, being clear about the aims allows sensible planning on how data will be used in the longer term. If the aim is to discover some relationships and then formally test them, the best use of a given dataset may be to split it and use half for disovery and half for hypothesis testing. This workflow would not occur to an analyst who was unclear about their task.
 
