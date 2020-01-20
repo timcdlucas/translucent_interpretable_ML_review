@@ -687,7 +687,12 @@ As we do not need to consider non-monotonic relationships, this simpler model sh
 In figures \ref{fig:limegp} and \ref{fig:limerf} we can see the outputs of a LIME analysis for the datapoints with the highest predicted litter size shutting to the Gaussian process and Random Forest model.
 However, it's important to note that as we know the true litter size values for these species we can see that the top-predicted data are not actually the species with the highest litter size.
 This reminds us not to interpret these as ``what factor imply the highest litter size'' but rather ``why are these particular species predicted as having large litters''.
-Although the species with the highest observed litter size are predicted poorly, the species with the highest predicted litter size have predictions quite close to their true value (figures \ref{fig:gppredobs} - \ref{fig:rfpredobs}).
+One notable difference between the LIME analysis for the Gaussian process model and the Random Forest model is that for the Gaussian process model, most covariates are in agreement that these datapoints should be high. 
+In contrast, there is a lot of contradiction between covariates in the Random Forest model.
+For datapoint 1683 (figure \ref{fig:limerf}, left) the strongest single covariate contribution (body mass) is suggesting that these species should have a small litter size. 
+This might be because of the noisey relationships given by Random Forest models.
+These predictions might be harder to defend in a policy context for example.
+
 
 \begin{figure}[t!]
 \centering
@@ -726,7 +731,10 @@ While many algorithms are objectively tested for various properties, very few ha
 Studies that do specifically test this aspect are very welcome \citep{bastani2017interpreting}.
 This algorithm-psychology interface is an important area of future research.
 
-In conclusion, machine learning is great.
+To conclude, we have seen a number of methods for interpreting machine learning models.
+While these models are not as easy to interpret as carefully constrained statistical models, they make up for this by finding relationships that a simpler model would not be able to.
+The interpretation of these models needs to done carefully and requiers user interaction and exploration in a way that is less vital in interpreting standard statistical models. 
+The power lies in the way a scientist defines their questions and uses these methods alongside other more statistical methods.
 
 \bibliography{machinelearn.bib}
 
