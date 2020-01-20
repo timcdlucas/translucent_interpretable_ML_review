@@ -2,3 +2,7 @@
 *.txt
 *.log
 *conflicted copy*
+*.aux
+*.bbl
+*.blg
+*.out
