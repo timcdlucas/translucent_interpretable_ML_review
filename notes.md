@@ -1,3 +1,11 @@
+
+To Explain or to Predict?
+Galit Shmueli
+
+
+looks like proper general mixed effects ml
+https://www.sciencedirect.com/science/article/pii/S1532046418301758
+
 ecological modelling as fall back journal
 
 
@@ -36,3 +44,11 @@ forest floor Viz.
 https://arxiv.org/abs/1605.09196
 
 https://www.sciencedirect.com/science/article/pii/S0304380018304010
+
+
+https://arxiv.org/abs/1901.04592
+
+
+quite good application
+https://www.sciencedirect.com/science/article/pii/S0048969718330869
+
