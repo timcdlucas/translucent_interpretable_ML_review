@@ -343,8 +343,7 @@ Here we have \(\lambda = 0.03\) as the selected hyperparameter and only one coef
 This gives some evidence that this is a complex system not easily explained by a few covariates.
 
 Similarly, the length scale, \(\sigma\), in the Gaussian process model is a crude measure of complexity, with small values implying that the functional relationships are highly non linear (figure \ref{fig:gphyp}).
-Here have \(\sigma = 0.02\) which implies there is little correlation between point separated by a Euclidean distance greater than Todo, in scaled and centred units.
-Todo interpret this in many dimensional space.
+Here have \(\sigma = 0.02\) which implies there is little correlation between points separated by a Euclidean distance greater than 0.02, in scaled and centred units.
 
 Finally, the Random Forest model has two hyperparameters (figure \ref{fig:rfhyp}); mtry is the number of randomly selected covariates to build each tree with and min.node.size is the maximum number of datapoints that can be in a leaf node of a tree.
 min.node.size protects against overfitting and gives an indication of how much noise relative to signal there is.
@@ -532,10 +531,10 @@ However, if we can identify important two way interactions we can start to inter
 We can find the interaction strength between two features in a similar fashion to finding variable importance.
 We can examine the 2D PDP of two covariates (figure \ref{fig:2dgestlatgp} \ref{fig:2dgestlatrf}) and calculate what proportion of the curve is explained by the sum of the two 1D PDPs (e.g.~figure \ref{fig:pdpgestgp}).
 We can therefore take one covariate that we know has strong interactions (``GestationLength\_d'' as seen in table \ref{tbl:interimp}) and calculate the two-way interaction strength between that covariate and all other covariates (table \ref{tbl:specificinter}).
-Finally, once important interactions have been identified, the 2D PDP can be examined to determine the shape of that interaction (figure \ref{fig:2dgestlatgp} and \ref{fig:2dgestlatrf}).
-Looking at the 2D PDP of gestation length and latitude for the Random Forest model we can see that something.
-todo
-
+Finally, once important interactions have been identified, the 2D PDP can be examined to determine the shape of that interaction (figure \ref{fig:2d}).
+Looking at the 2D PDP of gestation length and PET for the Gaussian process model we can see that for most of the range of the data we have a U-shaped relationship.
+However, at low values of gestation length, this U-shaped relationship flattens out and even becomes inverted at very low values.
+In the Random Forest model, the relationship appears to be more monotonically decreasing with increased PET while there is again a suggestion of an inverse U-shape relationship at low values of gestation length.
 
 
 
