@@ -435,12 +435,10 @@ Some models also allow tests of significance on variable importance measures.
 While these come with all the normal caveats for significance testing, the probability scale might be more useful for interpretation than the earlier values scaled by the maximum importance values.
 
 \emph{Caret} provides an easy interface for getting variable importance measures for many model types; however the calculations being performed are varied.
-While trying to avoid model-specific detail, it is important to note that there are different ways of calculating variable importance for a given model \citep{oppel2009alternative, seifert2019surrogate} and some are more correct than others.
-For the Random Forest model the type of variable importance calculation is important and depends on the type of covariates being used.
-Firstly, variable importance calculated by permutation us more reliable (though computationally slower) than other methods like Gini impurity {[}@{]}.
-Secondly, in the presence of a mix of continuous and categorical covariates, all methods performed on standard Random Forests are biased towards selecting continuous covariates.
-If accurate variable importance measures are needed, a related model, conditional inference forests \citep{hothorn2006unbiased} or the maxstat split rule in ranger \citep{wright2017unbiased}, should be used instead.
-This is not required here because the covariates are all continuous.
+For some models, including Random Forest, there are different methods for calculating variable importance \citep{oppel2009alternative, seifert2019surrogate} and some are more correct than others, especially in the presence of categorical variables.
+Here I have used the default variable importance given by caret; given there are no categorical variables this is acceptably unbiased.
+If more accurate variable importance measures are needed, a related model, conditional inference forests \citep{hothorn2006unbiased} or the maxstat split rule in ranger \citep{wright2017unbiased}, should be used instead.
+
 
 \begin{figure}[t!]
   \centering
