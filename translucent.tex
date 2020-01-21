@@ -296,6 +296,7 @@ We can also use predictive performance of machine learning models to scale our e
 Here, the linear model with a priori variable selection (figure \ref{fig:aprioripredobs}) had performance not much worse than the elastic net model (figure \ref{fig:enetpredobs}) but considerably worse than the Random Forest (figure \ref{fig:rfpredobs}).
 The similarity between the elastic net model and \emph{a priori} selection implies that the literature search did a reasonable job of selecting important covariates.
 However, the fact that Random Forest performs much better than the \emph{a priori} linear model suggests that there are nonlinearities or interactions that are important but were not included in the \emph{a priori} model.
+The suggestion of missing complexity in \emph{a priori} model is evidence that the mode is misspecified and therefore care should be taken when interpreting even this simple linear model \citep{lyddon2018nonparametric, maldonado1993interpreting}. 
 It is important to be clear that this is not a suggestion to go back and add these variables to our \emph{a priori} model.
 This would amount to severe data snooping and would bias any significance tests performed on the \emph{a priori} model \citep{white2000reality}.
 
@@ -345,24 +346,6 @@ This can be examined further by fitting models with additional random covariates
     Hyperparameter selection for a) the elastic net model, b) the Gaussian process model and c) the Random Forest model.
   }
 \end{figure}
-
-%\begin{figure}[htbp]
-%\centering
-%\includegraphics{figs/elastic_net-1.pdf}
-%\caption{Hyperparameter selection for the elastic net model\protect\label{fig:enethyp}}
-%\end{figure}
-
-%\begin{figure}[htbp]
-%\centering
-%\includegraphics{figs/gp-1.pdf}
-%\caption{Hyperparameter selection for the Gaussian proces model\protect\label{fig:gphyp}}
-%\end{figure}
-
-%%\begin{figure}[htbp]
-%\centering
-%\includegraphics{figs/ranger-1.pdf}
-%\caption{Hyperparameter selection for the }
-%\end{figure}
 
 \section{Variable level properties}\label{variable-level-properties}
 
@@ -569,12 +552,10 @@ This is not how we would wish the model to behave.
   \centering
   \subfloat[Gaussian process model\protect\label{fig:2dgestlatgp}]{\includegraphics[width =0.5\textwidth ]{figs/pdp_gest_pet-1.pdf}}
   \subfloat[Random Forest model\protect\label{fig:2dgestlatrf}]{\includegraphics[width = 0.5\textwidth]{figs/pdp_gest_pet-2.pdf}}
-
-
-  \label{fig:2d}
   \caption{
     2D PDP plot for Gestation Length and PET in a) the Gaussian process model and b) the Random Forest model.
   }
+  \label{fig:2d}
 \end{figure}
 
 Secondly, we often have many categories and little data per category in a categorical random effect and wish to share power across groups.
