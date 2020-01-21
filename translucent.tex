@@ -673,25 +673,32 @@ For regular time series we can typically include covariates created from the lag
 \section{Data-point level properties}\label{data-point-level-properties}
 
 Finally, we can try to interpret models at the level of the individual prediction \citep{lime, ribeiro2016should, lundberg2017unified, ribeiro2016nothing}.
-Model interpretation at a single point is a much easier task than interpreting the global model because at a small enough scale the response curve is either flat or monotonically increasing or decreasing so humped curves do not need to be considered.
+Model interpretation at a single point is a much easier task than interpreting the global model because at a small enough scale the response curve is either monotonically increasing or decreasing or flat, so complex non-linear curves do not need to be considered.
 
-However, it is difficult to examine the model at all datapoints.
-Therefore we must focus our analysis on a few, interesting points.
-Points with the highest or lowest predicted values may tell us something about what factors makes these points recieve extreme predictions.
+However, it is difficult to examine the model at all data points.
+Therefore we must focus our analysis on a few, interesting or important points.
+Points with the highest or lowest predicted values may tell us something about what factors makes these points receive extreme predictions.
 Alternatively, we might be more interested in a subset of points for an external reason.
-In the PanTHERIA case we might be particularly interested in one taxonomic group.
-Alternatively, we might want to interpret predictions that are intended for use directly in for example a conservation program.
+In the PanTHERIA example we might be particularly interested in one taxonomic group.
+Alternatively, we might want to interpret predictions that are going to be used directly in a conservation program for example.
 
-The method Local Individual Model Evaluation (LIME) examines the behaviour of a model at a point by generating a new dataset by permuting the covariates slightly around the point and making predictions from the model at these new datapoints \citep{lime, ribeiro2016should, lundberg2017unified, ribeiro2016nothing}.
+The method Local Individual Model Evaluation (LIME) examines the behaviour of a model at a point by  permuting the covariates slightly around the point and making predictions from the model over this new dataset \citep{lime, ribeiro2016should, lundberg2017unified, ribeiro2016nothing}.
 Then a simple, interpretable model, such as ridge regression, is fitted to this dataset.
-As we do not need to consider non-monotonic relationships, this simpler model should accurately describe the behaviour at the local scale.
+As we do not need to consider non-linear relationships, this simpler model should accurately describe the behaviour at the local scale.
 
-In figures \ref{fig:limegp} and \ref{fig:limerf} we can see the outputs of a LIME analysis for the datapoints with the highest predicted litter size shutting to the Gaussian process and Random Forest model.
-However, it's important to note that as we know the true litter size values for these species we can see that the top-predicted data are not actually the species with the highest litter size.
-This reminds us not to interpret these as ``what factor imply the highest litter size'' but rather ``why are these particular species predicted as having large litters''.
-One notable difference between the LIME analysis for the Gaussian process model and the Random Forest model is that for the Gaussian process model, most covariates are in agreement that these datapoints should be high.
+In figures \ref{fig:limegp} and \ref{fig:limerf} we can see the outputs of a LIME analysis for the data points with the highest predicted litter size according to the Gaussian process and Random Forest model.
+It is important to note that as we know the true litter size values for these species we can see that the top-predicted data points are not actually the species with the highest litter size.
+This reminds us not to interpret this LIME analysis as ``what factors imply the highest litter size'' but rather ``why are these particular species predicted as having large litters''.
+We can however interpret these outputs alongside the variable importance estimates in table \ref{tbl:varimp}.
+If we examine the species shown in the left pane of figure \ref{fig:limegp} we can see that Gestation length is the most important factor in determining why this species has been predicted as having a large litter size.
+In table \ref{tbl:varimp} we see that gestation length is a very important variable so if this species may well only have a slightly long gestation length, but combined with the strong variable importance this then strongly predicts that the species has a large litter size.
+In contrast, age at sexual maturity is the second strong factor in determining the prediction for this species' litter size but it is not in the top 5 factors in terms of variable importance.
+Therefore we expect this species must have quite a large value for age at sexual maturity for this factor to be so important in determining the predicted litter size.
+We can further examine as many of the factors as necessary.
+
+One notable difference between the LIME analysis for the Gaussian process model and the Random Forest model is that for the Gaussian process model, most covariates are in agreement that these data points should have large predicted litter sizes (the bars are green and point to the right).
 In contrast, there is a lot of contradiction between covariates in the Random Forest model.
-For datapoint 1683 (figure \ref{fig:limerf}, left) the strongest single covariate contribution (body mass) is suggesting that these species should have a small litter size.
+For the species on the left of figure \ref{fig:limerf} the strongest single covariate contribution (body mass) is suggesting that these species should have a small litter size.
 This might be because of the noisey relationships given by Random Forest models.
 These predictions might be harder to defend in a policy context for example.
 
