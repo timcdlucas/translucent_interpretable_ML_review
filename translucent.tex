@@ -258,7 +258,7 @@ Each model has benefits but the variety of machine learning methods is reviewed 
 
 \section{Global properties}\label{global-properties}
 
-The first level of interpretation we can examine is the global level; what do the fitted models tell us about the system as a whole.
+The first level at which we can interpret the model is the global level; what do the fitted models tell us about the system as a whole?
 One global property of interest is how predictable the system is.
 This can be assessed using scatter plots of observed versus out-of-sample predictions (Figure \ref{fig:enetpredobs} \ref{fig:gppredobs} \ref{fig:rfpredobs}) as well as metrics such as \(r^2\) or the root mean squared error (Table \ref{tbl:allr2}).
 Random Forests are effective here as they are fast to fit, robust and need relatively little tuning.
@@ -270,7 +270,7 @@ Therefore we are probably missing some important covariates.
 
 \begin{table}[t!]
 \begin{longtable}[c]{@{}ll@{}}
-\caption{\(R^2\) for all models. \label{tbl:allr2}}\tabularnewline
+\caption{\(R^2\) for all models fitted. \label{tbl:allr2}}\tabularnewline
 \toprule
 Model & \(R^2\)\tabularnewline
 \midrule
@@ -293,12 +293,12 @@ Random Forest w/ phylogenetic distance & 0.81\tabularnewline
 \end{table}
 
 We can also use predictive performance of machine learning models to scale our expectations for how well a more statistical or mechanistic model fits the data.
-Here, the linear model with a priori variable selection (figure \ref{fig:aprioripredobs}) had performance not much worse than the elastic net model (figure \ref{fig:enetpredobs}) but considerably worse than the Random Forest (figure \ref{fig:rfpredobs}).
+Here, the linear model with \emph{a priori} variable selection (figure \ref{fig:aprioripredobs}) had performance not much worse than the elastic net model (figure \ref{fig:enetpredobs}) but considerably worse than the Random Forest (figure \ref{fig:rfpredobs}).
 The similarity between the elastic net model and \emph{a priori} selection implies that the literature search did a reasonable job of selecting important covariates.
 However, the fact that Random Forest performs much better than the \emph{a priori} linear model suggests that there are nonlinearities or interactions that are important but were not included in the \emph{a priori} model.
-The suggestion of missing complexity in \emph{a priori} model is evidence that the mode is misspecified and therefore care should be taken when interpreting even this simple linear model \citep{lyddon2018nonparametric, maldonado1993interpreting}. 
-It is important to be clear that this is not a suggestion to go back and add these variables to our \emph{a priori} model.
+This is not a suggestion to go back and add these variables to our \emph{a priori} model.
 This would amount to severe data snooping and would bias any significance tests performed on the \emph{a priori} model \citep{white2000reality}.
+The suggestion of missing complexity in the \emph{a priori} model is evidence that the model is misspecified and therefore care should be taken when interpreting even this simple linear model \citep{lyddon2018nonparametric, maldonado1993interpreting}. 
 
 
 
@@ -317,21 +317,19 @@ This would amount to severe data snooping and would bias any significance tests 
 \end{figure}
 
 We can also attempt to interpret the hyperparameters of our models to try to understand something about the complexity of the system.
-For the elastic net model, the lambda parameter and the number of non-zero coefficients give us some idea of the systems complexity (figure \ref{fig:enethyp}); if very few variables are retained and we get good predictive performance this suggests a simple system.
+For the elastic net model, the lambda parameter and the number of non-zero coefficients give us some idea of the system's complexity (figure \ref{fig:enethyp}); if very few variables are retained and we get good predictive performance this suggests a simple system.
 Here we have \(\lambda = 0.03\) as the selected hyperparameter and only one coefficient being forced to zero.
 This gives some evidence that this is a complex system not easily explained by a few covariates.
-
 Similarly, the length scale, \(\sigma\), in the Gaussian process model is a crude measure of complexity, with small values implying that the functional relationships are highly non linear (figure \ref{fig:gphyp}).
-Here have \(\sigma = 0.02\) which implies there is little correlation between points separated by a Euclidean distance greater than 0.02, in scaled and centred units.
 
-Finally, the Random Forest model has two hyperparameters (figure \ref{fig:rfhyp}); mtry is the number of randomly selected covariates to build each tree with and min.node.size is the maximum number of datapoints that can be in a leaf node of a tree.
+Finally, the Random Forest model has two hyperparameters (figure \ref{fig:rfhyp}); mtry is the number of randomly selected covariates to examined at each split in the trees and min.node.size is the maximum number of data points that can be in a leaf node of a tree.
 min.node.size protects against overfitting and gives an indication of how much noise relative to signal there is.
 Here, the smallest value of min.node.size tested gets elected which implies there is not much noise in the data relative to signal.
 The selected value for mtry was 20.
 mtry can be difficult to interpret and depends on the number of covariates included in the model.
 Very small values imply little or no interactions between covariates while intermediate or high values indicate that there are interactions between covariates.
 However, large values like the 20 selected here does not indicate interaction depths of 20.
-Instead it more likely implies that there are many uninformative covariates and so 20 covariates are needed to avoid trees with no useful covariates.
+Instead it more likely implies that there are many uninformative covariates and so 20 covariates are needed to avoid splits that consider no useful covariates.
 This can be examined further by fitting models with additional random covariates.
 
 
