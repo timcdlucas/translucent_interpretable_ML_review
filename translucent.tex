@@ -542,10 +542,10 @@ In the Random Forest model, the relationship appears to be more monotonically de
 
 \section{Handling non-independent data}\label{handling-non-independent-data}
 
-The PanTHERIA dataset is an example of data that strongly violates assumptions of independent data.
+The PanTHERIA dataset is an example of a dataset that strongly violates assumptions of independence.
 The autocorrelation here arises due to common ancestry of species; two species that recently diverged from a common ancestor are likely to be more similar than species whose common ancestor is in the deep past.
-This autocorrelation is typically handled with a phylogenetic random effect while other sources of autocorrelation such as time or space can be similarly handled with an appropriate random effects term.
-Categorical random effects can be used to model a wide variety of sources of autocorrelation such as multiple samples from a single individual, study site or lab.
+This autocorrelation is typically handled with a phylogenetic random effect \citep{felsenstein1985phylogenies, ives2006statistics, gay2014parasite, pellissier2012shifts, ferguson2014colony} while other sources of autocorrelation such as time or space can be similarly handled with an appropriate random effects term \citep{ives2006statistics, redding2017evaluating, diggle1998model}.
+Categorical random effects can be used to model a wide variety of sources of autocorrelation such as multiple samples from a single individual, study site or lab  \citep{harrison2018brief, bolker2009generalized}.
 
 Including random effects within parametric or non-parametric statistical models is entirely possible with flexible modelling packages \citep{stan, INLA, glmmTMB, tmb}.
 As a simple demonstration I fitted a phylogenetic linear model via INLA \citep{INLA} using the \emph{a priori} selected covariates (cross-validated \(r^2 = 0.72\)) and a phylogenetic linear model using all covariates and strong regularising priors (\(r^2 = 0.74\)).
@@ -580,7 +580,7 @@ Random Forest & AdultForearmLen\_mm & 0.14\tabularnewline
 However, combining random effects with non-parametric, non-statistical models is more difficult.
 While these models are starting to be developed \citep{ngufor2019mixed, hajjem2014mixed, hajjem2017generalized, eo2014tree, miller2017gradient, REEMtree}, they are not available in R packages, are only implemented for a small subset of machine learning algorithms and do not necessarily benefit from the computational improvements implemented in the most up-to-date packages \citep{wright2015ranger, xgboost}.
 Therefore, generic methods for handling random effects, that can be used with any machine learning algorithm, are useful.
-The naïve approach to including random effects within machine learning models would be to simply include them as covariates; categorical random effects as categorical covariates, space or time as continuous variables for example.
+The na\"{i}ve approach to including random effects within machine learning models would be to simply include them as covariates; categorical random effects as categorical covariates, space or time as continuous variables for example.
 However to understand when this approach is or is not appropriate, we have to examine three factors as to why these effects are not just included as fixed effects in typical mixed-effects models.
 
 Firstly, we expect to extrapolate continuous random effects and expect unseen categories during prediction when using categorical random effects.
@@ -603,7 +603,7 @@ This is not how we would wish the model to behave.
 \end{figure}
 
 Secondly, we often have many categories and little data per category in a categorical random effect and wish to share power across groups.
-This low ratio of data to parameters can be reframed as a regularisation problem.
+This low number of data points per parameter can be reframed as a regularisation problem.
 The regularisation can be seen explicitely in the Bayesian formulation of random effects models (hierarchical models) where the random parameters are regularised by a zero centered prior, the strength of which is in turn learned from the data \citep{simpson2017penalising}.
 
 Finally, random effects are often included as a way to control for autocorrelation rather than being part of the desired predictive model.
@@ -611,16 +611,15 @@ For example, if all future predictions are to be for unseen categories of a cate
 Similarly if the data collection was biased with respect to a random effect, we might want to control for this without wanting to use this effect in predictions.
 For example, if data was collected by different labs or with different protocols, we might want to control for this effect but then predict the latent effect.
 If the presence of a species is measured using different methods (camera trapping, visual surveys etc.) we might want to control for this, but we aim to predict the latent state ``species presence'', not ``species presence as measured by camera trapping''.
-While this relate to the first point on predicting outside the range of the data, the methods for handling it can be different.
 
-Given these issues we can consider how to include random effects into machine learning models and then examine the results when these are applied to the PanTHERIA analysis.
-As discussed above, the phylogenetic effect is the clearest in the PanTHERIA dataset.
-One way of including phylogenetic information in an analysis is to treat a taxonomic level such as genus as a categorical reason effect.
+Given these issues we can consider how to include random effects into the Random Forest model and then examine the results when these are applied to the PanTHERIA analysis.
+While we are continuing to use Random Forest as our example model, these methods are applicable to most machine learning methods.
+One way of including phylogenetic information in an analysis is to treat a taxonomic level such as genus as a categorical random effect.
 While this is less principled than properly including the phylogeny, it is simple.
 This method also allows a demonstration of categorical random effects.
 
 If we use genus as a categorical random effect to encapsulate some phylogenetic information, the first issue to is that we must be careful that the software does not automatically encode the data as a full-rank one-hot dummy variable.
-While less-than-full-rank form would cause identifiability issues with the intercept in a linear model, the random columns and greedy splitting during tree building means this is handled without modifications to the standard Random Forest algorithm.
+While less-than-full-rank form would cause identifiability issues with the intercept in a linear model, the random columns and greedy splitting during tree building means we do not have to worry about identifiability in the context while using Random Forest.
 
 The second issue above was that of regularisation.
 Random Forest will automatically consider all interactions between our covariates and genus effect.
@@ -630,18 +629,20 @@ However, given that, in creating the one-hot dummy variables, I have added many 
 
 The final consideration above was the case where we expect all predictions to be made on new categories.
 In the case of Random Forest, the above methods are suitable.
-However, given a model that cannot regularise as effectively, we might want to control for genus without including it as a covariate in the model at all.
-In this case we can simply weight the data so that each genus is equally represented or so that each genus is represented proportionally to the number of species in each genus in the full prediction set, which could be for example all mammals.
+However, given a model that cannot regularise as effectively or if our dataset was quite small we might have wanted to control for genus without including it as a covariate in the model at all.
+In this case we can simply weight the data so that each genus is equally represented.
+Alternatively we could weight the data so that each genus is represented proportionally to the number of species in each genus in the full prediction set (all mammals for example).
 Many models in \emph{caret} accept a weight argument so this is a fairly general solution.
 
-I obtained an \(r^2\) value of something the model that uses the raw categorical variable directly and \(r^2 = 0.70\) for the model with one-hot dummy variables.
+I obtained an \(r^2\) value of 0.70 for the model that used genus encoded as a one-hot dummy variables.
 As this is marginally better than the Random Forest model without genus as a covariate, this provides some evidence that phylogenetic effects are present.
 The best hyperparameters were mtry = 500 (which implies that many of the genera are not very useful on their own) and min.node.size = 5 which is the same as the model without genus as a covariate.
 
 If however, we wish to include the full phylogeny in our model, we need different methods.
 The first method is to include all the phylogenetic information in covariates \citep{hengl2018random}.
-Given the data set of 2143 datapoints we can do this by defining 2143 new covariates that measure the phylogenetic distance between datapoints.
-That is, the first new covariate is the phylogenetic distance between every datapoint and the first datapoint, then this is repeated to create 2143 new covariates.
+Given the data set of 2143 data points we can do this by defining 2143 new covariates that measure the phylogenetic distance between data points.
+That is, the first new covariate is the phylogenetic distance between every data point and the first datapoint
+This is then repeated to create 2143 new covariates.
 This method is relatively untested but is general and can work with any machine learning algorithm.
 However, interpretation of the strength of the phylogeny will be relatively difficult as it is encoded as 2143 different covariates.
 Fitting a Random Forest to this augmented dataset was the best performing model out of all tested and gave an \(r^2\) of 0.81.
@@ -651,14 +652,14 @@ We fit a number of machine learning algorithms and make out-of-sample prediction
 We then fit a phylogenetic mixed-effects model using the out-of-sample predictions as covariates and constraining the regression coefficients to be positive.
 This method is likely to be very effective at prediction and the phylogenetic component of the regression is interpretable as it would be in any normal phylogenetic regression.
 However, this method only corrects for the biases from autocorrelated data after the machine learning models are fitted; while it may still be possible to interpret the machine learning models as we have done previously, the computed nonlinear relationships remain biased.
-I fitted this model using the three original models (elastic net, Gaussian process regression and Random Forest) and fit a hierarchical phylogenetic mixed-effects model using INLA \citep{INLA}.
+I fitted this model using the three original models (elastic net, Gaussian process regression and Random Forest) and fitted a hierarchical phylogenetic mixed-effects model using INLA \citep{INLA}.
 I obtained a cross-validated \(r^2\) of 0.72.
 Fitting the model on all the data yielded a posterior mean of 0.03 for the standard deviation of the phylogenetic random effect.
 
 While I cannot demonstrate the handling of spatial or temporal autocorrelation with this dataset the methods described above are equally applicable \citep{elith2009species}.
 In a method analogous to using genus as a categorical variable, space can be split into regions and the region used as a categorical variable \citep{appelhans2015evaluating}.
 This approach is commonly used with predefined spatial units such as countries.
-Another common approach with spatial data is ``thinning'' and is conceptually similar to the weighting method for categorical data \cite{elith2010art}.
+Another common approach with spatial data is ``thinning'' and is conceptually similar to the weighting method for categorical data \citep{elith2010art}.
 In its simplest form, thinning, involves removing data points so that each spatial pixel has at most one data instance \citep{elith2010art, verbruggen2013improving}.
 This is equivalent to treating the pixel as a categorical variable and subsampling as above until each pixel is equally represented (noting that each pixel is represented equally in the prediction dataset i.e.~once).
 Also note that in the context of presence-only data, this is equivalent to weighting the data but with presence-absence data or continuous response data, weighting is a better way to include all the data.
