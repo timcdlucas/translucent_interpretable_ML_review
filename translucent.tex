@@ -712,24 +712,20 @@ These predictions might be harder to defend in a policy context for example.
 
 It is clear that machine learning is continuing to grow in popularity in ecology.
 However, it currently remains used almost solely for purely predictive purposes.
-Their full potential us therefore not being realised.
-One important step for this to occur is for ecologists to be more clear about the purposes of their analyses; is a well defined hypothesis being tested, is a dataset being explored for potential relationships to drive hypothesis generation, or is prediction the main focus.
+The full potential of these methods is therefore not being realised.
+For ecologists to get the most out of machine learning methods they must be more clear about the purposes of their analyses; is a well defined hypothesis being tested, is a dataset being explored for potential relationships to drive hypothesis generation, or is prediction the main focus?
 This clarity makes it possible to be clear about the trade-offs in any statistical analysis and to use the most effective tools given the desired outcomes.
 Using simple linear models is often not optimal if discovery of relationships or predictions are the aim; if a formal hypothesis is being tested Random Forests are unlikely to be the best choice.
 Finally, being clear about the aims allows sensible planning on how data will be used in the longer term.
-If the aim is to discover some relationships and then formally test them, the best use of a given dataset may be to split it and use half for disovery and half for hypothesis testing.
+If the aim is to discover some relationships and then formally test them, the best use of a given dataset may be to split it and use half for discovery and half for hypothesis testing.
 This workflow would not occur to an analyst who was unclear about their task.
-
-A major hurdle in interpreting these models is the ability to visualise high dimensional surfaces.
-Here I have demonstrated a number of methods for visualising response curves but they all rely on selecting a few dimensions to focus on.
-While visualising high dimensional surfaces is ultimately an unsolvable problem, any methods or software that aid the exploration of this fundemental property of a fitted model would be extremely useful.
 
 While the methods here have been generic machine learning methods, there are a number of approaches for combining mechanistic models and non-parametric models.
 These include using a mechanistic model as the mean function of a Gaussian process \citep{rasmussen2004gaussian} or using a mechanistic model as a regularising prior for a non-parametric model \citep{lyddon2018nonparametric}.
 These methods have great potential for combining the interpretability of mechanistic models and the interpolative predictive ability of non-parametric machine learning models.
 
 Finally, as with all modelling, interpretation of machine learning models requires human input.
-While many algorithms are objectively tested for various properties, very few have been tested for their ability to aid the human interpreter.
+While many algorithms are objectively tested for various modelling properties, very few have been tested for their ability to aid the human interpreter.
 Studies that do specifically test this aspect are very welcome \citep{bastani2017interpreting}.
 This algorithm-psychology interface is an important area of future research.
 
