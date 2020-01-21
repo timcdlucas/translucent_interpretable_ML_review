@@ -178,15 +178,14 @@ These methods are not fully probabilistic, and often have large numbers of param
 
 
 A major shift in the statistical analysis of ecological and evolutionary data in recent decades is the acknowledgement that observational, biological data rarely conform to assumptions of independence due to phylogeny \citep{felsenstein1985phylogenies, ives2006statistics}, space \citep{redding2017evaluating, diggle1998model}, time \citep{ives2006statistics} or other categorical, grouping variables \citep{harrison2018brief, bolker2009generalized}.
-This issue of autocorrelation is largely underappreciated in the machine learning literature and only recently have random effects been explicitely built into typical machine learning models \citep{eo2014tree, hajjem2014mixed, hajjem2017generalized, miller2017gradient}.
-Most machine learning models make some assumption of independence and certainly estimates of out-of-sample predictive ability can be biased if cross-validation is used without accounting for autocorrelation.
+This issue of autocorrelation is largely under-appreciated in the machine learning literature and only recently have random effects been explicitly built into typical machine learning models \citep{eo2014tree, hajjem2014mixed, hajjem2017generalized, miller2017gradient}.
+Most machine learning models make some assumption of independence and estimates of out-of-sample predictive ability can be biased if cross-validation is used without accounting for autocorrelation.
 There are however a number of strategies to mitigate biases caused by autocorrelation and for gaining insight into the random effects themselves.
 These include simple methods such as using random effects as normal covariates or preprocessing the data to reduce autocorrelation \citep{elith2010art}.
-Further methods include the creation of new covariates that encode the autocorrelation in more useful ways, stratified cross-validation \citep{le2014spatial} or using a mixed model to ``stack'' multiple machine learning models post-hoc \citep{bhatt2017improved}.
 These methods will be examined in more detail in the body of the review.
 
 In this review I will present an illustrative analysis on the PanTHERIA dataset \citep{jones2009pantheria} which contains mammalian life history traits.
-I fitted four models, with variations, that span the range of interpretability: i) a typical model used by biologists; a simple linear model with a priori variable selection ii) a parametric statistical model, the elastic net \citep{elasticnet} iii) a non-parametric statistical model, Gaussian process regression \citep{rasmussen2004gaussian} and iv) a non-parametric, non-statistical model, Random Forest \citep{breiman2001random}.
+I fitted four models, with variations, that span the range of interpretability: i) a simple linear model with \emph{a priori} variable selection as is often used in ecology ii) a parametric statistical model, the elastic net \citep{elasticnet} iii) a non-parametric statistical model, Gaussian process regression \citep{rasmussen2004gaussian} and iv) a non-parametric, non-statistical model, Random Forest \citep{breiman2001random}.
 For each of these models I demonstrate how they can be interpreted with methods that are applicable to a wide variety of machine learning models.
 The full analysis is included as a reproducible R \citep{R} script that reads data directly from online repositories (S1).
 
