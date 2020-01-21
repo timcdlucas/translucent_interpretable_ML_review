@@ -315,30 +315,6 @@ This would amount to severe data snooping and would bias any significance tests 
   }
 \end{figure}
 
-%\begin{figure}[htbp]
-%\centering
-%\includegraphics{figs/a_priori_var_selection-1.pdf}
-%\caption{Predicted vs observed for the a priori selected model\protect\label{fig:aprioripredobs}}
-%\end{figure}
-
-%\begin{figure}[htbp]
-%\centering
-%\includegraphics{figs/elastic_net-2.pdf}
-%\caption{Predicted vs observed for the a priori selected model\protect\label{fig:enetpredobs}}
-%\end{figure}
-
-%\begin{figure}[htbp]
-%\centering
-%\includegraphics{figs/gp-2.pdf}
-%\caption{Predicted vs observed for the Gaussian process model\protect\label{fig:gppredobs}}
-%\end{figure}
-
-%\begin{figure}[htbp]
-%\centering
-%\includegraphics{figs/ranger-2.pdf}
-%\caption{Predicted vs observed for the Random Forest model\protect\label{fig:rfpredobs}}
-%\end{figure}
-
 We can also attempt to interpret the hyperparameters of our models to try to understand something about the complexity of the system.
 For the elastic net model, the lambda parameter and the number of non-zero coefficients give us some idea of the systems complexity (figure \ref{fig:enethyp}); if very few variables are retained and we get good predictive performance this suggests a simple system.
 Here we have \(\lambda = 0.03\) as the selected hyperparameter and only one coefficient being forced to zero.
