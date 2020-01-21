@@ -392,7 +392,7 @@ This can be examined further by fitting models with additional random covariates
 
 We can also interpret a model at the level of the individual covariate.
 This can include random or fixed effects.
-We can examine variable importence \citep{oppel2009alternative}, importance of interactions between pairs of covariates and start to examine the functional responses of covariates.
+We can examine variable importance \citep{oppel2009alternative}, importance of interactions between pairs of covariates and start to examine the functional responses of covariates.
 It is important however to remember that these models are not designed for inference; the following methods should be thought of as hypothesis generation and more formal, subsequent tests (on a different dataset) would be needed to confirm relationships between covariates and the response variable.
 
 \begin{table}[t!]
@@ -431,11 +431,10 @@ For the regularised linear model, variable importance is given simply by the mag
 We can see that gestation length comes top for all three models and that latitude and PET are prominent in all three as well.
 Fitting multiple models and searching for consistency is one useful way to increase confidence in results (as in \citet{appelhans2015evaluating}).
 The fact that gestation length is found to be important also highlights the issue of causality; it is not clear which direction causality flows between gestation length and litter size.
-Does large litter sizes force gestation length to be small or does short gestation length allow large litters? It could also be true that causality flows in different directions in different species.
-Some models also allow tests of significance on variable importance measures.
-While these come with all the normal caveats for significance testing, the probability scale might be more useful for interpretation than the earlier values scaled by the maximum importance values.
+Does large litter sizes force gestation length to be small or does short gestation length allow large litters? 
+It could also be true that causality flows in different directions in different species.
 
-\emph{Caret} provides an easy interface for getting variable importance measures for many model types; however the calculations being performed are varied.
+\emph{Caret} provides an easy interface for getting variable importance measures for many model types; however the calculations being performed differ between models.
 For some models, including Random Forest, there are different methods for calculating variable importance \citep{oppel2009alternative, seifert2019surrogate} and some are more correct than others, especially in the presence of categorical variables.
 Here I have used the default variable importance given by caret; given there are no categorical variables this is acceptably unbiased.
 If more accurate variable importance measures are needed, a related model, conditional inference forests \citep{hothorn2006unbiased} or the maxstat split rule in ranger \citep{wright2017unbiased}, should be used instead.
@@ -452,19 +451,19 @@ If more accurate variable importance measures are needed, a related model, condi
   }
 \end{figure}
 
-It is also worth noting that the reliability of variable importence measures differs between model types and depends on the data.
+It is also worth noting that the replicability of variable importance differs between model types and depends on the data set.
 For example, repeatedly fitting a neural network to these data gives very different results each time.
-In contrast, Gaussian processes and linear models generally give the same results given different starting values and the repeated randomisation inherent in Random Forest means these models tend to give similar results each time.
-Furthermore, variable importance in the presence of colinearity is less reliable and less interpretable \citep{dormann2013collinearity}.
-Given two colinear variables, some models such as Random Forest will share the variable importance between them potentially masking an important variable.
+In contrast, linear models, Gaussian processes and Random Forest generally give the same results each time.
+Furthermore, variable importance in the presence of collinearity is less reliable and less interpretable \citep{dormann2013collinearity}.
+Given two collinear variables, some models such as Random Forest will share the variable importance between them potentially masking an important variable.
 In contrast, other models such as stepwise regression might put all the variable importance into one variable with no guarantee that the correct variable is selected.
 
 Once some important covariates have been identified, it is useful to examine the shape of the relationship between covariate and response.
 The simplest way to do this is a partial dependence plot (PDP) \citep{friedman2001greedy}.
 This plot is calculated by evaluating the model n times for each data point using n equally spaced values of the covariate of interest.
 The mean response for each value of the covariates of interest is plotted.
-All responses are linear for the regularised linear model so a PDP is not useful.
-The PDPs for gestation length for the Gaussian process and Random Forest models are shown in figures \ref{fig:pdpgestgp} and \ref{fig:pdpgestrf}.
+For the regularised linear model all the responses are, by definition, linear so a PDP is not useful.
+The PDPs for gestation length from the Gaussian process and Random Forest models are shown in figures \ref{fig:pdpgestgp} and \ref{fig:pdpgestrf}.
 It can be seen that neither response is linear and are both decreasing for low values of gestation length.
 However, the PDP for the Gaussian process model is increasing at high values of gestation length and is similar to a squared curve.
 In contrast, the Random Forest model is flat at high values of gestation length.
@@ -531,7 +530,7 @@ Here we can clearly see the range of responses that exist for a single covariate
 Gaussian process models and Random Forests implicitly consider deep interactions which become increasingly difficult to interpret.
 However, if we can identify important two way interactions we can start to interpret these.
 We can find the interaction strength between two features in a similar fashion to finding variable importance.
-We can examine the 2D PDP of two covariates (figure \ref{fig:2dgestlatgp} \ref{fig:2dgestlatrf}) and calculate what proportion of the curve is explained by the sum of the two 1D PDPs (e.g.~figure \ref{fig:pdpgestgp}).
+We can consider the 2D PDP of two covariates (figure \ref{fig:2dgestlatgp} \ref{fig:2dgestlatrf}) and calculate what proportion of the curve is explained by the sum of the two 1D PDPs (e.g.~figure \ref{fig:pdpgestgp}).
 We can therefore take one covariate that we know has strong interactions (``GestationLength\_d'' as seen in table \ref{tbl:interimp}) and calculate the two-way interaction strength between that covariate and all other covariates (table \ref{tbl:specificinter}).
 Finally, once important interactions have been identified, the 2D PDP can be examined to determine the shape of that interaction (figure \ref{fig:2d}).
 Looking at the 2D PDP of gestation length and PET for the Gaussian process model we can see that for most of the range of the data we have a U-shaped relationship.
