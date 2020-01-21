@@ -83,7 +83,7 @@
 
 \section{Abstract}\label{abstract}
 
-Machine learning has become popular in ecology but its use has remained restricted to predicting rather than understanding the natural world.
+Machine learning has become popular in ecology but its use has remained restricted to predicting, rather than understanding, the natural world.
 Many researchers consider machine learning algorithms to be a black box.
 While it can be difficult to interpret fitted machine learning models these models can, with careful examination, be used to inform our understanding of the world.
 They are translucent boxes.
@@ -95,11 +95,11 @@ In this review I review a number of techniques for interpreting machine learning
 
 \subsection{Machine learning in ecology}\label{machine-learning-in-ecology}
 
-Machine learning is a collection of techniques that focuses on making accurate predictions from data \citep{crisci2012review, breiman2001statistical}. 
-It differs from the broader field of statistics in two aspects: 1) the estimation of parameters that relate to the real world is less emphasised and 2) the driver of the predictions are expected to be the data rather than expert opinion and careful selection of plausible mechanistic models \citep{breiman2001statistical}. 
-High-level machine learning libraries that aid the full machine learning pipeline \citep{caret, scikit, maxent, biomod} have made machine learning easy to use. 
-These techniques have therefore become popular, particularly in the fields of species distribution modelling \citep{maxent, biomod, elith2006novel, golding2018zoon, gobeyn2019evolutionary} and species identification from images or acoustic detectors \citep{mac2018bat, waldchen2018machine, shamir2014classification, xue2017automatic}. 
-Other uses include any study where prediction rather than inference is the focus such as predicting the conservation status of species \citep{bland2015predicting} and predicting behavioural states \citep{browning2018predicting}. 
+Machine learning is a collection of techniques that focuses on making accurate predictions from data \citep{crisci2012review, breiman2001statistical}.
+It differs from the broader field of statistics in two aspects: 1) the estimation of parameters that relate to the real world is less emphasised and 2) the driver of the predictions are expected to be the data rather than expert opinion and careful selection of plausible mechanistic models \citep{breiman2001statistical}.
+High-level machine learning libraries that aid the full machine learning pipeline \citep{caret, scikit, maxent, biomod} have made machine learning easy to use.
+These techniques have therefore become popular, particularly in the fields of species distribution modelling \citep{maxent, biomod, elith2006novel, golding2018zoon, gobeyn2019evolutionary} and species identification from images or acoustic detectors \citep{mac2018bat, waldchen2018machine, shamir2014classification, xue2017automatic}.
+Other uses include any study where prediction rather than inference is the focus such as predicting the conservation status of species \citep{bland2015predicting} and predicting behavioural states \citep{browning2018predicting}.
 However, machine learning methods have a reputation as being a black box; inscrutable and mindlessly applied.
 
 This reputation is not totally unfounded with a number of factors making machine learning models difficult to interpret.
@@ -219,7 +219,7 @@ One major benefit of \emph{caret} is that most of the procedures presented later
 
 \subsubsection{\texorpdfstring{\emph{A priori} variable selection}{A priori variable selection}}\label{a-priori-variable-selection}
 
-The standard approach for modelling in ecology and comparative biology is to carefully select a relatively small set of covariates based on \emph{a priori} knowledge of the system \citep[ ]{whittingham2006we}.
+The standard approach for modelling in ecology and comparative biology is to carefully select a relatively small set of covariates based on \emph{a priori} knowledge of the system \citep{whittingham2006we}.
 This process ensures that all variables are reasonably likely to be casually important, reduces overfitting and keeps the number of parameters small.
 As a baseline model, I fitted a linear model, selecting covariates that the literature suggests relates to litter size.
 I chose body size \citep{leutenegger1979evolution, tuomi1980mammalian}, gestation length \citep{okkens1993influence, bielby2007fast}, metabolic rate \citep{white2004does}, litters per year \citep{white2004does} and longevity \citep{wilkinson2002life, zammuto1986life}.
@@ -304,7 +304,7 @@ This would amount to severe data snooping and would bias any significance tests 
   \subfloat[\emph{a priori} model\label{fig:aprioripredobs}]{\includegraphics[width =0.5\textwidth ]{figs/a_priori_var_selection-1.pdf}}
   \subfloat[Elastic net\label{fig:enetpredobs}]{\includegraphics[width = 0.5\textwidth]{figs/elastic_net-2.pdf}}
 
-  \subfloat[Gaussian process\label{fig:gppredobs}]{\includegraphics[width =0.5\textwidth ]{figs/gp?-2.pdf}}
+  \subfloat[Gaussian process\label{fig:gppredobs}]{\includegraphics[width =0.5\textwidth ]{figs/gp-2.pdf}}
   \subfloat[Random Forest\label{fig:rfpredobs}]{\includegraphics[width = 0.5\textwidth]{figs/ranger-2.pdf}}
   \label{fig:predobs}
   \caption{
@@ -327,7 +327,7 @@ This would amount to severe data snooping and would bias any significance tests 
 
 %\begin{figure}[htbp]
 %\centering
-%\includegraphics{figs/gp?-2.pdf}
+%\includegraphics{figs/gp-2.pdf}
 %\caption{Predicted vs observed for the Gaussian process model\protect\label{fig:gppredobs}}
 %\end{figure}
 
@@ -359,7 +359,7 @@ This can be examined further by fitting models with additional random covariates
 \begin{figure}[t!]
   \centering
   \subfloat[elastic net model\protect\label{fig:enethyp}]{\includegraphics[width =0.5\textwidth ]{figs/elastic_net-1.pdf}}
-  \subfloat[Gaussian proces model\protect\label{fig:gphyp}]{\includegraphics[width = 0.5\textwidth]{figs/gp?-1.pdf}}
+  \subfloat[Gaussian proces model\protect\label{fig:gphyp}]{\includegraphics[width = 0.5\textwidth]{figs/gp-1.pdf}}
 
   \subfloat[Random Forest model\protect\label{fig:rfhyp}]{\includegraphics[width =0.5\textwidth ]{figs/ranger-1.pdf}}
   \label{fig:hyp}
@@ -376,7 +376,7 @@ This can be examined further by fitting models with additional random covariates
 
 %\begin{figure}[htbp]
 %\centering
-%\includegraphics{figs/gp?-1.pdf}
+%\includegraphics{figs/gp-1.pdf}
 %\caption{Hyperparameter selection for the Gaussian proces model\protect\label{fig:gphyp}}
 %\end{figure}
 
@@ -520,7 +520,7 @@ Here we can clearly see the range of responses that exist for a single covariate
 
   \label{fig:ice}
   \caption{
-    ICE plot for Gestation Length in a) the Gaussian process model and b) the Random Forest model. 
+    ICE plot for Gestation Length in a) the Gaussian process model and b) the Random Forest model.
     Clustered ICE plot for latitude in c) the Gaussiean process model and b) the Random Forest model.
   }
 \end{figure}
@@ -573,7 +573,7 @@ Random Forest & AdultForearmLen\_mm & 0.14\tabularnewline
 \bottomrule
 \end{longtable}
 \end{table}
-  
+
 
 However, combining random effects with non-parametric, non-statistical models is more difficult.
 While these models are starting to be developed \citep{ngufor2019mixed, hajjem2014mixed, hajjem2017generalized, eo2014tree, miller2017gradient, REEMtree}, they are not available in R packages, are only implemented for a small subset of machine learning algorithms and do not necessarily benefit from the computational improvements implemented in the most up-to-date packages \citep{wright2015ranger, xgboost}.
@@ -596,7 +596,7 @@ This is not how we would wish the model to behave.
 
   \label{fig:2d}
   \caption{
-    2D PDP plot for Gestation Length and PET in a) the Gaussian process model and b) the Random Forest model. 
+    2D PDP plot for Gestation Length and PET in a) the Gaussian process model and b) the Random Forest model.
   }
 \end{figure}
 
@@ -687,9 +687,9 @@ As we do not need to consider non-monotonic relationships, this simpler model sh
 In figures \ref{fig:limegp} and \ref{fig:limerf} we can see the outputs of a LIME analysis for the datapoints with the highest predicted litter size shutting to the Gaussian process and Random Forest model.
 However, it's important to note that as we know the true litter size values for these species we can see that the top-predicted data are not actually the species with the highest litter size.
 This reminds us not to interpret these as ``what factor imply the highest litter size'' but rather ``why are these particular species predicted as having large litters''.
-One notable difference between the LIME analysis for the Gaussian process model and the Random Forest model is that for the Gaussian process model, most covariates are in agreement that these datapoints should be high. 
+One notable difference between the LIME analysis for the Gaussian process model and the Random Forest model is that for the Gaussian process model, most covariates are in agreement that these datapoints should be high.
 In contrast, there is a lot of contradiction between covariates in the Random Forest model.
-For datapoint 1683 (figure \ref{fig:limerf}, left) the strongest single covariate contribution (body mass) is suggesting that these species should have a small litter size. 
+For datapoint 1683 (figure \ref{fig:limerf}, left) the strongest single covariate contribution (body mass) is suggesting that these species should have a small litter size.
 This might be because of the noisey relationships given by Random Forest models.
 These predictions might be harder to defend in a policy context for example.
 
@@ -733,7 +733,7 @@ This algorithm-psychology interface is an important area of future research.
 
 To conclude, we have seen a number of methods for interpreting machine learning models.
 While these models are not as easy to interpret as carefully constrained statistical models, they make up for this by finding relationships that a simpler model would not be able to.
-The interpretation of these models needs to done carefully and requiers user interaction and exploration in a way that is less vital in interpreting standard statistical models. 
+The interpretation of these models needs to done carefully and requiers user interaction and exploration in a way that is less vital in interpreting standard statistical models.
 The power lies in the way a scientist defines their questions and uses these methods alongside other more statistical methods.
 
 \bibliography{machinelearn.bib}
