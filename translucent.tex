@@ -619,6 +619,18 @@ For regular time series we can typically include covariates created from the lag
 
 \section{Data-point level properties}\label{data-point-level-properties}
 
+\begin{figure}[t!]
+\centering
+\includegraphics{figs/lime2-1.pdf}
+\caption{LIME analysis of predictions of five points from the Gaussian process model.\protect\label{fig:limegp}}
+\end{figure}
+
+\begin{figure}[t!]
+\centering
+\includegraphics{figs/lime2-2.pdf}
+\caption{LIME analysis of predictions of five points from the Random Forest model.\protect\label{fig:limerf}}
+\end{figure}
+
 Finally, we can try to interpret models at the level of the individual prediction \citep{lime, ribeiro2016should, lundberg2017unified, ribeiro2016nothing}.
 Model interpretation at a single point is a much easier task than interpreting the global model because at a small enough scale the response curve is either monotonically increasing or decreasing or flat, so complex non-linear curves do not need to be considered.
 
@@ -633,34 +645,22 @@ The method Local Individual Model Evaluation (LIME) examines the behaviour of a 
 Then a simple, interpretable model, such as ridge regression, is fitted to this dataset.
 As we do not need to consider non-linear relationships, this simpler model should accurately describe the behaviour at the local scale.
 
-In figures \ref{fig:limegp} and \ref{fig:limerf} we can see the outputs of a LIME analysis for the data points with the highest predicted litter size according to the Gaussian process and Random Forest model.
+In figures \ref{fig:limegp} and \ref{fig:limerf} we can see the outputs of a LIME analysis for the two data points with the highest predicted litter size according to the Gaussian process and Random Forest model.
+The simple model is a ridge regression model with the 10 covariates with highest weights being plotted.
+The explanation fit values given in the plot is the $R^2$ of how well the simple, interpretable model explains the predictions of the more complex models.
+In all cases here the simpler model explains around 60\% of the variation in the predictions of the permuted data.
 It is important to note that as we know the true litter size values for these species we can see that the top-predicted data points are not actually the species with the highest litter size.
 This reminds us not to interpret this LIME analysis as ``what factors imply the highest litter size'' but rather ``why are these particular species predicted as having large litters''.
 We can however interpret these outputs alongside the variable importance estimates in table \ref{tbl:varimp}.
-If we examine the species shown in the left pane of figure \ref{fig:limegp} we can see that Gestation length is the most important factor in determining why this species has been predicted as having a large litter size.
-In table \ref{tbl:varimp} we see that gestation length is a very important variable so if this species may well only have a slightly long gestation length, but combined with the strong variable importance this then strongly predicts that the species has a large litter size.
-In contrast, age at sexual maturity is the second strong factor in determining the prediction for this species' litter size but it is not in the top 5 factors in terms of variable importance.
-Therefore we expect this species must have quite a large value for age at sexual maturity for this factor to be so important in determining the predicted litter size.
-We can further examine as many of the factors as necessary.
-
-One notable difference between the LIME analysis for the Gaussian process model and the Random Forest model is that for the Gaussian process model, most covariates are in agreement that these data points should have large predicted litter sizes (the bars are green and point to the right).
-In contrast, there is a lot of contradiction between covariates in the Random Forest model.
-For the species on the left of figure \ref{fig:limerf} the strongest single covariate contribution (body mass) is suggesting that these species should have a small litter size.
-This might be because of the noisey relationships given by Random Forest models.
-These predictions might be harder to defend in a policy context for example.
 
 
-\begin{figure}[t!]
-\centering
-\includegraphics{figs/lime-2cr.pdf}
-\caption{LIME analysis of predictions of five points from the Gaussian process model.\protect\label{fig:limegp}}
-\end{figure}
+If we examine the species shown in the left pane of figure \ref{fig:limegp} we can see that dispersal age is the most important factor in determining why this species has been predicted as having a large litter size.
+As the bars show negative weights this suggests that it is because the dispersal age of these species is small that they are predicted as having high litter sizes.
+Indeed, both of these species are in the lowest 3\% of dispersal ages amongst the species in this data set.
 
-\begin{figure}[t!]
-\centering
-\includegraphics{figs/lime-3cr.pdf}
-\caption{LIME analysis of predictions of five points from the Random Forest model.\protect\label{fig:limerf}}
-\end{figure}
+
+
+
 
 \section{Future directions and conclusions}\label{future-directions-and-conclusions}
 
