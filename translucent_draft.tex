@@ -1,0 +1,701 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\usepackage{subfig}
+
+\usepackage[usenames,dvipsnames]{color}
+\definecolor{boxcolour}{rgb}{1,0.98,0.8}
+
+\usepackage{geometry}
+%\geometry{verbose,a4paper,tmargin=27mm,bmargin=25mm,lmargin=25mm,rmargin=25mm}
+
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={A translucent box: interpretable machine learning in ecology},
+            pdfauthor={Tim C. D. Lucas},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{natbib}
+\bibliographystyle{plainnat}
+
+\usepackage[draft]{graphicx}
+
+\usepackage{longtable,booktabs}
+\usepackage{grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%\setcounter{topnumber}{1}
+%\setcounter{totalnumber}{1}
+%\renewcommand{\topfraction}{0.6}
+%\renewcommand{\textfraction}{0.3}
+
+\title{A translucent box: interpretable machine learning in ecology}
+\author{Tim C. D. Lucas}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Abstract}\label{abstract}
+
+Machine learning has become popular in ecology but its use has remained restricted to predicting, rather than understanding, the natural world.
+Many researchers consider machine learning algorithms to be a black box.
+While it can be difficult to interpret fitted machine learning models these models can, with careful examination, be used to inform our understanding of the world.
+They are translucent boxes.
+Furthermore, the interpretation of these models can be an important step in building confidence in a model or in a specific prediction from a model.
+In this review I review a number of techniques for interpreting machine learning models, discuss the limits in interpretation for different methods and demonstrate these approaches using a case example of understanding litter sizes in mammals.
+
+
+
+
+\section{Introduction}\label{introduction}
+
+\subsection{Machine learning in ecology}\label{machine-learning-in-ecology}
+
+Machine learning is a collection of techniques that focuses on making accurate predictions from data \citep{crisci2012review, breiman2001statistical}.
+It differs from the broader field of statistics in two aspects: 1) the estimation of parameters that relate to the real world is less emphasised and 2) the driver of the predictions are expected to be the data rather than expert opinion and careful selection of plausible mechanistic models \citep{breiman2001statistical}.
+High-level machine learning libraries that aid the full machine learning pipeline \citep{caret, scikit, maxent, biomod} have made machine learning easy to use.
+These techniques have therefore become popular, particularly in the fields of species distribution modelling \citep{maxent, biomod, elith2006novel, golding2018zoon, gobeyn2019evolutionary} and species identification from images or acoustic detectors \citep{mac2018bat, waldchen2018machine, shamir2014classification, xue2017automatic}.
+Other uses include any study where prediction rather than inference is the focus such as predicting the conservation status of species \citep{bland2015predicting} and predicting behavioural states \citep{browning2018predicting}.
+However, machine learning methods have a reputation as being a black box; inscrutable and mindlessly applied.
+
+This reputation is not totally unfounded with a number of factors making machine learning models difficult to interpret.
+Firstly, they are often nonparametric.
+They therefore estimate nonlinear relationships between covariates and response variables which can be difficult to interpret.
+These relationships are often not summarised in a small number of interpretable parameters instead containing huge numbers of parameters without estimates of uncertainty.
+Secondly, they often fit deep interactions between covariates \citep{lunetta2004screening}.
+Even simple, two-way interactions in linear models cause confusion \citep{engqvist2005mistreatment, lamina2012visualizing} and deep, nonlinear interactions are difficult to visualise or understand.
+Thirdly, fitting machine learning models is often stochastic \citep{breiman2001random, glorot2002understanding} and fitting the same model with different starting values may give a totally different set of fitted parameters (though perhaps with similar predictive performance).
+However, while interpretation of machine learning models can be difficult, there is plenty of insight to be gained by fitting and appraising these models, as will be seen in this review.
+
+Given the black box reputation one might wonder why we should bother interpreting machine learning models; if the predictions are good, then the objective has been achieved.
+However, any predictions that may be used to make decisions (i.e.~all predictions of any interest) should be examined.
+Particular examples of this include predictions used for conservation policy or health care \citep{vayena2018machine}.
+Careless predictions can have severe effects on the entity for which the predictions are being made (an endangered species or a person at risk of a disease for example) and can more generally erode trust between modellers, policy makers and other stakeholders.
+In regulated fields such as healthcare, these considerations come with legal backing.
+Interpreting machine learning models as part of model verification has been the primary driver of research in this field \citep{molnar, ribeiro2016should}.
+
+However, there are further reasons to interpret machine learning models that apply to fields that are further removed from policy decisions \citep{elith2009species}.
+The same traits that make machine learning models good at prediction and difficult to interpret also makes them potentially useful in exploratory analysis before more formal statistical modeling \citep{zhao2017causal}.
+The nonparametric nature of many machine learning models means they can discover nonlinear relationships and interactions without specifying then a priori as would be required in more statistical modeling.
+Furthermore, the lack of expert domain knowledge needed to fit an effective machine learning model means they can be useful as a baseline to compare how well a mechanistic model performs.
+Finally it is worth noting that standard statistical models are often not as interpretable as they seem; understanding the results from a statistical model is made more difficult in the presence of colinearity between covariates or when nature's true model is not in the set of models being considered \citep{lyddon2018nonparametric, yao2017using}.
+Therefore, in some cases it might be better to fit a more predictive model and sacrifice some, but not all, interpretability.
+Alternatively, it might be useful to use a highly predictive model to create hypotheses which could then be tested in a more formal statistical framework \citep{zhao2017causal}.
+
+\subsection{An overview of machine learning}\label{an-overview-of-machine-learning}
+
+Supervised learning is a subfield of machine learning and is the archetypal modelling found in biology.
+The analyst has some response data and some covariates and the task is to predict the response data.
+Therefore models such as generalised linear models, mixed effects models and time series modelling would come under supervised learning.
+If the response variable is continuous, supervised learning is referred to as regression; if the response  variabel is categorical, with two or more categories, the task is referred to as classification.
+While there are many different ways you could classify machine learning models, one that is useful for discussions of interpretability is to split models into three groups: i) parametric, statistical models, ii) non-parametric statistical models and iii) non-statistical, non-parametric models (see box 1).
+
+
+
+\begin{figure*}[t]
+\centering
+\colorbox{boxcolour}{
+\begin{minipage}{1\textwidth}
+
+
+\setlength{\parindent}{3mm}
+\noindent\textsf{\textbf{Box 1: Types of machine learning model}}\footnotesize
+
+\vspace{-2mm}
+\subsection{Parametric, statistical models}
+This group include many models commonly used by biologists.
+They are parametric because their functional form (the shapes that the relationships between covariates and response variables can take) is defined in advance.
+They are statistical because they will include some kind of likelihood function that makes the model probabilistic.
+Therefore generalised linear models are included in this category.
+A common technique to improve prediction is regularisation that biases parameter estimates (towards zero in the case of a linear model) to give a simpler model and avoid overfitting.
+Methods for regularisation of linear models include the LASSO and other penalties \citep{tibshirani1996regression, zou2005regularization}, as used by maxent for example  \citep{maxent}.
+Other methods include stepwise selection \citep{hocking1976biometrics}, or Bayesian regularisation \citep{park2008bayesian, liu2018bayesian}.
+
+
+\subsection{Non-parametric, statistical models}
+These models are fitted in a formal statistical framework as above but the functional form is not defined in advance.
+Instead, flexible curves are fitted.
+This group includes splines (and GAMs which combine splines and other linear terms) and Gaussian process regression \citep{rasmussen2004gaussian}.
+These methods have principled uncertainty estimates due to being statistical.
+Furthermore, while the non-parametric components are often not represented by a small number of interpretable parameters, they are often controlled by a small number of hyperparameters.
+If these hyperparameters are fitted in a hierarchical framework (as is common) then they are can be interpreted with associated uncertainty.
+
+\subsection{Non-parametric, non-statistical models}
+These methods encompass many more algorithmic methods \citep{crisci2012review} such as decision trees, ensembles of trees like Random Forests \citep{breiman2001random} and boosted regression trees \citep{elith2008working, friedman2001greedy}, neural networks \citep{neuralnets} and support vector machines \citep{svm}.
+These methods are not fully probabilistic, and often have large numbers of parameters that do not have uncertainty estimates.
+
+\end{minipage}
+
+}
+\normalcolor
+\end{figure*}
+
+
+A major shift in the statistical analysis of ecological and evolutionary data in recent decades is the acknowledgement that observational, biological data rarely conform to assumptions of independence due to phylogeny \citep{felsenstein1985phylogenies, ives2006statistics}, space \citep{redding2017evaluating, diggle1998model}, time \citep{ives2006statistics} or other categorical, grouping variables \citep{harrison2018brief, bolker2009generalized}.
+This issue of autocorrelation is largely under-appreciated in the machine learning literature and only recently have random effects been explicitly built into typical machine learning models \citep{eo2014tree, hajjem2014mixed, hajjem2017generalized, miller2017gradient}.
+Most machine learning models make some assumption of independence and estimates of out-of-sample predictive ability can be biased if cross-validation is used without accounting for autocorrelation.
+There are however a number of strategies to mitigate biases caused by autocorrelation and for gaining insight into the random effects themselves.
+These include simple methods such as using random effects as normal covariates or preprocessing the data to reduce autocorrelation \citep{elith2010art}.
+These methods will be examined in more detail in the body of the review.
+
+In this review I will present an illustrative analysis on the PanTHERIA dataset \citep{jones2009pantheria} which contains mammalian life history traits.
+I fitted four models, with variations, that span the range of interpretability: i) a simple linear model with \emph{a priori} variable selection as is often used in ecology ii) a parametric statistical model, the elastic net \citep{elasticnet} iii) a non-parametric statistical model, Gaussian process regression \citep{rasmussen2004gaussian} and iv) a non-parametric, non-statistical model, Random Forest \citep{breiman2001random}.
+For each of these models I demonstrate how they can be interpreted with methods that are applicable to a wide variety of machine learning models.
+The full analysis is included as a reproducible R \citep{R} script that reads data directly from online repositories (S1).
+
+\section{Example analysis}\label{example-analysis}
+
+\subsection{Data}\label{data}
+
+The PanTHERIA database is a dataset of mammalian life history traits collected from the published literature \citep{jones2009pantheria}.
+Overall it contains 5416 species and data on 35 traits, complimented by a further 15 variables calculated by intersecting IUCN shapefiles for each species and remotely sensed geographic data.
+There are large amounts of missing data for many of the life history traits and these gaps were filled with median imputation as this method is both simple and conservative.
+In this illustrative analysis I will use use this dataset to examine potential factors relating to the average litter size (with a \(\log(x+1)\) transform due to the strong left skew and presence of zeroes).
+As each data row represents a species, the data are not independent; species with more recent common ancestors are likely to have similar life history traits.
+Most analyses of this type of data \citep{gay2014parasite, pellissier2012shifts, ferguson2014colony} would use phylogenetic regression which includes an estimated phylogeny, converted to a covariance matrix, as a random effect \citep{magnusson2017glmmtmb, caper}.
+Methods for handling non-independence while using machine learning models are demonstrated in the section `Handling non-independent data'.
+
+\subsection{Model fitting}\label{model-fitting}
+
+I fitted four classes of model (with variations) to the data: a linear model with \emph{a priori} variable selection, a regularised linear model, a statistical, non-parametric Gaussian process model and a non-statistical Random Forest model.
+I used five-fold cross-validation to test model accuracy and select hyperparameters.
+Given the very different levels of flexibility in the models, this out-of-sample test of accuracy is important and given the non-statistical nature of the Random Forest, statistical, within-sample model comparisons such as AIC are not possible.
+All models were fitted using \emph{caret} \citep{caret} in R \citep{R}.
+One major benefit of \emph{caret} is that most of the procedures presented later for interpreting the models are immediately useable with over 200 machine learning models including up-to-date implementations of various models such as xgboost, h2o and keras \citep{xgboost, h2o, keras}.
+
+\subsubsection{\texorpdfstring{\emph{A priori} variable selection}{A priori variable selection}}\label{a-priori-variable-selection}
+
+The standard approach for modelling in ecology and comparative biology is to carefully select a relatively small set of covariates based on \emph{a priori} knowledge of the system \citep{whittingham2006we}.
+This process ensures that all variables are reasonably likely to be causally important, reduces overfitting and keeps the number of parameters small.
+As a baseline model, I fitted a linear model, selecting covariates that the literature suggests are related to litter size.
+I chose body size \citep{leutenegger1979evolution, tuomi1980mammalian}, gestation length \citep{okkens1993influence, bielby2007fast}, metabolic rate \citep{white2004does}, litters per year \citep{white2004does} and longevity \citep{wilkinson2002life, zammuto1986life}.
+
+
+\subsubsection{Statistical, parametric models}\label{statistical-parametric-models}
+
+If we have many covariates relative to sample size and have minimal \emph{a priori} knowledge of the system we may wish to include all the covariates in a linear model but regularise the coefficients.
+Similarly, if we want to include many interactions or transformed variables (as in maxent \citep{maxent} for example), the number of covariates can grow rapidly and regularisation becomes vital.
+This approach is also sensible if we care more about prediction than about unbiased estimates of parameters.
+The simplest regularised linear models are ridge regression \citep{ridge}, that includes a penalty on the square of the coefficients, and LASSO \citep{tibshirani1996regression} that penalises the absolute value of the coefficients and therefore more strongly penalises smaller values.
+For the PanTHERIA analysis I fitted an elastic net, a common model that blends both the ridge and the LASSO penalty.
+The total strength of the penalty, and the relative contribution of the two penalties were selected using cross-validation (figure \ref{fig:enethyp}).
+
+\subsubsection{Non-parametric, statistical models}\label{non-parametric-statistical-models}
+
+Given the parametric nature of the elastic net model, the way to include nonlinear responses and interactions is to define them manually before model fitting.
+This however still imposes important restrictions as it is difficult to know which nonlinear functions are potentially useful and the model is still ultimately constrained by the effects we can think of to include (typically polynomial terms, log and exponential transforms and sine transforms).
+In contrast, non-parametric models like Gaussian processes \citep{rasmussen2004gaussian} or splines \citep{splines} require no pre-specification of functional forms and instead the overall flexibility of the model is controlled with a hyperparameter.
+Given their statistical nature, the uncertainty estimates around predictions are a natural part of the model and should be well calibrated even if we extrapolate far from the data.
+For the PanTHERIA analysis I have fitted a Gaussian process model with a radial basis kernel \citep{kernlab}, selecting the scale hyperparameter using cross-validation (figure \ref{fig:gphyp}).
+
+\subsubsection{Non-parametric, non-statistical models}\label{non-parametric-non-statistical-models}
+
+Finally, I fitted a Random Forest model \citep{breiman2001random, wright2015ranger} as an example of a non-statistical, non-parametric model.
+I selected Random Forest as they tend to be easy to use, with few hyperparameters, and are robust to overfitting.
+A Random Forest is an ensemble of decision trees with each tree being fitted to a random bootstrap sample of the input data and each split in the tree selecting from a random sample of the covariates.
+Random Forests using the ranger \citep{wright2015ranger} package via \emph{caret} have three hyperparameters.
+Split rule, which determines how the decision tree splits are chosen, was set to `variance'.
+The maximum number of data points at a leaf (min.node.size), which can be used to prevent overfitting was selected by cross-validation (figure \ref{fig:rfhyp}).
+Finally, the number of randomly selected covariates to considered at each split (mtry) was also selected by cross-validation (figure \ref{fig:rfhyp}).
+Random Forests are however just one model amongst many non-statistical, non-parametric models.
+Other notable models include neural networks \citep{neuralnets}, boosted decision trees \citep{friedman2001greedy}, support vector machines \citep{svm} and nearest neighbour \citep{altman1992introduction}.
+Each model has benefits but the variety of machine learning methods is reviewed elsewhere \citep{crisci2012review}.
+
+
+\section{Global properties}\label{global-properties}
+
+The first level at which we can interpret the model is the global level; what do the fitted models tell us about the system as a whole?
+One global property of interest is how predictable the system is.
+This can be assessed using scatter plots of observed versus out-of-sample predictions (Figure \ref{fig:enetpredobs} \ref{fig:gppredobs} \ref{fig:rfpredobs}) as well as metrics such as \(r^2\) or the root mean squared error (Table \ref{tbl:allr2}).
+Random Forests are effective here as they are fast to fit, robust and need relatively little tuning.
+If a Random Forest has poor predictive performance then it is likely that either vital covariates are missing from the dataset or that the response is in fact very noisy.
+The Random Forest model fitted here has fairly good predictive performance (figure \ref{fig:rfpredobs}) with an \(r^2\) of 0.67.
+However, it can be seen that certain species, particularly those with very large litters, are predicted quite poorly.
+We can be fairly sure that this trait is not noisy as the evolutionary consequences of litter size are large.
+Therefore we are probably missing some important covariates.
+
+\begin{table}[t!]
+\begin{longtable}[c]{@{}ll@{}}
+\caption{\(R^2\) for all models fitted. \label{tbl:allr2}}\tabularnewline
+\toprule
+Model & \(R^2\)\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+Model & \(R^2\)\tabularnewline
+\midrule
+\endhead
+A priori linear & 0.34\tabularnewline
+Elastic net & 0.53\tabularnewline
+Gaussian Process & 0.63\tabularnewline
+Random Forest & 0.68\tabularnewline
+Random Forest w/ genus & 0.70\tabularnewline
+A priori phylogenetic & 0.72\tabularnewline
+Regularised phylogenetic & 0.74\tabularnewline
+Stacked generalisation & 0.72\tabularnewline
+Random Forest w/ phylogenetic distance & 0.81\tabularnewline
+\bottomrule
+\end{longtable}
+\end{table}
+
+We can also use predictive performance of machine learning models to scale our expectations for how well a more statistical or mechanistic model fits the data.
+Here, the linear model with \emph{a priori} variable selection (figure \ref{fig:aprioripredobs}) had performance not much worse than the elastic net model (figure \ref{fig:enetpredobs}) but considerably worse than the Random Forest (figure \ref{fig:rfpredobs}).
+The similarity between the elastic net model and \emph{a priori} selection implies that the literature search did a reasonable job of selecting important covariates.
+However, the fact that Random Forest performs much better than the \emph{a priori} linear model suggests that there are nonlinearities or interactions that are important but were not included in the \emph{a priori} model.
+This is not a suggestion to go back and add these variables to our \emph{a priori} model.
+This would amount to severe data snooping and would bias any significance tests performed on the \emph{a priori} model \citep{white2000reality}.
+The suggestion of missing complexity in the \emph{a priori} model is evidence that the model is misspecified and therefore care should be taken when interpreting even this simple linear model \citep{lyddon2018nonparametric, maldonado1993interpreting}.
+
+
+
+\begin{figure}[t!]
+  \centering
+  \subfloat[\emph{a priori} model\label{fig:aprioripredobs}]{\includegraphics[width =0.5\textwidth ]{figs/a_priori_var_selection-1.pdf}}
+  \subfloat[Elastic net\label{fig:enetpredobs}]{\includegraphics[width = 0.5\textwidth]{figs/elastic_net-2.pdf}}
+
+  \subfloat[Gaussian process\label{fig:gppredobs}]{\includegraphics[width =0.5\textwidth ]{figs/gp-2.pdf}}
+  \subfloat[Random Forest\label{fig:rfpredobs}]{\includegraphics[width = 0.5\textwidth]{figs/ranger-2.pdf}}
+  \label{fig:predobs}
+  \caption{
+    Predicted vs observed for a) the \emph{a priori} selected model, b) the elastic net model, c) the Gaussian process model and d) the Random Forest model.
+    The models are fitted under five fold cross-validation such that the data being predicted is not used at all in model fitting.
+  }
+\end{figure}
+
+We can also attempt to interpret the hyperparameters of our models to try to understand something about the complexity of the system.
+For the elastic net model, the lambda parameter and the number of non-zero coefficients give us some idea of the system's complexity (figure \ref{fig:enethyp}); if very few variables are retained and we get good predictive performance this suggests a simple system.
+Here we have \(\lambda = 0.03\) as the selected hyperparameter and only one coefficient being forced to zero.
+This gives some evidence that this is a complex system not easily explained by a few covariates.
+Similarly, the length scale, \(\sigma\), in the Gaussian process model is a crude measure of complexity, with small values implying that the functional relationships are highly non linear (figure \ref{fig:gphyp}).
+
+Finally, the Random Forest model has two hyperparameters (figure \ref{fig:rfhyp}); mtry is the number of randomly selected covariates to examined at each split in the trees and min.node.size is the maximum number of data points that can be in a leaf node of a tree.
+min.node.size protects against overfitting and gives an indication of how much noise relative to signal there is.
+Here, the smallest value of min.node.size tested gets elected which implies there is not much noise in the data relative to signal.
+The selected value for mtry was 20.
+mtry can be difficult to interpret and depends on the number of covariates included in the model.
+Very small values imply little or no interactions between covariates while intermediate or high values indicate that there are interactions between covariates.
+However, large values like the 20 selected here does not indicate interaction depths of 20.
+Instead it more likely implies that there are many uninformative covariates and so 20 covariates are needed to avoid splits that consider no useful covariates.
+This can be examined further by fitting models with additional random covariates.
+
+
+\begin{figure}[t!]
+  \centering
+  \subfloat[elastic net model\protect\label{fig:enethyp}]{\includegraphics[width =0.5\textwidth ]{figs/elastic_net-1.pdf}}
+  \subfloat[Gaussian proces model\protect\label{fig:gphyp}]{\includegraphics[width = 0.5\textwidth]{figs/gp-1.pdf}}
+
+  \subfloat[Random Forest model\protect\label{fig:rfhyp}]{\includegraphics[width =0.5\textwidth ]{figs/ranger-1.pdf}}
+  \label{fig:hyp}
+  \caption{
+    Hyperparameter selection for a) the elastic net model, b) the Gaussian process model and c) the Random Forest model.
+  }
+\end{figure}
+
+\section{Variable level properties}\label{variable-level-properties}
+
+We can also interpret a model at the level of the individual covariate.
+This can include random or fixed effects.
+We can examine variable importance \citep{oppel2009alternative}, importance of interactions between pairs of covariates and start to examine the functional responses of covariates.
+It is important however to remember that these models are not designed for inference; the following methods should be thought of as hypothesis generation and more formal, subsequent tests (on a different dataset) would be needed to confirm relationships between covariates and the response variable.
+
+\begin{table}[t!]
+\begin{longtable}[c]{@{}lll@{}}
+\caption{Variable importance values. \label{tbl:varimp}}\tabularnewline
+\toprule
+Model & Variable & Importance\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+Model & Variable & Importance\tabularnewline
+\midrule
+\endhead
+Elastic net & GestationLen\_d & 100\tabularnewline
+& AdultBodyMass\_g & 70.67\tabularnewline
+& GR\_MidRangeLat\_dd & 67.42\tabularnewline
+& GR\_MinLat\_dd & 62.73\tabularnewline
+& PET\_Mean\_mm & 61.68\tabularnewline
+Gaussian Process & GestationLen\_d & 100\tabularnewline
+& AdultBodyMass\_g & 70.67\tabularnewline
+& GR\_MidRangeLat\_dd & 67.42\tabularnewline
+& GR\_MinLat\_dd & 62.73\tabularnewline
+& PET\_Mean\_mm & 61.68\tabularnewline
+Random Forest & GestationLen\_d & 100\tabularnewline
+& AdultBodyMass\_g & 58.065\tabularnewline
+& AdultForearmLen\_mm & 26.915\tabularnewline
+& GR\_MidRangeLat\_dd & 25.800\tabularnewline
+& PET\_Mean\_mm & 22.957\tabularnewline
+\bottomrule
+\end{longtable}
+\end{table}
+
+Table \ref{tbl:varimp} shows the top five most important variables as determined by the three models \citep{oppel2009alternative}.
+These importance measures are not in absolute units so they are scaled such that the most important covariate has a value of 100.
+For the regularised linear model, variable importance is given simply by the magnitude of the regression coefficients (i.e.~ignoring the sign) and these raw values might be more useful than the scaled importance values.
+We can see that gestation length comes top for all three models and that latitude and PET are prominent in all three as well.
+Fitting multiple models and searching for consistency is one useful way to increase confidence in results (as in \citet{appelhans2015evaluating}).
+The fact that gestation length is found to be important also highlights the issue of causality; it is not clear which direction causality flows between gestation length and litter size.
+Does large litter sizes force gestation length to be small or does short gestation length allow large litters?
+It could also be true that causality flows in different directions in different species.
+
+\emph{Caret} provides an easy interface for getting variable importance measures for many model types; however the calculations being performed differ between models.
+For some models, including Random Forest, there are different methods for calculating variable importance \citep{oppel2009alternative, seifert2019surrogate} and some are more correct than others, especially in the presence of categorical variables.
+Here I have used the default variable importance given by caret; given there are no categorical variables this is acceptably unbiased.
+If more accurate variable importance measures are needed, a related model, conditional inference forests \citep{hothorn2006unbiased} or the maxstat split rule in ranger \citep{wright2017unbiased}, should be used instead.
+
+
+\begin{figure}[t!]
+  \centering
+  \subfloat[Gaussian process model\protect\label{fig:pdpgestgp}]{\includegraphics[width =0.5\textwidth ]{figs/pdp_gest-1.pdf}}
+  \subfloat[Random Forest model\protect\label{fig:pdpgestrf}]{\includegraphics[width = 0.5\textwidth]{figs/pdp_gest-2.pdf}}
+
+  \label{fig:pdp}
+  \caption{
+    PDP plot for Gestation Length in a) the Gaussian process model and b) the Random Forest model.
+  }
+\end{figure}
+
+It is also worth noting that the replicability of variable importance differs between model types and depends on the data set.
+For example, repeatedly fitting a neural network to these data gives very different results each time.
+In contrast, linear models, Gaussian processes and Random Forest generally give the same results each time.
+Furthermore, variable importance in the presence of collinearity is less reliable and less interpretable \citep{dormann2013collinearity}.
+Given two collinear variables, some models such as Random Forest will share the variable importance between them potentially masking an important variable.
+In contrast, other models such as stepwise regression might put all the variable importance into one variable with no guarantee that the correct variable is selected.
+
+Once some important covariates have been identified, it is useful to examine the shape of the relationship between covariate and response.
+The simplest way to do this is a partial dependence plot (PDP) \citep{friedman2001greedy}.
+This plot is calculated by evaluating the model n times for each data point using n equally spaced values of the covariate of interest.
+The mean response for each value of the covariates of interest is plotted.
+For the regularised linear model all the responses are, by definition, linear so a PDP is not useful.
+The PDPs for gestation length from the Gaussian process and Random Forest models are shown in figures \ref{fig:pdpgestgp} and \ref{fig:pdpgestrf}.
+It can be seen that neither response is linear and are both decreasing for low values of gestation length.
+However, the PDP for the Gaussian process model is increasing at high values of gestation length and is similar to a squared curve.
+In contrast, the Random Forest model is flat at high values of gestation length.
+
+\begin{table}[t!]
+\begin{longtable}[c]{@{}lll@{}}
+\caption{Interaction strengths. \label{tbl:interimp}}\tabularnewline
+\toprule
+Model & Variable & Interaction Importance\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+Model & Variable & Interaction Importance\tabularnewline
+\midrule
+\endhead
+Gaussian Process & AdultBodyMass\_g & 0.20\tabularnewline
+& AgeatEyeOpening\_d & 0.20\tabularnewline
+& Terrestriality & 0.20\tabularnewline
+& DispersalAge\_d & 0.16\tabularnewline
+& MaxLongevity\_m & 0.11\tabularnewline
+Random Forest & AdultBodyMass\_g & 0.34\tabularnewline
+& GestationLen\_d & 0.23\tabularnewline
+& Terrestriality & 0.15\tabularnewline
+& GR\_MaxLat\_dd & 0.10\tabularnewline
+& PET\_Mean\_mm & 0.10\tabularnewline
+\bottomrule
+\end{longtable}
+\end{table}
+
+
+
+While PDPs are computed as the mean of the response over the dataset, the variable importance measures calculated above are evaluated over all training data.
+There can therefore be a mismatch where a PDP looks flat while the variable importance is high.
+Relatedly, the PDP gives no information on interactions because it is only plotted at one value of the other covariates.
+To address these issues we can calculate the interaction importance for each covariate (table \ref{tbl:interimp}).
+This value is given by decomposing the prediction function into contributions from just the focal covariate, contributions from everything except the focal covariate and contributions that rely on both the focal covariate and non-focal covariates together.
+
+
+Once we have identified covariates with important interactions we can use individual conditional expectation (ICE) plots.
+Like PDPs, ICE plots calculate the predicted response value across a range of the focal covariate.
+However, instead of averaging over the dataset, they plot one curve for each data point (Figure \ref{fig:icegestgp} and \ref{fig:icegestrf}).
+In these plots we can start to see that the response curve differs depending on what value the other covariates take.
+As the number of data points increases, these plots can get very busy and so clustering the curves is useful (figure \ref{fig:clusticelatgp} and \ref{fig:clusticelatrf}).
+Here we can clearly see the range of responses that exist for a single covariate, with latitude having a positive relationship with litter size in some cases and a negative relationship in others.
+
+
+
+\begin{figure}[t!]
+  \centering
+  \subfloat[Gaussian process model\protect\label{fig:icegestgp}]{\includegraphics[width =0.5\textwidth ]{figs/ice-1.pdf}}
+  \subfloat[Random Forest model\protect\label{fig:icegestrf}]{\includegraphics[width = 0.5\textwidth]{figs/ice-2.pdf}}
+
+  \subfloat[Gaussian process model\protect\label{fig:clusticelatgp}]{\includegraphics[width =0.5\textwidth ]{figs/clustered_ice_lat-1.pdf}}
+  \subfloat[Random Forest model\protect\label{fig:clusticelatrf}]{\includegraphics[width = 0.5\textwidth]{figs/clustered_ice_lat-2.pdf}}
+
+  \label{fig:ice}
+  \caption{
+    ICE plot for Gestation Length in a) the Gaussian process model and b) the Random Forest model.
+    Clustered ICE plot for latitude in c) the Gaussiean process model and b) the Random Forest model.
+  }
+\end{figure}
+
+
+Gaussian process models and Random Forests implicitly consider deep interactions which become increasingly difficult to interpret.
+However, if we can identify important two way interactions we can start to interpret these.
+We can find the interaction strength between two features in a similar fashion to finding variable importance.
+We can consider the 2D PDP of two covariates (figure \ref{fig:2dgestlatgp} \ref{fig:2dgestlatrf}) and calculate what proportion of the curve is explained by the sum of the two 1D PDPs (e.g.~figure \ref{fig:pdpgestgp}).
+We can therefore take one covariate that we know has strong interactions (``GestationLength\_d'' as seen in table \ref{tbl:interimp}) and calculate the two-way interaction strength between that covariate and all other covariates (table \ref{tbl:specificinter}).
+Finally, once important interactions have been identified, the 2D PDP can be examined to determine the shape of that interaction (figure \ref{fig:2d}).
+Looking at the 2D PDP of gestation length and PET for the Gaussian process model we can see that for most of the range of the data we have a U-shaped relationship.
+However, at low values of gestation length, this U-shaped relationship flattens out and even becomes inverted at very low values.
+In the Random Forest model, the relationship appears to be more monotonically decreasing with increased PET while there is again a suggestion of an inverse U-shape relationship at low values of gestation length.
+
+
+
+\section{Handling non-independent data}\label{handling-non-independent-data}
+
+The PanTHERIA dataset is an example of a dataset that strongly violates assumptions of independence.
+The autocorrelation here arises due to common ancestry of species; two species that recently diverged from a common ancestor are likely to be more similar than species whose common ancestor is in the deep past.
+This autocorrelation is typically handled with a phylogenetic random effect \citep{felsenstein1985phylogenies, ives2006statistics, gay2014parasite, pellissier2012shifts, ferguson2014colony} while other sources of autocorrelation such as time or space can be similarly handled with an appropriate random effects term \citep{ives2006statistics, redding2017evaluating, diggle1998model}.
+Categorical random effects can be used to model a wide variety of sources of autocorrelation such as multiple samples from a single individual, study site or lab  \citep{harrison2018brief, bolker2009generalized}.
+
+Including random effects within parametric or non-parametric statistical models is entirely possible with flexible modelling packages \citep{stan, INLA, glmmTMB, tmb}.
+As a simple demonstration I fitted a phylogenetic linear model via INLA \citep{INLA} using the \emph{a priori} selected covariates (cross-validated \(r^2 = 0.72\)) and a phylogenetic linear model using all covariates and strong regularising priors (\(r^2 = 0.74\)).
+Both models, when fitted to all the data, yielded posterior means of 0.04 for the standard deviation of the phylogenetic random effect which implies a relatively weak effect.
+
+\begin{table}[t!]
+\begin{longtable}[c]{@{}lll@{}}
+\caption{Specific interaction strengths between GestationLength\_d and other variables. \label{tbl:specificinter}}\tabularnewline
+\toprule
+Model & Variable & Interaction Importance\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+Model & Variable & Interaction Importance\tabularnewline
+\midrule
+\endhead
+Gaussian Process & WeaningBodyMass\_g\_EXT & 0.54\tabularnewline
+& SocialGrpSize & 0.22\tabularnewline
+& WeaningBodyMass\_g & 0.20\tabularnewline
+& HomeRange\_km2 & 0.17\tabularnewline
+& AgeatFirstBirth\_d & 0.16\tabularnewline
+Random Forest & AdultForearmLen\_mm & 0.14\tabularnewline
+& AdultBodyMass\_g & 0.12\tabularnewline
+& WeaningAge\_d & 0.11\tabularnewline
+& GR\_MidRangeLat\_dd & 0.08\tabularnewline
+& Terrestriality & 0.07\tabularnewline
+\bottomrule
+\end{longtable}
+\end{table}
+
+
+However, combining random effects with non-parametric, non-statistical models is more difficult.
+While these models are starting to be developed \citep{ngufor2019mixed, hajjem2014mixed, hajjem2017generalized, eo2014tree, miller2017gradient, REEMtree}, they are not available in R packages, are only implemented for a small subset of machine learning algorithms and do not necessarily benefit from the computational improvements implemented in the most up-to-date packages \citep{wright2015ranger, xgboost}.
+Therefore, generic methods for handling random effects, that can be used with any machine learning algorithm, are useful.
+The na\"{i}ve approach to including random effects within machine learning models would be to simply include them as covariates; categorical random effects as categorical covariates, space or time as continuous variables for example.
+However to understand when this approach is or is not appropriate, we have to examine three factors as to why these effects are not just included as fixed effects in typical mixed-effects models.
+
+Firstly, we expect to extrapolate continuous random effects and expect unseen categories during prediction when using categorical random effects.
+Many machine learning models extrapolate poorly, for example tree based models will predict a flat response curve outside the range of the data.
+For an effect such as space this is undesirable and we would instead typically wish the spatial prediction to return to the mean of the data \citep{rasmussen2004gaussian, hengl2018random}.
+Predicting unseen categories of a categorical variable presents problems as well.
+A categorical variable might often be encoded as a full-rank one-hot dummy variable (one dummy variable less than the number of categories) and unseen categories would be implicitly predicted using the fitted value for the first category.
+This is not how we would wish the model to behave.
+
+\begin{figure}[t!]
+  \centering
+  \subfloat[Gaussian process model\protect\label{fig:2dgestlatgp}]{\includegraphics[width =0.5\textwidth ]{figs/pdp_gest_pet-1.pdf}}
+  \subfloat[Random Forest model\protect\label{fig:2dgestlatrf}]{\includegraphics[width = 0.5\textwidth]{figs/pdp_gest_pet-2.pdf}}
+  \caption{
+    2D PDP plot for Gestation Length and PET in a) the Gaussian process model and b) the Random Forest model.
+  }
+  \label{fig:2d}
+\end{figure}
+
+Secondly, we often have many categories and little data per category in a categorical random effect and wish to share power across groups.
+This low number of data points per parameter can be reframed as a regularisation problem.
+The regularisation can be seen explicitely in the Bayesian formulation of random effects models (hierarchical models) where the random parameters are regularised by a zero centered prior, the strength of which is in turn learned from the data \citep{simpson2017penalising}.
+
+Finally, random effects are often included as a way to control for autocorrelation rather than being part of the desired predictive model.
+For example, if all future predictions are to be for unseen categories of a categorical random effect or if all spatial predictions are to be made far from data, then we might want to construct our model simply so that the model is unbiased by these autocorrelations rather than using them directly in predictions.
+Similarly if the data collection was biased with respect to a random effect, we might want to control for this without wanting to use this effect in predictions.
+For example, if data was collected by different labs or with different protocols, we might want to control for this effect but then predict the latent effect.
+If the presence of a species is measured using different methods (camera trapping, visual surveys etc.) we might want to control for this, but we aim to predict the latent state ``species presence'', not ``species presence as measured by camera trapping''.
+
+Given these issues we can consider how to include random effects into the Random Forest model and then examine the results when these are applied to the PanTHERIA analysis.
+While we are continuing to use Random Forest as our example model, these methods are applicable to most machine learning methods.
+One way of including phylogenetic information in an analysis is to treat a taxonomic level such as genus as a categorical random effect.
+While this is less principled than properly including the phylogeny, it is simple.
+This method also allows a demonstration of categorical random effects.
+
+If we use genus as a categorical random effect to encapsulate some phylogenetic information, the first issue to is that we must be careful that the software does not automatically encode the data as a full-rank one-hot dummy variable.
+While less-than-full-rank form would cause identifiability issues with the intercept in a linear model, the random columns and greedy splitting during tree building means we do not have to worry about identifiability in the context while using Random Forest.
+
+The second issue above was that of regularisation.
+Random Forest will automatically consider all interactions between our covariates and genus effect.
+Random Forest is natively regularised by the bootstrap aggregation, and the complexity of the model is further controlled by hyper parameters as in figure \ref{fig:rfhyp}.
+The new model can therefore be fitted in the same way as the old model.
+However, given that, in creating the one-hot dummy variables, I have added many covariates I increased the range of the mtry parameter.
+
+The final consideration above was the case where we expect all predictions to be made on new categories.
+In the case of Random Forest, the above methods are suitable.
+However, given a model that cannot regularise as effectively or if our dataset was quite small we might have wanted to control for genus without including it as a covariate in the model at all.
+In this case we can simply weight the data so that each genus is equally represented.
+Alternatively we could weight the data so that each genus is represented proportionally to the number of species in each genus in the full prediction set (all mammals for example).
+Many models in \emph{caret} accept a weight argument so this is a fairly general solution.
+
+I obtained an \(r^2\) value of 0.70 for the model that used genus encoded as a one-hot dummy variables.
+As this is marginally better than the Random Forest model without genus as a covariate, this provides some evidence that phylogenetic effects are present.
+The best hyperparameters were mtry = 500 (which implies that many of the genera are not very useful on their own) and min.node.size = 5 which is the same as the model without genus as a covariate.
+
+If however, we wish to include the full phylogeny in our model, we need different methods.
+The first method is to include all the phylogenetic information in covariates \citep{hengl2018random}.
+Given the data set of 2143 data points we can do this by defining 2143 new covariates that measure the phylogenetic distance between data points.
+That is, the first new covariate is the phylogenetic distance between every data point and the first datapoint
+This is then repeated to create 2143 new covariates.
+This method is relatively untested but is general and can work with any machine learning algorithm.
+However, interpretation of the strength of the phylogeny will be relatively difficult as it is encoded as 2143 different covariates.
+Fitting a Random Forest to this augmented dataset was the best performing model out of all tested and gave an \(r^2\) of 0.81.
+
+The second method involves fitting multiple machine learning models and then using phylogenetic regression to `stack' them.
+We fit a number of machine learning algorithms and make out-of-sample predictions within the cross-validation framework.
+We then fit a phylogenetic mixed-effects model using the out-of-sample predictions as covariates and constraining the regression coefficients to be positive.
+This method is likely to be very effective at prediction and the phylogenetic component of the regression is interpretable as it would be in any normal phylogenetic regression.
+However, this method only corrects for the biases from autocorrelated data after the machine learning models are fitted; while it may still be possible to interpret the machine learning models as we have done previously, the computed nonlinear relationships remain biased.
+I fitted this model using the three original models (elastic net, Gaussian process regression and Random Forest) and fitted a hierarchical phylogenetic mixed-effects model using INLA \citep{INLA}.
+I obtained a cross-validated \(r^2\) of 0.72.
+Fitting the model on all the data yielded a posterior mean of 0.03 for the standard deviation of the phylogenetic random effect.
+
+While I cannot demonstrate the handling of spatial or temporal autocorrelation with this dataset the methods described above are equally applicable \citep{elith2009species}.
+In a method analogous to using genus as a categorical variable, space can be split into regions and the region used as a categorical variable \citep{appelhans2015evaluating}.
+This approach is commonly used with predefined spatial units such as countries.
+Another common approach with spatial data is ``thinning'' and is conceptually similar to the weighting method for categorical data \citep{elith2010art}.
+In its simplest form, thinning, involves removing data points so that each spatial pixel has at most one data instance \citep{elith2010art, verbruggen2013improving}.
+This is equivalent to treating the pixel as a categorical variable and subsampling as above until each pixel is equally represented (noting that each pixel is represented equally in the prediction dataset i.e.~once).
+Also note that in the context of presence-only data, this is equivalent to weighting the data but with presence-absence data or continuous response data, weighting is a better way to include all the data.
+More subtle methods involve removing data based on the local density \citep{verbruggen2013improving}.
+In this method, a kernel bandwidth is chosen either \emph{a priori} or by cross-validation, then data is probabilistically removed based on the density of data geographically near it.
+Again, weighting the data may be more principled.
+
+Temporal effects are easier to handle as they are one dimensional with causation only able to occur in one direction.
+Furthermore, they have been studied in detail in the machine learning literature \citep{jeong2008non}.
+For regular time series we can typically include covariates created from the lagged response variable while for irregular time series we can create covariates like ``mean response within X units of time previous to this datapoint''.
+
+\section{Data-point level properties}\label{data-point-level-properties}
+
+Finally, we can try to interpret models at the level of the individual prediction \citep{lime, ribeiro2016should, lundberg2017unified, ribeiro2016nothing}.
+Model interpretation at a single point is a much easier task than interpreting the global model because at a small enough scale the response curve is either monotonically increasing or decreasing or flat, so complex non-linear curves do not need to be considered.
+
+However, it is difficult to examine the model at all data points.
+Therefore we must focus our analysis on a few, interesting or important points.
+Points with the highest or lowest predicted values may tell us something about what factors makes these points receive extreme predictions.
+Alternatively, we might be more interested in a subset of points for an external reason.
+In the PanTHERIA example we might be particularly interested in one taxonomic group.
+Alternatively, we might want to interpret predictions that are going to be used directly in a conservation program for example.
+
+The method Local Individual Model Evaluation (LIME) examines the behaviour of a model at a point by  permuting the covariates slightly around the point and making predictions from the model over this new dataset \citep{lime, ribeiro2016should, lundberg2017unified, ribeiro2016nothing}.
+Then a simple, interpretable model, such as ridge regression, is fitted to this dataset.
+As we do not need to consider non-linear relationships, this simpler model should accurately describe the behaviour at the local scale.
+
+In figures \ref{fig:limegp} and \ref{fig:limerf} we can see the outputs of a LIME analysis for the data points with the highest predicted litter size according to the Gaussian process and Random Forest model.
+It is important to note that as we know the true litter size values for these species we can see that the top-predicted data points are not actually the species with the highest litter size.
+This reminds us not to interpret this LIME analysis as ``what factors imply the highest litter size'' but rather ``why are these particular species predicted as having large litters''.
+We can however interpret these outputs alongside the variable importance estimates in table \ref{tbl:varimp}.
+If we examine the species shown in the left pane of figure \ref{fig:limegp} we can see that Gestation length is the most important factor in determining why this species has been predicted as having a large litter size.
+In table \ref{tbl:varimp} we see that gestation length is a very important variable so if this species may well only have a slightly long gestation length, but combined with the strong variable importance this then strongly predicts that the species has a large litter size.
+In contrast, age at sexual maturity is the second strong factor in determining the prediction for this species' litter size but it is not in the top 5 factors in terms of variable importance.
+Therefore we expect this species must have quite a large value for age at sexual maturity for this factor to be so important in determining the predicted litter size.
+We can further examine as many of the factors as necessary.
+
+One notable difference between the LIME analysis for the Gaussian process model and the Random Forest model is that for the Gaussian process model, most covariates are in agreement that these data points should have large predicted litter sizes (the bars are green and point to the right).
+In contrast, there is a lot of contradiction between covariates in the Random Forest model.
+For the species on the left of figure \ref{fig:limerf} the strongest single covariate contribution (body mass) is suggesting that these species should have a small litter size.
+This might be because of the noisey relationships given by Random Forest models.
+These predictions might be harder to defend in a policy context for example.
+
+
+\begin{figure}[t!]
+\centering
+\includegraphics{figs/lime-2cr.pdf}
+\caption{LIME analysis of predictions of five points from the Gaussian process model.\protect\label{fig:limegp}}
+\end{figure}
+
+\begin{figure}[t!]
+\centering
+\includegraphics{figs/lime-3cr.pdf}
+\caption{LIME analysis of predictions of five points from the Random Forest model.\protect\label{fig:limerf}}
+\end{figure}
+
+\section{Future directions and conclusions}\label{future-directions-and-conclusions}
+
+It is clear that machine learning is continuing to grow in popularity in ecology.
+However, it currently remains used almost solely for purely predictive purposes.
+The full potential of these methods is therefore not being realised.
+For ecologists to get the most out of machine learning methods they must be more clear about the purposes of their analyses; is a well defined hypothesis being tested, is a dataset being explored for potential relationships to drive hypothesis generation, or is prediction the main focus?
+This clarity makes it possible to be clear about the trade-offs in any statistical analysis and to use the most effective tools given the desired outcomes.
+Using simple linear models is often not optimal if discovery of relationships or predictions are the aim; if a formal hypothesis is being tested Random Forests are unlikely to be the best choice.
+Finally, being clear about the aims allows sensible planning on how data will be used in the longer term.
+If the aim is to discover some relationships and then formally test them, the best use of a given dataset may be to split it and use half for discovery and half for hypothesis testing.
+This workflow would not occur to an analyst who was unclear about their task.
+
+While the methods here have been generic machine learning methods, there are a number of approaches for combining mechanistic models and non-parametric models.
+These include using a mechanistic model as the mean function of a Gaussian process \citep{rasmussen2004gaussian} or using a mechanistic model as a regularising prior for a non-parametric model \citep{lyddon2018nonparametric}.
+These methods have great potential for combining the interpretability of mechanistic models and the interpolative predictive ability of non-parametric machine learning models.
+
+Finally, as with all modelling, interpretation of machine learning models requires human input.
+While many algorithms are objectively tested for various modelling properties, very few have been tested for their ability to aid the human interpreter.
+Studies that do specifically test this aspect are very welcome \citep{bastani2017interpreting}.
+This algorithm-psychology interface is an important area of future research.
+
+To conclude, in this review I have demonstrated  a number of methods for interpreting machine learning models.
+All models lie on a continuum of interpretability and complexity.
+These models are not as easy to interpret as carefully constrained statistical models.
+However this is because they instead allow greater predictive accuracy and allow the analyst to discover relationships they had no hypothesised \emph{a priori}.
+The interpretation of these models needs to done carefully and requires user interaction and exploration in a way that is less vital in interpreting standard statistical models.
+To this end machine learning models tend to be better at exploration and hypothesis generation while more robust statistical methods are still needed to formally test most hypotheses.
+The power here lies in the way a scientist defines their questions and uses machine learning alongside other methods.
+
+
+
+
+\bibliography{machinelearn.bib}
+
+\end{document}
