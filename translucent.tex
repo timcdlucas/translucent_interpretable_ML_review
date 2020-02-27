@@ -1,4 +1,4 @@
-\documentclass[10pt,]{article}
+\documentclass[12pt,]{article}
 \usepackage{lmodern}
 \usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
@@ -22,6 +22,8 @@
   \fi
   \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
 \fi
+
+\usepackage{mathptmx}
 % use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 % use microtype if available
@@ -68,6 +70,11 @@
 \let\oldsubparagraph\subparagraph
 \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
+
+\linespread{2}
+\raggedright
+\usepackage{lineno}
+\linenumbers
 
 %\setcounter{topnumber}{1}
 %\setcounter{totalnumber}{1}
@@ -132,7 +139,7 @@ Alternatively, it might be useful to use a highly predictive model to generate h
 Supervised learning is a subfield of machine learning and is the archetypal modelling found in biology.
 The analyst has some response data and some covariates and the task is to predict the response data.
 Therefore models such as generalised linear models, mixed effects models and time series modelling would come under supervised learning.
-If the response variable is continuous, supervised learning is referred to as regression; if the response  variabel is categorical, with two or more categories, the task is referred to as classification.
+If the response variable is continuous, supervised learning is referred to as regression; if the response  variable is categorical, with two or more categories, the task is referred to as classification.
 While there are many different ways you could classify machine learning models, one that is useful for discussions of interpretability is to split models into three groups: i) parametric, statistical models, ii) non-parametric, statistical models and iii) non-statistical, non-parametric models (see box 1).
 
 
@@ -140,13 +147,13 @@ While there are many different ways you could classify machine learning models, 
 \begin{figure*}[t]
 \centering
 \colorbox{boxcolour}{
-\begin{minipage}{1\textwidth}
+\begin{minipage}{1.\textwidth}
 
 
 \setlength{\parindent}{3mm}
-\noindent\textsf{\textbf{Box 1: Types of machine learning model}}\footnotesize
-
-\vspace{-2mm}
+\noindent\textsf{\textbf{Box 1: Types of machine learning model}}\scriptsize 
+\linespread{0.1}
+\vspace{-4mm}
 \subsection{Parametric, statistical models}
 This group includes many models commonly used by biologists.
 They are parametric because their functional form (the shapes that the relationships between covariates and response variables can take) is defined in advance.
@@ -485,7 +492,7 @@ In the Random Forest model, the relationship appears to be more monotonically de
   \label{fig:ice}
   \caption{
     ICE plot for Gestation Length in a) the Gaussian process model and b) the Random Forest model.
-    Clustered ICE plot for latitude in c) the Gaussiean process model and b) the Random Forest model.
+    Clustered ICE plot for latitude in c) the Gaussian process model and b) the Random Forest model.
   }
 \end{figure}
 
