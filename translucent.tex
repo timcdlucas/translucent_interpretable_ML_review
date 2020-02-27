@@ -497,8 +497,9 @@ This autocorrelation is typically handled with a phylogenetic random effect \cit
 Categorical random effects can be used to model a wide variety of sources of autocorrelation such as multiple samples from a single individual, study site or lab  \citep{harrison2018brief, bolker2009generalized}.
 
 Including random effects within parametric or non-parametric statistical models is entirely possible with flexible modelling packages such as Stan, INLA, TMB or Greta  \citep{stan, INLA, golding2019greta, tmb}.
-As a simple demonstration I fitted a phylogenetic linear model via INLA \citep{INLA} using the \emph{a priori} selected covariates (cross-validated \(r^2 = 0.72\)) and a phylogenetic linear model using all covariates and strong regularising priors (\(r^2 = 0.74\)).
-Both models, when fitted to all the data, yielded posterior means of 0.04 for the standard deviation of the phylogenetic random effect which implies a relatively weak effect.
+As a simple demonstration I fitted a phylogenetic linear model via INLA \citep{INLA} using the \emph{a priori} selected covariates  and a phylogenetic linear model using all covariates and strong regularising priors (\(r^2 = 0.74\)).
+For both models, the species-level phylogenetic terms correlate strongly with the species-level fitted value suggesting the phylogenetic effect is an important component of the models.
+This fact is supported by the fact that the out-of-sample $r^2$ values are much higher in the phylogenetic models ($r^2 = 0.72$ and 0.74) than those of the non-phylogenetic models ($r^2 = 0.34$ and 0.53). 
 
 
 However, combining random effects with non-parametric, non-statistical models is more difficult.
