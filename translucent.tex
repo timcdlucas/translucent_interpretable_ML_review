@@ -102,7 +102,8 @@ Many researchers consider machine learning algorithms to be a black box.
 While it can be difficult to interpret fitted machine learning models these models can, with careful examination, be used to inform our understanding of the world.
 They are translucent boxes.
 Furthermore, the interpretation of these models can be an important step in building confidence in a model or in a specific prediction from a model.
-In this review I review a number of techniques for interpreting machine learning models, discuss the limits of interpretability for different methods and demonstrate these approaches using a case example of understanding litter sizes in mammals.
+In this review I present a number of techniques for interpreting machine learning models at the level of the system, the variable and the individual prediction as well as methods for handling non-independent data.
+I also discuss the limits of interpretability for different methods and demonstrate these approaches using a case example of understanding litter sizes in mammals.
 
 
 
@@ -124,20 +125,22 @@ They therefore estimate nonlinear relationships between covariates and response 
 Secondly, they often fit deep interactions between covariates \citep{lunetta2004screening}.
 Even simple, two-way interactions in linear models cause confusion \citep{engqvist2005mistreatment, lamina2012visualizing} and deep, nonlinear interactions are difficult to visualise or understand.
 Thirdly, fitting machine learning models is often stochastic \citep{breiman2001random, glorot2002understanding} and fitting the same model with different starting values may give a totally different set of fitted parameters (though perhaps with similar predictive performance).
-However, while interpretation of machine learning models can be difficult, there is plenty of insight to be gained by fitting and appraising these models, as will be seen in this review.
+However, while interpreting machine learning models can be difficult, there is plenty of insight to be gained by appraising these models at the level of the system, the variable and the individual prediction as well as by considering autocorrelative structure in the data.
 
 Given the black box reputation one might wonder why we should bother interpreting machine learning models; if the predictions are good, then the objective has been achieved.
 However, any predictions that may be used to make decisions (i.e.~any predictions of interest) should be examined carefully.
 Particular examples of this include predictions used for conservation policy or health care \citep{vayena2018machine}.
 Careless predictions can have severe effects on the entity for which the predictions are being made (an endangered species or a person at risk of a disease for example) and can more generally erode trust between modellers, policy makers and other stakeholders.
 In regulated fields such as healthcare, these considerations come with legal backing.
-Interpreting machine learning models as part of model verification has been the primary driver of research in this field \citep{molnar, ribeiro2016should}.
+Appraising models as part of model verification has been the primary driver of research in the field of interpretable machine learning \citep{molnar, ribeiro2016should}.
+Broadly we might want to carefully quantify how accurate the predictions from our models are, consider whether the fitted relationships between covariates and response variables are plausible and understand why an individual prediction is given.
+
 
 However, there are further reasons to interpret machine learning models that apply to fields that are further removed from policy decisions \citep{elith2009species}.
 The same traits that make machine learning models good at prediction and difficult to interpret also makes them potentially useful in exploratory analysis before more formal statistical modeling \citep{zhao2017causal}.
-The nonparametric nature of many machine learning models means they can discover nonlinear relationships and interactions without specifying them \emph{a priori} as would be required in more statistical modelling.
-Furthermore, they can be useful as a baseline to compare how well a mechanistic model performs.
-Finally it is worth noting that standard statistical models are often not as interpretable as they seem; understanding the results from a statistical model is made more difficult in the presence of colinearity between covariates or when nature's true model is not in the set of models being considered \citep{lyddon2018nonparametric, yao2017using}.
+Firstly, they can be useful as a global-level baseline to compare how well a mechanistic model performs.
+Secondly, the nonparametric nature of many machine learning models means they can discover nonlinear relationships between covariates and response variables and interactions between covariates without specifying them \emph{a priori} as would be required in more statistical modelling.
+It is also worth noting that standard statistical models are often not as interpretable as they seem; understanding the results from a statistical model is made more difficult in the presence of colinearity between covariates or when nature's true model is not in the set of models being considered \citep{lyddon2018nonparametric, yao2017using}.
 Therefore, in some cases it might be better to fit a more predictive model and sacrifice some, but not all, interpretability.
 Alternatively, it might be useful to use a highly predictive model to generate hypotheses which could then be tested in a more formal statistical framework \citep{zhao2017causal}.
 
@@ -202,7 +205,8 @@ These methods will be examined in more detail in the body of the review.
 In this review I will present an illustrative analysis on the PanTHERIA dataset \citep{jones2009pantheria} which contains mammalian life history traits.
 I fitted four models, with variations, that span the range of interpretability: i) a simple linear model with \emph{a priori} variable selection as is often used in ecology ii) a parametric statistical model, the elastic net \citep{elasticnet} iii) a non-parametric statistical model, Gaussian process regression \citep{rasmussen2004gaussian} and iv) a non-parametric, non-statistical model, Random Forest \citep{breiman2001random}.
 For each of these models I demonstrate how they can be interpreted with methods that are applicable to a wide variety of machine learning models.
-More specifically, I examine how the models can be interpreted at the level of the full model, the individual covariate (with attention given to random effects) and finally at the level of the individual prediction.
+More specifically, I examine how the models can be interpreted at the level of the full model, the individual variable and at the level of the individual prediction.
+I then demonstrate methods for handling and interpreting autocorrelation in the data.
 The full analysis is included as a reproducible R \citep{R} script that reads data directly from online repositories (S1).
 
 \section{Example analysis}\label{example-analysis}
@@ -712,6 +716,7 @@ Studies that do specifically test this aspect are very welcome \citep{bastani201
 This algorithm-psychology interface is an important area of future research.
 
 To conclude, in this review I have demonstrated  a number of methods for interpreting machine learning models.
+These methods were used to examine global properties of the models, describe the ways in which individual variables relate to the response variable, quantify what factors drove individual predictions and finally to explore the autocorrelation structure within the data.
 Interpreting machine learning models has two major benefits: firstly, predictions from a better understood model can be better defended in practical applications; secondly, machine learning methods can be used for exploratory statistics and hypothesis generation.
 All models lie on a continuum of interpretability and complexity.
 These models are not as easy to interpret as carefully constrained statistical models.
