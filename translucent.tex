@@ -248,7 +248,7 @@ This approach is also sensible if we care more about prediction than about unbia
 The simplest regularised linear models are ridge regression \citep{ridge}, that includes a penalty on the square of the coefficients, and LASSO \citep{tibshirani1996regression} that penalises the absolute value of the coefficients and therefore more strongly penalises smaller values.
 For the PanTHERIA analysis I fitted an elastic net, a common model that blends both the ridge and the LASSO penalty.
 The total strength of the penalty, and the relative contribution of the two penalties were selected using cross-validation.
-In figure \ref{fig:enethyp} we can see that the best performing model had mostly a LASSO penalty and an intermediate amount of regularization.
+Figure \ref{fig:enethyp} shows how predictive performance varies with hyperparameter values and we can see that the best performing model had mostly a LASSO penalty and an intermediate amount of regularization.
 
 
 \begin{figure}[t!]
@@ -271,7 +271,7 @@ This however still imposes important restrictions as it is difficult to know whi
 In contrast, non-parametric models like Gaussian processes \citep{rasmussen2004gaussian} or splines \citep{splines} require no pre-specification of functional forms and instead the overall flexibility of the model is controlled with a hyperparameter.
 Given their statistical nature, the uncertainty estimates around predictions are a natural part of the model and should be well calibrated even if we extrapolate far from the data.
 For the PanTHERIA analysis I have fitted a Gaussian process model with a radial basis kernel \citep{kernlab}, selecting the scale hyperparameter using cross-validation.
-We can see (figure \ref{fig:gphyp}) that a relatively short scale length, which allows quite non-linear relationships, had a best model performance.
+We can see (figure \ref{fig:gphyp}) that a relatively short scale length, which allows quite non-linear relationships, had the best model performance.
 
 \subsubsection{Non-parametric, non-statistical models}\label{non-parametric-non-statistical-models}
 
@@ -282,7 +282,7 @@ Random Forests using the ranger  package \citep{wright2015ranger} via \emph{care
 Split rule, which determines how the decision tree splits are chosen, was set to `variance'.
 The maximum number of data points at a leaf (min.node.size), which can be used to prevent overfitting was selected by cross-validation.
 The number of randomly selected covariates to be considered at each split (mtry) was also selected by cross-validation.
-We can see that high values of mtry and low values of minimum node size were selected as the best performing hyperparameters (figure \ref{fig:rfhyp}).
+We can see that high values of mtry and low values of minimum node size had the best performing hyperparameters (figure \ref{fig:rfhyp}).
 
 
 \section{Global properties}\label{global-properties}
@@ -292,7 +292,7 @@ One global property of interest is how predictable the system is.
 This can be assessed using scatter plots of observed versus out-of-sample predictions (Figure \ref{fig:enetpredobs} \ref{fig:gppredobs} \ref{fig:rfpredobs}) as well as metrics such as  \(r^2\) (the proportion of the variance of the held-out observed values explained by the predictions) or the root mean squared error (Table \ref{tbl:allr2}).
 Random Forests are effective here as they are fast to fit, robust and need relatively little tuning.
 If a Random Forest has poor predictive performance then it is likely that either vital covariates are missing from the dataset or that the response is in fact very noisy.
-The Random Forest model fitted here has fairly good predictive performance (figure \ref{fig:rfpredobs}) with an \(r^2\) of 0.68.
+The Random Forest model fitted here has fairly good predictive performance (the points in figure \ref{fig:rfpredobs} cluster relatively closely to the one-one line) with an \(r^2\) of 0.68.
 However, it can be seen that certain species, particularly those with very large litters, are predicted quite poorly.
 We can be fairly sure that this trait is not noisy as the evolutionary consequences of litter size are large.
 Therefore we are probably missing some important covariates which is a useful result gained solely by interpreting the model at the global level.
