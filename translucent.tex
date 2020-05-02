@@ -76,17 +76,24 @@
 \usepackage{lineno}
 \linenumbers
 
+\usepackage[font=small]{caption}
+
+
 %\setcounter{topnumber}{1}
 %\setcounter{totalnumber}{1}
 %\renewcommand{\topfraction}{0.6}
 %\renewcommand{\textfraction}{0.3}
 
 \title{A translucent box: interpretable machine learning in ecology}
-\author{Tim C. D. Lucas}
+\author{Tim C. D. Lucas\textsuperscript{1}\\
+1. Big Data Institute, University of Oxford}
+
 \date{}
 
 \begin{document}
 \maketitle
+
+Running header: A translucent box
 
 \section{Abstract}\label{abstract}
 
@@ -400,12 +407,13 @@ If more accurate variable importance measures are needed, a related model, condi
 
 \begin{figure}[t!]
   \centering
-  \subfloat[Gaussian process model\protect\label{fig:pdpgestgp}]{\includegraphics[width =0.5\textwidth ]{figs/pdp_gest-1.pdf}}
-  \subfloat[Random Forest model\protect\label{fig:pdpgestrf}]{\includegraphics[width = 0.5\textwidth]{figs/pdp_gest-2.pdf}}
+    \subfloat[Elastic net model\protect\label{fig:pdpgestenet}]{\includegraphics[width = 0.33\textwidth ]{figs/enet_marginals-1.pdf}}
+  \subfloat[Gaussian process model\protect\label{fig:pdpgestgp}]{\includegraphics[width = 0.33\textwidth ]{figs/pdp_gest-1.pdf}}
+  \subfloat[Random Forest model\protect\label{fig:pdpgestrf}]{\includegraphics[width = 0.33\textwidth]{figs/pdp_gest-2.pdf}}
 
   \label{fig:pdp}
   \caption{
-    PDP plot for Gestation Length in a) the Gaussian process model and b) the Random Forest model.
+    PDP plot for Gestation Length in a) the elastic net model, b) the Gaussian process model and c) the Random Forest model. The elastic net model can only fit linear relationships, the Gaussian process model fits smooth non-linear relationships while the Random Forest model fits more blocky relationships due to the decision trees that underpins it.
   }
 \end{figure}
 
@@ -483,16 +491,21 @@ In the Random Forest model, the relationship appears to be more monotonically de
 
 \begin{figure}[t!]
   \centering
-  \subfloat[Gaussian process model\protect\label{fig:icegestgp}]{\includegraphics[width =0.5\textwidth ]{figs/ice-1.pdf}}
-  \subfloat[Random Forest model\protect\label{fig:icegestrf}]{\includegraphics[width = 0.5\textwidth]{figs/ice-2.pdf}}
+    \subfloat[Elastic net model\protect\label{fig:icegestenet}]{\includegraphics[width =0.33\textwidth ]{figs/enet_marginals-2.pdf}}
+  \subfloat[Gaussian process model\protect\label{fig:icegestgp}]{\includegraphics[width =0.33\textwidth ]{figs/ice-1.pdf}}
+  \subfloat[Random Forest model\protect\label{fig:icegestrf}]{\includegraphics[width = 0.33\textwidth]{figs/ice-2.pdf}}
 
   \subfloat[Gaussian process model\protect\label{fig:clusticelatgp}]{\includegraphics[width =0.5\textwidth ]{figs/clustered_ice-2.pdf}}
   \subfloat[Random Forest model\protect\label{fig:clusticelatrf}]{\includegraphics[width = 0.5\textwidth]{figs/clustered_ice-3.pdf}}
 
   \label{fig:ice}
   \caption{
-    ICE plot for Gestation Length in a) the Gaussian process model and b) the Random Forest model.
-    Clustered ICE plot for latitude in c) the Gaussian process model and b) the Random Forest model.
+    ICE plots for gestation length against litter size in a) the elastic net model, b) the Gaussian process model and c) the Random Forest model.
+    Each grey curve is the relationship between gestation length and litter size evaluated at 10\% of the the datapoints. 
+    The yellow curves are the median of these curves and is therefore the PDP as seen in Figure 3.
+    Clustered ICE plot for gestation length against litter size in d) the Gaussian process model and e) the Random Forest model.
+    The clustered ice plots are created by subtracting the mean of each curve and then clustering them using k-means.
+    This normalisation step forces all the linear relationship in (a) to be identical and so the clustered plot is not shown. 
   }
 \end{figure}
 
@@ -563,10 +576,11 @@ If the presence of a species is measured using different methods (camera trappin
 
 \begin{figure}[t!]
   \centering
-  \subfloat[Gaussian process model\protect\label{fig:2dgestlatgp}]{\includegraphics[width =0.5\textwidth ]{figs/pdp_gest_pet-1.pdf}}
-  \subfloat[Random Forest model\protect\label{fig:2dgestlatrf}]{\includegraphics[width = 0.5\textwidth]{figs/pdp_gest_pet-2.pdf}}
+    \subfloat[Gaussian process model\protect\label{fig:2dgestlatenet}]{\includegraphics[width =0.33\textwidth ]{figs/enet_2d-1.pdf}}
+  \subfloat[Gaussian process model\protect\label{fig:2dgestlatgp}]{\includegraphics[width =0.33\textwidth ]{figs/pdp_gest_pet-1.pdf}}
+  \subfloat[Random Forest model\protect\label{fig:2dgestlatrf}]{\includegraphics[width = 0.33\textwidth]{figs/pdp_gest_pet-2.pdf}}
   \caption{
-    2D PDP plot for Gestation Length and PET in a) the Gaussian process model and b) the Random Forest model.
+    2D PDP plot for Gestation Length and PET in a) the elastic net model, b) the Gaussian process model and c) the Random Forest model.
   }
   \label{fig:2d}
 \end{figure}
