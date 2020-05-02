@@ -355,8 +355,7 @@ Instead it more likely implies that there are many uninformative covariates and 
 
 \section{Variable level properties}\label{variable-level-properties}
 
-We can also interpret a model at the level of the individual covariate.
-This can include random or fixed effects.
+The second level at which we can try to interpret the model is that of the individual covariate.
 We can examine variable importance \citep{oppel2009alternative}, importance of interactions between pairs of covariates and start to examine the functional responses of covariates.
 It is important however to remember that these models are not designed for inference; the following methods should be thought of as hypothesis generation and more formal, subsequent tests (on a different dataset) would be needed to confirm relationships between covariates and the response variable.
 
@@ -426,7 +425,7 @@ In contrast, other models such as stepwise regression might put all the variable
 
 Once some important covariates have been identified, it is useful to examine the shape of the relationship between covariate and response.
 The simplest way to do this is a partial dependence plot (PDP) \citep{friedman2001greedy}.
-This plot is calculated by evaluating the model n times for each data point using n equally spaced values of the covariate of interest.
+This plot is calculated by evaluating the model n times for each data point using $n$ equally spaced values of the covariate of interest.
 The mean response for each value of the covariate of interest is plotted.
 For the regularised linear model all the responses are, by definition, linear so a PDP is not useful.
 The PDPs for gestation length for the Gaussian process and Random Forest models are shown in figures \ref{fig:pdpgestgp} and \ref{fig:pdpgestrf}.
@@ -488,53 +487,6 @@ However, at low values of gestation length, this U-shaped relationship flattens 
 In the Random Forest model, the relationship appears to be more monotonically decreasing with increased PET while there is again a suggestion of an inverse U-shape relationship at low values of gestation length.
 
 
-
-\begin{figure}[t!]
-  \centering
-    \subfloat[Elastic net model\protect\label{fig:icegestenet}]{\includegraphics[width =0.33\textwidth ]{figs/enet_marginals-2.pdf}}
-  \subfloat[Gaussian process model\protect\label{fig:icegestgp}]{\includegraphics[width =0.33\textwidth ]{figs/ice-1.pdf}}
-  \subfloat[Random Forest model\protect\label{fig:icegestrf}]{\includegraphics[width = 0.33\textwidth]{figs/ice-2.pdf}}
-
-  \subfloat[Gaussian process model\protect\label{fig:clusticelatgp}]{\includegraphics[width =0.5\textwidth ]{figs/clustered_ice-2.pdf}}
-  \subfloat[Random Forest model\protect\label{fig:clusticelatrf}]{\includegraphics[width = 0.5\textwidth]{figs/clustered_ice-3.pdf}}
-
-  \label{fig:ice}
-  \caption{
-    ICE plots for gestation length against litter size in a) the elastic net model, b) the Gaussian process model and c) the Random Forest model.
-    Each grey curve is the relationship between gestation length and litter size evaluated at 10\% of the the datapoints. 
-    The yellow curves are the median of these curves and is therefore the PDP as seen in Figure 3.
-    Clustered ICE plot for gestation length against litter size in d) the Gaussian process model and e) the Random Forest model.
-    The clustered ice plots are created by subtracting the mean of each curve and then clustering them using k-means.
-    This normalisation step forces all the linear relationship in (a) to be identical and so the clustered plot is not shown. 
-  }
-\end{figure}
-
-\section{Handling non-independent data}\label{handling-non-independent-data}
-
-The PanTHERIA dataset is an example of a dataset that strongly violates assumptions of independence.
-The autocorrelation here arises due to common ancestry of species; two species that recently diverged from a common ancestor are likely to be more similar than species whose common ancestor is in the deep past.
-This autocorrelation is typically handled with a phylogenetic random effect \citep{felsenstein1985phylogenies, ives2006statistics, gay2014parasite, pellissier2012shifts, ferguson2014colony} while other sources of autocorrelation such as time or space can be similarly handled with an appropriate random effects term \citep{ives2006statistics, redding2017evaluating, diggle1998model}.
-Categorical random effects can be used to model a wide variety of sources of autocorrelation such as multiple samples from a single individual, study site or lab  \citep{harrison2018brief, bolker2009generalized}.
-
-Including random effects within parametric or non-parametric statistical models is entirely possible with flexible modelling packages such as Stan, INLA, TMB or Greta  \citep{stan, INLA, golding2019greta, tmb}.
-As a simple demonstration I fitted a phylogenetic linear model via INLA \citep{INLA} using the \emph{a priori} selected covariates  and a phylogenetic linear model using all covariates and strong regularising priors (\(r^2 = 0.74\)).
-For both models, the species-level phylogenetic terms correlate strongly with the species-level fitted value suggesting the phylogenetic effect is an important component of the models.
-This fact is supported by the fact that the out-of-sample $r^2$ values are much higher in the phylogenetic models ($r^2 = 0.72$ and 0.74) than those of the non-phylogenetic models ($r^2 = 0.34$ and 0.53). 
-
-
-However, combining random effects with non-parametric, non-statistical models is more difficult.
-While these models are starting to be developed \citep{ngufor2019mixed, hajjem2014mixed, hajjem2017generalized, eo2014tree, miller2017gradient, REEMtree}, they are not available in R packages, are only implemented for a small subset of machine learning algorithms and do not necessarily benefit from the computational improvements implemented in the most up-to-date packages \citep{wright2015ranger, xgboost}.
-Therefore, generic methods for handling random effects, that can be used with any machine learning algorithm, are useful.
-The na\"{i}ve approach to including random effects within machine learning models would be to simply include them as covariates; categorical random effects as categorical covariates, space or time as continuous variables for example.
-However to understand when this approach is or is not appropriate, we have to examine three factors as to why these effects are not just included as fixed effects in typical mixed-effects models.
-
-Firstly, we expect to extrapolate continuous random effects and expect unseen categories during prediction when using categorical random effects.
-Many machine learning models extrapolate poorly, for example tree based models will predict a flat response curve outside the range of the data.
-For an effect such as space this is undesirable and we would instead typically wish the spatial prediction to return to the mean of the data \citep{rasmussen2004gaussian, hengl2018random}.
-Predicting unseen categories of a categorical variable presents problems as well.
-A categorical variable might often be encoded as a full-rank one-hot dummy variable (one dummy variable less than the number of categories) and unseen categories would be implicitly predicted using the fitted value for the first category.
-This is not how we would wish the model to behave.
-
 \begin{table}[t!]
 \begin{longtable}[c]{@{}lll@{}}
 \caption{Specific interaction strengths between GestationLength\_d and other variables. \label{tbl:specificinter}}\tabularnewline
@@ -562,16 +514,25 @@ Random Forest & AdultForearmLen\_mm & 0.14\tabularnewline
 
 
 
-Secondly, we often have many categories and little data per category in a categorical random effect and wish to share information across groups.
-This low number of data points per parameter can be reframed as a regularisation problem.
-The regularisation can be seen explicitely in the Bayesian formulation of random effects models (hierarchical models) where the random parameters are regularised by a zero centered prior, the strength of which is in turn learned from the data \citep{simpson2017penalising}.
+\begin{figure}[t!]
+  \centering
+    \subfloat[Elastic net model\protect\label{fig:icegestenet}]{\includegraphics[width =0.33\textwidth ]{figs/enet_marginals-2.pdf}}
+  \subfloat[Gaussian process model\protect\label{fig:icegestgp}]{\includegraphics[width =0.33\textwidth ]{figs/ice-1.pdf}}
+  \subfloat[Random Forest model\protect\label{fig:icegestrf}]{\includegraphics[width = 0.33\textwidth]{figs/ice-2.pdf}}
 
-Finally, random effects are often included as a way to control for autocorrelation rather than being part of the desired predictive model.
-For example, if all future predictions are to be for unseen categories of a categorical random effect or if all spatial predictions are to be made far from data, then we might want to construct our model simply so that the model is unbiased by these autocorrelations rather than using them directly in predictions.
-Similarly if the data collection was biased with respect to a random effect, we might want to control for this without wanting to use this effect in predictions.
-For example, if data was collected by different labs or with different protocols, we might want to control for this effect but then predict the latent effect.
-If the presence of a species is measured using different methods (camera trapping, visual surveys etc.) we might want to control for this, but we aim to predict the latent state ``species presence'', not ``species presence as measured by camera trapping''.
+  \subfloat[Gaussian process model\protect\label{fig:clusticelatgp}]{\includegraphics[width =0.5\textwidth ]{figs/clustered_ice-2.pdf}}
+  \subfloat[Random Forest model\protect\label{fig:clusticelatrf}]{\includegraphics[width = 0.5\textwidth]{figs/clustered_ice-3.pdf}}
 
+  \label{fig:ice}
+  \caption{
+    ICE plots for gestation length against litter size in a) the elastic net model, b) the Gaussian process model and c) the Random Forest model.
+    Each grey curve is the relationship between gestation length and litter size evaluated at 10\% of the the datapoints. 
+    The yellow curves are the median of these curves and are therefore the PDPs as seen in Figure ??.
+    Clustered ICE plot for gestation length against litter size in d) the Gaussian process model and e) the Random Forest model.
+    The clustered ice plots are created by subtracting the mean of each curve and then clustering them using k-means.
+    This normalisation step forces all the linear relationship in (a) to be identical and so the clustered plot is not shown. 
+  }
+\end{figure}
 
 
 \begin{figure}[t!]
@@ -584,6 +545,89 @@ If the presence of a species is measured using different methods (camera trappin
   }
   \label{fig:2d}
 \end{figure}
+
+
+
+\section{Data-point level properties}\label{data-point-level-properties}
+
+\begin{figure}[t!]
+\centering
+\includegraphics{figs/lime2-1.pdf}
+\caption{LIME analysis of predictions of five points from the Gaussian process model.\protect\label{fig:limegp}}
+\end{figure}
+
+\begin{figure}[t!]
+\centering
+\includegraphics{figs/lime2-2.pdf}
+\caption{LIME analysis of predictions of five points from the Random Forest model.\protect\label{fig:limerf}}
+\end{figure}
+
+The third level at which we can try to interpret models is that of the individual prediction \citep{lime, ribeiro2016should, lundberg2017unified, ribeiro2016nothing}.
+Model interpretation at a single point is a much easier task than interpreting the global model because at a small enough scale the response curve is either flat or monotonically increasing or decreasing, so complex non-linear curves do not need to be considered.
+
+However, it is difficult to examine the model at all data points.
+Therefore we must focus our analysis on a few, interesting or important points.
+Points with the highest or lowest predicted values may tell us something about what factors makes these points receive extreme predictions.
+Alternatively, we might be more interested in a subset of points for an external reason.
+In the PanTHERIA example we might be particularly interested in one taxonomic group.
+Alternatively, we might want to interpret predictions that are going to be used directly in a conservation program for example.
+
+The method Local Individual Model Evaluation (LIME) examines the behaviour of a model at a point by  permuting the covariates slightly around the point and making predictions from the model over this new dataset \citep{lime, ribeiro2016should, lundberg2017unified, ribeiro2016nothing}.
+Then a simple, interpretable model, such as ridge regression, is fitted to this dataset.
+As we do not need to consider non-linear relationships, this simpler model should accurately describe the behaviour at the local scale.
+
+In figures \ref{fig:limegp} and \ref{fig:limerf} we can see the outputs of a LIME analysis for the two data points with the highest predicted litter size according to the Gaussian process and Random Forest model.
+The simple model is a ridge regression model with the 10 covariates with highest weights being plotted.
+The explanation fit values given in the plot is the $R^2$ of how well the simple, interpretable model explains the predictions of the more complex models.
+In all cases here the simpler model explains around 60\% of the variation in the predictions of the permuted data.
+It is important to note that as we know the true litter size values for these species we can see that the top-predicted data points are not actually the species with the highest litter size.
+This reminds us not to interpret this LIME analysis as ``what factors imply the highest litter size'' but rather ``why are these particular species predicted as having large litters''.
+We can however interpret these outputs alongside the variable importance estimates in table \ref{tbl:varimp}.
+
+
+If we examine the species shown in the left pane of figure \ref{fig:limegp} we can see that dispersal age is the most important factor in determining why this species has been predicted as having a large litter size.
+As the bars show negative weights this suggests that it is because the dispersal age of these species is small that they are predicted as having high litter sizes.
+Indeed, both of these species are in the lowest 3\% of dispersal ages amongst the species in this data set.
+
+
+
+\section{Handling non-independent data}\label{handling-non-independent-data}
+
+The PanTHERIA dataset is an example of a dataset that strongly violates assumptions of independence.
+The autocorrelation here arises due to common ancestry of species; two species that recently diverged from a common ancestor are likely to be more similar than species whose common ancestor is in the deep past.
+This autocorrelation is typically handled with a phylogenetic random effect \citep{felsenstein1985phylogenies, ives2006statistics, gay2014parasite, pellissier2012shifts, ferguson2014colony} while other sources of autocorrelation such as time or space can be similarly handled with an appropriate random effects term \citep{ives2006statistics, redding2017evaluating, diggle1998model}.
+Categorical random effects can be used to model a wide variety of sources of autocorrelation such as multiple samples from a single individual, study site or lab  \citep{harrison2018brief, bolker2009generalized}.
+
+Including random effects within parametric or non-parametric statistical models is entirely possible with flexible modelling packages such as Stan, INLA, TMB or Greta  \citep{stan, INLA, golding2019greta, tmb}.
+As a simple demonstration I fitted a phylogenetic linear model with INLA \citep{INLA} using the \emph{a priori} selected covariates (\(r^2 = 0.72\)) and a phylogenetic linear model using all covariates and strong regularising priors (\(r^2 = 0.74\)).
+For both models, the species-level phylogenetic terms correlate strongly with the species-level fitted value suggesting the phylogenetic effect is an important component of the models.
+This fact is supported by the fact that the out-of-sample $r^2$ values are much higher in the phylogenetic models ($r^2 = 0.72$ and 0.74) than those of the non-phylogenetic models ($r^2 = 0.34$ and 0.53). 
+
+
+However, combining random effects with non-parametric, non-statistical models is more difficult.
+While these models are starting to be developed \citep{ngufor2019mixed, hajjem2014mixed, hajjem2017generalized, eo2014tree, miller2017gradient, REEMtree}, they are not available in R packages, are only implemented for a small subset of machine learning algorithms and do not necessarily benefit from the computational improvements implemented in the most up-to-date packages \citep{wright2015ranger, xgboost}.
+Therefore, generic methods for handling random effects, that can be used with any machine learning algorithm, are useful.
+The na\"{i}ve approach to including random effects within machine learning models would be to simply include them as covariates; categorical random effects as categorical covariates, space or time as continuous variables for example.
+Interpretation of these variables could then be approached using the methods described in the section `variable level properties'.
+However to understand when this approach is or is not appropriate, we have to examine three factors as to why these effects are not just included as fixed effects in typical mixed-effects models.
+
+Firstly, we expect to extrapolate continuous random effects and expect unseen categories during prediction when using categorical random effects.
+Many machine learning models extrapolate poorly, for example tree based models will predict a flat response curve outside the range of the data.
+For an effect such as space this is undesirable and we would instead typically wish the spatial prediction to return to the mean of the data \citep{rasmussen2004gaussian, hengl2018random}.
+Predicting unseen categories of a categorical variable presents problems as well.
+A categorical variable might often be encoded as a full-rank one-hot dummy variable (one dummy variable less than the number of categories) and unseen categories would be implicitly predicted using the fitted value for the first category.
+This is not how we would wish the model to behave.
+
+Secondly, we often have many categories and little data per category in a categorical random effect and wish to share information across groups.
+This low number of data points per parameter can be reframed as a regularisation problem.
+The regularisation can be seen explicitly in the Bayesian formulation of random effects models (hierarchical models) where the random parameters are regularised by a zero centered prior, the strength of which is in turn learned from the data \citep{simpson2017penalising}.
+
+Finally, random effects are often included as a way to control for autocorrelation rather than being part of the desired predictive model.
+For example, if all future predictions are to be for unseen categories of a categorical random effect or if all spatial predictions are to be made far from data, then we might want to construct our model simply so that the model is unbiased by these autocorrelations rather than using them directly in predictions.
+Similarly if the data collection was biased with respect to a random effect, we might want to control for this without wanting to use this effect in predictions.
+For example, if data was collected by different labs or with different protocols, we might want to control for this effect but then predict the latent effect.
+If the presence of a species is measured using different methods (camera trapping, visual surveys etc.) we might want to control for this, but we aim to predict the latent state ``species presence'', not ``species presence as measured by camera trapping''.
+
 
 Given these issues we can consider how to include random effects into the Random Forest model and then examine the results when these are applied to the PanTHERIA analysis.
 While we are continuing to use Random Forest as our example model, these methods are applicable to most machine learning methods.
@@ -642,48 +686,6 @@ Again, weighting the data may be more principled.
 Temporal effects are easier to handle as they are one dimensional with causation only able to occur in one direction.
 Furthermore, they have been studied in detail in the machine learning literature \citep{jeong2008non}.
 For regular time series we can typically include covariates created from the lagged response variable while for irregular time series we can create covariates like ``mean response within X units of time previous to this datapoint''.
-
-\section{Data-point level properties}\label{data-point-level-properties}
-
-\begin{figure}[t!]
-\centering
-\includegraphics{figs/lime2-1.pdf}
-\caption{LIME analysis of predictions of five points from the Gaussian process model.\protect\label{fig:limegp}}
-\end{figure}
-
-\begin{figure}[t!]
-\centering
-\includegraphics{figs/lime2-2.pdf}
-\caption{LIME analysis of predictions of five points from the Random Forest model.\protect\label{fig:limerf}}
-\end{figure}
-
-Finally, we can try to interpret models at the level of the individual prediction \citep{lime, ribeiro2016should, lundberg2017unified, ribeiro2016nothing}.
-Model interpretation at a single point is a much easier task than interpreting the global model because at a small enough scale the response curve is either monotonically increasing or decreasing or flat, so complex non-linear curves do not need to be considered.
-
-However, it is difficult to examine the model at all data points.
-Therefore we must focus our analysis on a few, interesting or important points.
-Points with the highest or lowest predicted values may tell us something about what factors makes these points receive extreme predictions.
-Alternatively, we might be more interested in a subset of points for an external reason.
-In the PanTHERIA example we might be particularly interested in one taxonomic group.
-Alternatively, we might want to interpret predictions that are going to be used directly in a conservation program for example.
-
-The method Local Individual Model Evaluation (LIME) examines the behaviour of a model at a point by  permuting the covariates slightly around the point and making predictions from the model over this new dataset \citep{lime, ribeiro2016should, lundberg2017unified, ribeiro2016nothing}.
-Then a simple, interpretable model, such as ridge regression, is fitted to this dataset.
-As we do not need to consider non-linear relationships, this simpler model should accurately describe the behaviour at the local scale.
-
-In figures \ref{fig:limegp} and \ref{fig:limerf} we can see the outputs of a LIME analysis for the two data points with the highest predicted litter size according to the Gaussian process and Random Forest model.
-The simple model is a ridge regression model with the 10 covariates with highest weights being plotted.
-The explanation fit values given in the plot is the $R^2$ of how well the simple, interpretable model explains the predictions of the more complex models.
-In all cases here the simpler model explains around 60\% of the variation in the predictions of the permuted data.
-It is important to note that as we know the true litter size values for these species we can see that the top-predicted data points are not actually the species with the highest litter size.
-This reminds us not to interpret this LIME analysis as ``what factors imply the highest litter size'' but rather ``why are these particular species predicted as having large litters''.
-We can however interpret these outputs alongside the variable importance estimates in table \ref{tbl:varimp}.
-
-
-If we examine the species shown in the left pane of figure \ref{fig:limegp} we can see that dispersal age is the most important factor in determining why this species has been predicted as having a large litter size.
-As the bars show negative weights this suggests that it is because the dispersal age of these species is small that they are predicted as having high litter sizes.
-Indeed, both of these species are in the lowest 3\% of dispersal ages amongst the species in this data set.
-
 
 
 
