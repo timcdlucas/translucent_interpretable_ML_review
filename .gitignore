@@ -7,3 +7,6 @@
 *.blg
 *.out
 .DS_Store
+*.synctex.gz
+*.tex.bak
+*oxford-logo.png
