@@ -112,8 +112,8 @@ I also discuss the limits of interpretability for different methods and demonstr
 
 \subsection{Machine learning in ecology}\label{machine-learning-in-ecology}
 
-Machine learning methods are a collection of techniques that focus on making accurate predictions from data \citep{crisci2012review, breiman2001statistical}.
-It differs from the broader field of statistics in two aspects: 1) the estimation of parameters that relate to the real world is less emphasised and 2) the driver of the predictions are expected to be the data rather than expert opinion and careful selection of plausible mechanistic models \citep{breiman2001statistical}.
+Machine learning methods are a collection of techniques that focus on making accurate predictions from data \citep{crisci2012review, breiman2001statistical, domingos}.
+It differs from the broader field of statistics in two aspects: 1) the estimation of parameters that relate to the real world is less emphasised and 2) the driver of the predictions are expected to be the data rather than expert opinion and careful selection of plausible mechanistic models \citep{breiman2001statistical, domingos}.
 High-level machine learning libraries that aid the full machine learning pipeline \citep{caret, scikit, maxent, biomod} have made machine learning easy to use.
 These techniques have therefore become popular, particularly in the fields of species distribution modelling \citep{maxent, biomod, elith2006novel, golding2018zoon, gobeyn2019evolutionary} and species identification from images or acoustic detectors \citep{mac2018bat, waldchen2018machine, shamir2014classification, xue2017automatic, fairbrass2019citynet}.
 Other uses include any study where prediction, rather than inference, is the focus such as predicting the conservation status of species \citep{bland2015predicting} and predicting behavioural states \citep{browning2018predicting}.
@@ -121,7 +121,7 @@ However, machine learning methods have a reputation for being a black box, inscr
 
 This reputation is not totally unfounded with a number of factors making machine learning models difficult to interpret.
 Firstly, they are often nonparametric.
-They therefore estimate nonlinear relationships between covariates and response variables which are not summarised by a small number of interpretable parameters instead containing huge numbers of parameters often without estimates of uncertainty.
+They therefore estimate nonlinear relationships between covariates and response variables which are not summarised by a small number of interpretable parameters instead containing huge numbers of parameters often without estimates of uncertainty \citep{domingos}.
 Secondly, they often fit deep interactions between covariates \citep{lunetta2004screening}.
 Even simple, two-way interactions in linear models cause confusion \citep{engqvist2005mistreatment, lamina2012visualizing} and deep, nonlinear interactions are difficult to visualise or understand.
 Thirdly, fitting machine learning models is often stochastic \citep{breiman2001random, glorot2002understanding} and fitting the same model with different starting values may give a totally different set of fitted parameters (though perhaps with similar predictive performance).
@@ -402,15 +402,15 @@ Random Forest & GestationLen\_d & 100\tabularnewline
 Table \ref{tbl:varimp} shows the top five most important variables as determined by the three models \citep{oppel2009alternative}.
 These importance measures are not in absolute units so they are scaled such that the most important covariate has a value of 100.
 For the regularised linear model, variable importance is given simply by the magnitude of the regression coefficients (i.e.~ignoring the sign) and these raw values might be more useful than the scaled importance values.
-We can see that gestation length comes top for all three models and that latitude and potential evapotranspiration rate in the species range (PET) are prominent in all three as well.
+We can see that gestation length comes top for all three models and that latitude and potential evapotranspiration rate in the species' range (PET) are prominent in all three as well.
 Fitting multiple models and searching for consistency is one useful way to increase confidence in results (as in \citet{appelhans2015evaluating}).
 The fact that gestation length is found to be important also highlights the issue of causality; it is not clear which direction causality flows between gestation length and litter size.
 Does large litter sizes force gestation length to be small or does short gestation length allow large litters? 
 It could also be true that causality flows in different directions in different species.
 
 \emph{Caret} provides an easy interface for getting variable importance measures for many model types; however the calculations being performed differ between models.
-For some models, including Random Forest, there are different methods for calculating variable importance \citep{oppel2009alternative, seifert2019surrogate} and some are more correct than others, especially in the presence of categorical variables.
-Here I have used the default variable importance given by caret; given there are no categorical variables this is acceptably unbiased.
+For some models, including Random Forest, there are different methods for calculating variable importance \citep{oppel2009alternative, seifert2019surrogate, basu2018iterative, wright2016little} and some are more correct than others, especially in the presence of categorical variables.
+Here I have used the default variable importance given by \emph{caret}; given there are no categorical variables this is acceptably unbiased.
 If more accurate variable importance measures are needed, a related model, conditional inference forests \citep{hothorn2006unbiased} or the maxstat split rule in ranger \citep{wright2017unbiased}, should be used instead.
 
 
