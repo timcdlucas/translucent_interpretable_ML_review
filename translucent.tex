@@ -717,12 +717,12 @@ For regular time series we can typically include covariates created from the lag
 
 \section{Software}
 
-\citep{caret, scikit, tidymodels}
-\citep{golding2018zoon, maxent, biomod}
-
-\citep{iml, dalex, lime, icebox, pdp}
-
-\citep{tidymodels}
+The accessibility to ecologists of machine learning models and methods for interpreting them is largely dependant on the availability of free, user-friendly software. 
+Packages such as \emph{caret} and the more recent \emph{tidymodels} allow R users to fit many models within a unified interface \citep{caret, tidymodels}.
+\emph{scikit-learn} provides a similar framework for python users.
+These frameworks also provide functions for tuning hyperparameters, splitting data and other tasks vital for effective modelling.
+The specific analyses and vizualisations are possible using a number of R packages such as \emph{iml, icebox} or \emph{pdp} for partial dependance plots and \emph{lime} for LIME analyses \citep{iml, lime, icebox, pdp}.
+\emph{dalex}, available for python and R, provides pdp, ICE plots and LIME analyses \citep{dalex}.
 
 
 \section{Future directions and conclusions}\label{future-directions-and-conclusions}
