@@ -137,7 +137,7 @@ Broadly we might want to carefully quantify how accurate the predictions from ou
 
 
 However, there are further reasons to interpret machine learning models that apply to fields that are further removed from policy decisions \citep{elith2009species}.
-The same traits that make machine learning models good at prediction and difficult to interpret also makes them potentially useful in exploratory analysis before more formal statistical modeling \citep{zhao2017causal}.
+The same traits that make machine learning models good at prediction and difficult to interpret also makes them potentially useful in exploratory analysis before more formal statistical modeling \citep{zhao2017causal, gelman2014statistical, nosek2012scientific}.
 Firstly, they can be useful as a global-level baseline to compare how well a mechanistic model performs.
 Secondly, the nonparametric nature of many machine learning models means they can discover nonlinear relationships between covariates and response variables and interactions between covariates without specifying them \emph{a priori} as would be required in more statistical modelling.
 It is also worth noting that standard statistical models are often not as interpretable as they seem; understanding the results from a statistical model is made more difficult in the presence of collinearity between covariates or when nature's true model is not in the set of models being considered \citep{lyddon2018nonparametric, yao2017using}.
@@ -281,8 +281,8 @@ A Random Forest is an ensemble of decision trees with each tree being fitted to 
 Random Forests using the ranger  package \citep{wright2015ranger} via \emph{caret} have three hyperparameters.
 Split rule, which determines how the decision tree splits are chosen, was set to `variance'.
 The maximum number of data points at a leaf (min.node.size), which can be used to prevent overfitting was selected by cross-validation.
-The number of randomly selected covariates to be considered at each split (mtry) was also selected by cross-validation.
-We can see that high values of mtry and low values of minimum node size had the best performing hyperparameters (figure \ref{fig:rfhyp}).
+The number of randomly selected covariates to be considered at each split  was also selected by cross-validation.
+We can see that high values of the number of randomly selected covariates and low values of minimum node size had the best performing hyperparameters (figure \ref{fig:rfhyp}).
 
 
 \section{Global properties}\label{global-properties}
@@ -354,11 +354,11 @@ Here we have \(\lambda = 0.03\) as the selected hyperparameter and only one coef
 This gives some evidence that this is a complex system not easily explained by a few covariates.
 Similarly, the length scale, \(\sigma\), in the Gaussian process model is a crude measure of complexity, with small values implying that the functional relationships are highly non linear (figure \ref{fig:gphyp}).
 
-Finally, the Random Forest model has two hyperparameters (figure \ref{fig:rfhyp}); mtry is the number of randomly selected covariates to be examined at each split in each tree and min.node.size is the maximum number of data points that can be in a leaf node of a tree.
-min.node.size protects against overfitting and gives an indication of how much noise relative to signal there is.
-Here, the smallest value of min.node.size tested gets elected which implies there is not much noise in the data relative to signal.
-The selected value for mtry was 20.
-mtry can be difficult to interpret and depends on the number of covariates included in the model.
+Finally, the Random Forest model has two hyperparameters (figure \ref{fig:rfhyp}); he number of randomly selected covariates to be examined at each split in each tree and the minimum node size i.e. the maximum number of data points that can be in a leaf node of a tree.
+The minimum node size protects against overfitting and gives an indication of how much noise relative to signal there is.
+Here, the smallest value of minimum node size tested gets elected which implies there is not much noise in the data relative to signal.
+The selected value for the number of randomly selected covariates was 20.
+The number of randomly selected covariates can be difficult to interpret and depends on the number of covariates included in the model.
 Very small values imply little or no interactions between covariates while intermediate or high values indicate that there are interactions between covariates.
 However, large values like the 20 selected here does not indicate interaction depths of 20.
 Instead it more likely implies that there are many uninformative covariates and so 20 covariates are needed to avoid splits that consider no useful covariates.
@@ -643,7 +643,7 @@ Firstly, we expect to extrapolate continuous random effects and expect unseen ca
 Many machine learning models extrapolate poorly, for example tree based models will predict a flat response curve outside the range of the data.
 For an effect such as space this is undesirable and we would instead typically wish the spatial prediction to return to the mean of the data \citep{rasmussen2004gaussian, hengl2018random}.
 Predicting unseen categories of a categorical variable presents problems as well.
-A categorical variable might often be encoded as a full-rank one-hot dummy variable (one dummy variable less than the number of categories) and unseen categories would be implicitly predicted using the fitted value for the first category.
+A categorical variable might often be encoded as a full-rank dummy variable (one dummy variable less than the number of categories) and unseen categories would be implicitly predicted using the fitted value for the first category.
 This is not how we would wish the model to behave.
 
 Secondly, we often have many categories and little data per category in a categorical random effect and wish to share information across groups.
@@ -663,13 +663,13 @@ One way of including phylogenetic information in an analysis is to treat a taxon
 While this is less principled than properly including the phylogeny, it is simple.
 This method also allows a demonstration of categorical random effects.
 
-If we use genus as a categorical random effect to encapsulate some phylogenetic information, the first issue to is that we must be careful that the software does not automatically encode the data as a full-rank one-hot dummy variable.
+If we use genus as a categorical random effect to encapsulate some phylogenetic information, the first issue to is that we must be careful that the software does not automatically encode the data as a full-rank dummy variable.
 While less-than-full-rank form would cause identifiability issues with the intercept in a linear model, the random columns and greedy splitting during tree building means we do not have to worry about identifiability in this context while using Random Forest.
 
 The second issue above was that of regularisation.
 Random Forest is natively regularised by the bootstrap aggregation, and the complexity of the model is further controlled by hyper parameters as in figure \ref{fig:rfhyp}.
 The new model can therefore be fitted in the same way as the old model.
-However, given that, in creating the one-hot dummy variables, I have added many covariates I increased the range of the mtry parameter.
+However, given that, in creating the dummy variables, I have added many covariates I increased the range of values considered for the number of randomly selected covariates.
 
 The final consideration above was the case where we expect all predictions to be made on new categories.
 In the case of Random Forest, the above methods are suitable.
@@ -678,9 +678,9 @@ In this case we can simply weight the data so that each genus is equally represe
 Alternatively we could weight the data so that each genus is represented proportionally to the number of species in each genus in the full prediction set (all mammals for example).
 Many models in \emph{caret} accept a weight argument so this is a fairly general solution.
 
-I obtained an \(r^2\) value of 0.70 for the model that used genus encoded as a one-hot dummy variables.
+I obtained an \(r^2\) value of 0.70 for the model that used genus encoded as a  dummy variables.
 As this is marginally better than the Random Forest model without genus as a covariate, this provides some evidence that phylogenetic effects are present.
-The best hyperparameters were mtry = 500 (which implies that many of the genera are not very useful on their own) and min.node.size = 5 which is the same as the model without genus as a covariate.
+The best hyperparameters were 500 for the number of randomly selected covariates  (which implies that many of the genera are not very useful on their own) and five for the minimum node size which is the same as the model without genus as a covariate.
 
 If however, we wish to include the full phylogeny in our model, we need different methods.
 The first method is to include all the phylogenetic information in covariates \citep{hengl2018random}.
@@ -734,7 +734,7 @@ For ecologists to get the most out of machine learning methods they must be more
 This clarity makes it possible to be clear about the trade-offs in any statistical analysis and to use the most effective tools given the desired outcomes.
 Using simple linear models is often not optimal if discovery of relationships or predictions are the aim; if a formal hypothesis is being tested Random Forests are unlikely to be the best choice.
 Finally, being clear about the aims allows sensible planning on how data will be used in the longer term.
-If the aim is to discover some relationships and then formally test them, the best use of a given dataset may be to split it and use half for discovery and half for hypothesis testing.
+If the aim is to discover some relationships and then formally test them, the best use of a given dataset may be to split it and use half for discovery and half for hypothesis testing \citep{gelman2014statistical, nosek2012scientific}.
 This workflow would not occur to an analyst who was unclear about their task.
 
 While the methods here have been generic machine learning methods, there are a number of approaches for combining mechanistic models and non-parametric models.
