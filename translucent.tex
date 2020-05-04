@@ -99,10 +99,10 @@ Running header: A translucent box
 
 Machine learning has become popular in ecology but its use has remained restricted to predicting, rather than understanding, the natural world.
 Many researchers consider machine learning algorithms to be a black box.
-While it can be difficult to interpret fitted machine learning models these models can, with careful examination, be used to inform our understanding of the world.
+These models can however, with careful examination, be used to inform our understanding of the world.
 They are translucent boxes.
 Furthermore, the interpretation of these models can be an important step in building confidence in a model or in a specific prediction from a model.
-In this review I present a number of techniques for interpreting machine learning models at the level of the system, the variable and the individual prediction as well as methods for handling non-independent data.
+Here I review a number of techniques for interpreting machine learning models at the level of the system, the variable and the individual prediction as well as methods for handling non-independent data.
 I also discuss the limits of interpretability for different methods and demonstrate these approaches using a case example of understanding litter sizes in mammals.
 
 
@@ -216,7 +216,7 @@ The full analysis is included as a reproducible R \citep{R} script that reads da
 The PanTHERIA database contains mammalian life history traits collected from the published literature \citep{jones2009pantheria}.
 Overall it contains 5416 species and data on 35 traits, complimented by a further 15 variables calculated by intersecting IUCN shapefiles for each species and remotely sensed geographic data.
 There are large amounts of missing data for many of the life history traits and these gaps were filled with median imputation as this method is both simple and conservative.
-In this illustrative analysis I will use use this dataset to examine potential factors relating to the average litter size (with a \(\log(x+1)\) transform due to the strong left skew and presence of zeroes).
+In this illustrative analysis I will use  this dataset to examine potential factors relating to the average litter size (with a \(\log(x+1)\) transform due to the strong left skew and presence of zeroes).
 As each data row represents a species, the data are not independent; species with more recent common ancestors are likely to have similar life history traits.
 Most analyses of this type of data \citep{felsenstein1985phylogenies, ives2006statistics, gay2014parasite, pellissier2012shifts, ferguson2014colony} would use phylogenetic regression which includes an estimated phylogeny, converted to a covariance matrix, as a random effect \citep{magnusson2017glmmtmb, caper}.
 Methods for handling non-independence while using machine learning models are demonstrated in the section `Handling non-independent data'.
@@ -629,7 +629,7 @@ Categorical random effects can be used to model a wide variety of sources of aut
 Including random effects within parametric or non-parametric statistical models is entirely possible with flexible modelling packages such as Stan, INLA, TMB or Greta  \citep{stan, INLA, golding2019greta, tmb}.
 As a simple demonstration I fitted a phylogenetic linear model with INLA \citep{INLA} using the \emph{a priori} selected covariates (\(r^2 = 0.72\)) and a phylogenetic linear model using all covariates and strong regularising priors (\(r^2 = 0.74\)).
 For both models, the species-level phylogenetic terms correlate strongly with the species-level fitted value suggesting the phylogenetic effect is an important component of the models.
-This fact is supported by the fact that the out-of-sample $r^2$ values are much higher in the phylogenetic models ($r^2 = 0.72$ and 0.74) than those of the non-phylogenetic models ($r^2 = 0.34$ and 0.53). 
+This interpretation is supported by the fact that the out-of-sample $r^2$ values are much higher in the phylogenetic models ($r^2 = 0.72$ and 0.74) than those of the non-phylogenetic models ($r^2 = 0.34$ and 0.53). 
 
 
 However, combining random effects with non-parametric, non-statistical models is more difficult.
@@ -715,7 +715,14 @@ Temporal effects are easier to handle as they are one dimensional with causation
 Furthermore, they have been studied in detail in the machine learning literature \citep{jeong2008non}.
 For regular time series we can typically include covariates created from the lagged response variable while for irregular time series we can create covariates like ``mean response within X units of time previous to this datapoint''.
 
+\section{Software}
 
+\citep{caret, scikit, tidymodels}
+\citep{golding2018zoon, maxent, biomod}
+
+\citep{iml, dalex, lime, icebox, pdp}
+
+\citep{tidymodels}
 
 
 \section{Future directions and conclusions}\label{future-directions-and-conclusions}
@@ -745,7 +752,7 @@ Interpreting machine learning models has two major benefits: firstly, prediction
 All models lie on a continuum of interpretability and complexity.
 These models are not as easy to interpret as carefully constrained statistical models.
 However this is because they instead allow greater predictive accuracy and allow the analyst to discover relationships they had no hypothesised \emph{a priori}.
-The interpretation of these models needs to done carefully and requires user interaction and exploration in a way that is less vital in interpreting standard statistical models.
+The interpretation of these models needs to be done carefully and requires user interaction and exploration in a way that is less vital in interpreting standard statistical models.
 To this end machine learning models tend to be better at exploration and hypothesis generation while more robust statistical methods are still needed to formally test most hypotheses.
 The power here lies in the way a scientist defines their questions and uses machine learning alongside other methods.
 
