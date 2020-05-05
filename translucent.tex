@@ -144,15 +144,32 @@ It is also worth noting that standard statistical models are often not as interp
 Therefore, in some cases it might be better to fit a more predictive model and sacrifice some, but not all, interpretability.
 Alternatively, it might be useful to use a highly predictive model to generate hypotheses which could then be tested in a more formal statistical framework \citep{zhao2017causal}.
 
+
 \subsection{An overview of machine learning}\label{an-overview-of-machine-learning}
 
+Throughout this paper, the working definition of machine learning is any model where the focus is prediction rather than the building models that directly reflect reality.
 Supervised learning is a subfield of machine learning and is the archetypal modelling found in biology.
 The analyst has some response data and some covariates and the task is to predict the response data.
 Therefore models such as generalised linear models, mixed effects models and time series modelling would come under supervised learning.
 If the response variable is continuous, supervised learning is referred to as regression; if the response  variable is categorical, with two or more categories, the task is referred to as classification.
 While there are many different ways you could classify machine learning models, one that is useful for discussions of interpretability is to split models into three groups: i) parametric, statistical models, ii) non-parametric, statistical models and iii) non-statistical, non-parametric models (see box 1).
+In this paper I define statistical models as being those fitted in a maximum likelihood or Bayesian framework and using a likelihood function such that the loss for any given prediction can be given as a probability.
+If a model with a binomial likelihood predicts that, for a  given datapoint, 50\% of trials should be successes, and the observed data contain two out of two successes, the probability of this data, given the prediction, is 0.25.
+Grounding these models in probability, and the inclusion of explicit noise terms, means that principled uncertainty distributions of both the parameters and predictions can be derived.
+In contrast, I define non-statistical models as those that are fitted using non-likelihood based objective functions.
+Often the only way to derive uncertainty intervals from these models is bootstrapping.
 
-
+The focus on predictive performance, and the prevalence of non-parametric models in machine learning means that some concepts that are marginalised in typical ecological statistics become very important.
+The first is out-of-sample performance.
+With simple, parametric models, the goodness-of-fit of a model can be examined by looking at how far the data fall from the model predictions ($R^2$ of a regression for example).
+However, with a non-parametric model, or a model with many covariates, you can easily fit a model that perfectly fits the data it was fitted to.
+However, predictions from such a model will often be poor as the model was fitting to the noise in the data rather than extracting useful signal; this is termed overfitting.
+To measure goodness-of-fit we need to test how well the model predicts data it has never seen before.
+This out-of-sample performance can be tested by holding back a portion of the data, or by splitting the data into a $k$ chunks and fitting the model $k$ times each time holding out one chunk.
+While out-of-sample performance is a measure of goodness-of-fit that is less affected by overfitting, we still need a way to make our models fit the signal rather than noise in the data.
+This is achieved by regularization.
+Regularization encompasses many techniques that forces the model to be simpler or fit less complicated relationships.
+The strength of regularization is typically controlled by hyperparameters and often the only way to choose these parameters is to try a range of values and then select the values that provide the best out-of-sample performance.
 
 \begin{figure*}[t]
 \centering
@@ -161,10 +178,10 @@ While there are many different ways you could classify machine learning models, 
 
 
 \setlength{\parindent}{3mm}
-\noindent\textsf{\textbf{Box 1: Types of machine learning model}}\scriptsize 
+\noindent\textsf{\textbf{Box 1: The classification of machine learning models used in this reivew}}\scriptsize 
 \linespread{0.1}
 \vspace{-4mm}
-\subsection{Parametric, statistical models}
+\paragraph{Parametric, statistical models}
 This group includes many models commonly used by biologists.
 They are parametric because their functional form (the shapes that the relationships between covariates and response variables can take) is defined in advance.
 They are statistical because they will include some kind of likelihood function that makes the model probabilistic.
@@ -173,20 +190,20 @@ A common technique to improve prediction is regularisation that biases parameter
 Methods for regularisation of linear models include the LASSO and other penalties \citep{tibshirani1996regression, zou2005regularization}, as used by maxent for example  \citep{maxent}. 
 Other methods include stepwise selection \citep{hocking1976biometrics}, or Bayesian regularisation \citep{park2008bayesian, liu2018bayesian}.
 
-
-\subsection{Non-parametric, statistical models}
+\paragraph{Non-parametric, statistical models}
 These models are fitted in a formal statistical framework as above but the functional form is not defined in advance.
 Instead, flexible curves are fitted.
 This group includes splines (and GAMs which combine splines and other linear terms) and Gaussian process regression \citep{rasmussen2004gaussian}.
 These methods have principled uncertainty estimates due to being statistical.
-Furthermore, while the non-parametric components are often not represented by a small number of interpretable parameters, they are often controlled by a small number of hyperparameters.
+Furthermore, while the non-parametric components are often not represented by a small number of interpretable parameters, they are often controlled, and regularized, by a small number of hyperparameters.
 If these hyperparameters are fitted in a hierarchical framework (as is common) then they are can be interpreted with associated uncertainty.
 
-\subsection{Non-parametric, non-statistical models}
+\paragraph{Non-parametric, non-statistical models}
 These methods encompass many more algorithmic methods \citep{crisci2012review} such as decision trees, ensembles of trees like Random Forests \citep{breiman2001random} and boosted regression trees \citep{elith2008working, friedman2001greedy}, neural networks \citep{neuralnets}, support vector machines \citep{svm} and nearest neighbour \citep{altman1992introduction}.
 Each model has benefits but the variety of machine learning methods is reviewed elsewhere \citep{crisci2012review}.
 These methods are not fully probabilistic, and often have large numbers of parameters that do not have uncertainty estimates.
-
+Uncertainty estimates for predictions typically have to be computed using bootstrapping.
+Regularization is achieved in these models in many different ways but in all cases the aim is the force the model to fit a smoother relationship between covariates and response values.
 
 \end{minipage}
 
