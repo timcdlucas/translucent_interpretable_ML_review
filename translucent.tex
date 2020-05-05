@@ -114,7 +114,7 @@ I also discuss the limits of interpretability for different methods and demonstr
 
 Machine learning methods are a collection of techniques that focus on making accurate predictions from data \citep{crisci2012review, breiman2001statistical, domingos}.
 It differs from the broader field of statistics in two aspects: 1) the estimation of parameters that relate to the real world is less emphasised and 2) the driver of the predictions are expected to be the data rather than expert opinion and careful selection of plausible mechanistic models \citep{breiman2001statistical, domingos}.
-High-level machine learning libraries that aid the full machine learning pipeline \citep{caret, scikit, maxent, biomod} have made machine learning easy to use.
+High-level machine learning libraries that streamline the full machine learning pipeline \citep{caret, scikit, maxent, biomod} have made machine learning easy to use.
 These techniques have therefore become popular, particularly in the fields of species distribution modelling \citep{maxent, biomod, elith2006novel, golding2018zoon, gobeyn2019evolutionary} and species identification from images or acoustic detectors \citep{mac2018bat, waldchen2018machine, shamir2014classification, xue2017automatic, fairbrass2019citynet}.
 Other uses include any study where prediction, rather than inference, is the focus such as predicting the conservation status of species \citep{bland2015predicting} and predicting behavioural states \citep{browning2018predicting}.
 However, machine learning methods have a reputation for being a black box, inscrutable and mindlessly applied.
@@ -153,7 +153,7 @@ The analyst has some response data and some covariates and the task is to predic
 Therefore models such as generalised linear models, mixed effects models and time series modelling would come under supervised learning.
 If the response variable is continuous, supervised learning is referred to as regression; if the response  variable is categorical, with two or more categories, the task is referred to as classification.
 While there are many different ways you could classify machine learning models, one that is useful for discussions of interpretability is to split models into three groups: i) parametric, statistical models, ii) non-parametric, statistical models and iii) non-statistical, non-parametric models (see box 1).
-In this paper I define statistical models as being those fitted in a maximum likelihood or Bayesian framework and using a likelihood function such that the loss for any given prediction can be given as a probability.
+In this review, I define statistical models as being those fitted in a maximum likelihood or Bayesian framework with using a likelihood function such that the loss for any given prediction can be given as a probability.
 If a model with a binomial likelihood predicts that, for a  given datapoint, 50\% of trials should be successes, and the observed data contain two out of two successes, the probability of this data, given the prediction, is 0.25.
 Grounding these models in probability, and the inclusion of explicit noise terms, means that principled uncertainty distributions of both the parameters and predictions can be derived.
 In contrast, I define non-statistical models as those that are fitted using non-likelihood based objective functions.
@@ -161,7 +161,7 @@ Often the only way to derive uncertainty intervals from these models is bootstra
 
 The focus on predictive performance, and the prevalence of non-parametric models in machine learning means that some concepts that are marginalised in typical ecological statistics become very important.
 The first is out-of-sample performance.
-With simple, parametric models, the goodness-of-fit of a model can be examined by looking at how far the data fall from the model predictions ($R^2$ of a regression for example).
+With simple, parametric models, the goodness-of-fit of a model can be examined by looking at how far the data used to fit the model fall from the model predictions ($R^2$ of a regression for example).
 However, with a non-parametric model, or a model with many covariates, you can easily fit a model that perfectly fits the data it was fitted to.
 However, predictions from such a model will often be poor as the model was fitting to the noise in the data rather than extracting useful signal; this is termed overfitting.
 To measure goodness-of-fit we need to test how well the model predicts data it has never seen before.
@@ -188,9 +188,9 @@ This group includes many models commonly used by biologists.
 They are parametric because their functional form (the shapes that the relationships between covariates and response variables can take) is defined in advance.
 They are statistical because they will include some kind of likelihood function that makes the model probabilistic.
 Therefore generalised linear models are included in this category.
-A common technique to improve prediction is regularisation that biases parameter estimates (towards zero in the case of a linear model) to give a simpler model and avoid overfitting.
-Methods for regularisation of linear models include the LASSO and other penalties \citep{tibshirani1996regression, zou2005regularization}, as used by maxent for example  \citep{maxent}. 
-Other methods include stepwise selection \citep{hocking1976biometrics}, or Bayesian regularisation \citep{park2008bayesian, liu2018bayesian}.
+A common technique to improve prediction is regularization that biases parameter estimates (towards zero in the case of a linear model) to give a simpler model and avoid overfitting.
+Methods for regularization of linear models include the LASSO and other penalties \citep{tibshirani1996regression, zou2005regularization}, as used by maxent for example  \citep{maxent}. 
+Other methods include stepwise selection \citep{hocking1976biometrics}, or Bayesian regularization \citep{park2008bayesian, liu2018bayesian}.
 
 \paragraph{Non-parametric, statistical models}
 These models are fitted in a formal statistical framework as above but the functional form is not defined in advance.
@@ -218,7 +218,7 @@ A major shift in the statistical analysis of ecological and evolutionary data in
 This issue of autocorrelation is largely under-appreciated in the machine learning literature and only recently have random effects been explicitly built into non-statistical machine learning models \citep{eo2014tree, hajjem2014mixed, hajjem2017generalized, miller2017gradient}.
 Most machine learning models make some assumption of independence and estimates of out-of-sample predictive ability can be biased if cross-validation is used without accounting for autocorrelation.
 There are however a number of strategies to mitigate biases caused by autocorrelation and for gaining insight into the random effects themselves.
-These include simple methods such as using random effects as normal covariates or preprocessing the data to reduce autocorrelation \citep{elith2010art}.
+These include simple methods such as including typical covariates to model random effects or preprocessing the data to reduce autocorrelation \citep{elith2010art}.
 These methods will be examined in more detail in the body of the review.
 
 In this review I demonstrate how machine-learning models can be interpreted and visualized to understand the global properties of the modeled system, the fitted relationships between covariates and response variables and why a particular prediction was made, using methods that are applicable to a wide variety of machine learning models.
@@ -243,7 +243,7 @@ Methods for handling non-independence while using machine learning models are de
 
 
 
-I fitted four classes of model (with variations) to the data: a linear model with \emph{a priori} variable selection, a regularised linear model, a statistical, non-parametric Gaussian process model and a non-statistical Random Forest model.
+I fitted four classes of model (with variations) to the data: a linear model with \emph{a priori} variable selection, a regularized linear model, a statistical, non-parametric Gaussian process model and a non-statistical Random Forest model.
 I used five-fold cross-validation to test model accuracy and select hyperparameters.
 Given the very different levels of flexibility in the models, this out-of-sample test of accuracy is important and given the non-statistical nature of the Random Forest, statistical, within-sample model comparisons such as AIC are not possible.
 All models were fitted using \emph{caret} \citep{caret} in R \citep{R}.
@@ -260,10 +260,10 @@ I chose body size \citep{leutenegger1979evolution, tuomi1980mammalian}, gestatio
 
 \subsubsection{Statistical, parametric models}\label{statistical-parametric-models}
 
-If we have many covariates relative to sample size and have minimal \emph{a priori} knowledge of the system we may wish to include all the covariates in a linear model but regularise the coefficients.
-Similarly, if we want to include many interactions or transformed variables (as in maxent \citep{maxent} for example), the number of covariates can grow rapidly and regularisation becomes vital.
+If we have many covariates relative to sample size and have minimal \emph{a priori} knowledge of the system we may wish to include all the covariates in a linear model but regularize the coefficients.
+Similarly, if we want to include many interactions or transformed variables (as in maxent \citep{maxent} for example), the number of covariates can grow rapidly and regularization becomes vital.
 This approach is also sensible if we care more about prediction than about unbiased estimates of parameters.
-The simplest regularised linear models are ridge regression \citep{ridge}, that includes a penalty on the square of the coefficients, and LASSO \citep{tibshirani1996regression} that penalises the absolute value of the coefficients and therefore more strongly penalises smaller values.
+The simplest regularized linear models are ridge regression \citep{ridge}, that includes a penalty on the square of the coefficients, and LASSO \citep{tibshirani1996regression} that penalises the absolute value of the coefficients and therefore more strongly penalises smaller values.
 For the PanTHERIA analysis I fitted an elastic net, a common model that blends both the ridge and the LASSO penalty.
 The total strength of the penalty, and the relative contribution of the two penalties were selected using cross-validation.
 Figure \ref{fig:enethyp} shows how predictive performance varies with hyperparameter values and we can see that the best performing model had mostly a LASSO penalty and an intermediate amount of regularization.
@@ -277,7 +277,7 @@ Figure \ref{fig:enethyp} shows how predictive performance varies with hyperparam
   \subfloat[Random Forest model\protect\label{fig:rfhyp}]{\includegraphics[width =0.4\textwidth ]{figs/pub_figs_hyp-3.pdf}}
   \label{fig:hyp}
   \caption{
-    Model performance against hyperparameter values for each model. Each plot shows the hyperparameter(s) along the x-axis and with colour and model performance (bigger is better) on the y axis. A) the elastic net model with the proportion of  LASSO and ridge regularisation (0 is ridge regression, 1 is LASSO regression) shown on the x axis and the overall strength of the regularisation shown in color (yellow is strong regularization).  B) the Gaussian process model with the scale parameter sigma on the x axis (large values are smoother, more regularized relationships). C) the Random Forest model. mtry on the x axis determines the number of randomly chosen covariates considered for splits at each node (lower values give stronger regularization). The minimum node size (shown with color) controls the size of leaf nodes (higher values are stronger regularization).
+    Model performance against hyperparameter values for each model. Each plot shows the hyperparameter(s) along the x-axis and with colour and model performance (bigger is better) on the y axis. A) the elastic net model with the proportion of  LASSO and ridge regularization (0 is ridge regression, 1 is LASSO regression) shown on the x axis and the overall strength of the regularization shown in color (yellow is strong regularization).  B) the Gaussian process model with the scale parameter sigma on the x axis (large values are smoother, more regularized relationships). C) the Random Forest model. mtry on the x axis determines the number of randomly chosen covariates considered for splits at each node (lower values give stronger regularization). The minimum node size (shown with color) controls the size of leaf nodes (higher values are stronger regularization).
   }
 \end{figure}
 
@@ -307,17 +307,17 @@ We can see that high values of the number of randomly selected covariates and lo
 
 The first level at which we can interpret the model is the global level; what do the fitted models tell us about the system as a whole?
 One global property of interest is how predictable the system is.
-This can be assessed using scatter plots of observed versus out-of-sample predictions (Figure \ref{fig:enetpredobs} \ref{fig:gppredobs} \ref{fig:rfpredobs}) as well as metrics such as  \(r^2\) (the proportion of the variance of the held-out observed values explained by the predictions) or the root mean squared error (Table \ref{tbl:allr2}).
+This can be assessed using scatter plots of observed versus out-of-sample predictions (Figure \ref{fig:predobs}) as well as metrics such as  \(r^2\) (the proportion of the variance of the held-out observed values explained by the predictions) or the root mean squared error (Table \ref{tbl:allr2}).
 Random Forests are effective here as they are fast to fit, robust and need relatively little tuning.
 If a Random Forest has poor predictive performance then it is likely that either vital covariates are missing from the dataset or that the response is in fact very noisy.
 The Random Forest model fitted here has fairly good predictive performance (the points in figure \ref{fig:rfpredobs} cluster relatively closely to the one-one line) with an \(r^2\) of 0.68.
 We can be fairly sure that this trait is not noisy as the evolutionary consequences of litter size are large.
 Therefore we are probably missing some important covariates which is a useful result gained solely by interpreting the model at the global level.
 
-It can be seen that species with very large litters, are predicted quite poorly by all models.
+It can be seen that species with very large litters, are predicted quite poorly by all models  (Figure \ref{fig:predobs}).
 Machine learning models are known to extrapolate poorly, both at the edges of the range of the response variable and at the extremes of any given covariate \citep{elith2010art}.
 This is a general issue with non-parametric models and especially an issue with tree-based models like Random Forest.
-Non-parametric models are very reliant on data in similar regions of covariate space.
+The predictions from non-parametric models are very reliant on data in nearby regions of covariate space.
 However, there is typically less data at the edges of covariate space and so predictive performance tends to be low.
 Tree based methods are, in addition, unable to make predictions higher or lower than the range of the data which also tends to make their predictive performance of extreme values poor.
 Analysts should be careful when interpreting predictions or relationships in these areas of model extrapolation. 
@@ -339,7 +339,7 @@ Gaussian Process & 0.63\tabularnewline
 Random Forest & 0.68\tabularnewline
 Random Forest w/ genus & 0.70\tabularnewline
 A priori phylogenetic & 0.72\tabularnewline
-Regularised phylogenetic & 0.74\tabularnewline
+Regularized phylogenetic & 0.74\tabularnewline
 Stacked generalisation & 0.72\tabularnewline
 Random Forest w/ phylogenetic distance & 0.81\tabularnewline
 \bottomrule
@@ -348,10 +348,10 @@ Random Forest w/ phylogenetic distance & 0.81\tabularnewline
 
 We can also use predictive performance of machine learning models to scale our expectations for how well a more statistical or mechanistic model fits the data.
 Here, the linear model with \emph{a priori} variable selection (Figure \ref{fig:aprioripredobs}) is unable to accurately model litter size and performed considerably worse than the other three models.
-Furthermore, the Gaussian process model and Random Forest model performed considerably better than the elastic net model (Table \ref{tbl:allr2})
+Furthermore, the Gaussian process model and Random Forest model performed considerably better than the elastic net model (Table \ref{tbl:allr2}).
 This suggests that some of the covariates included in the elastic net model, but not in the \emph{a priori} model were useful and that there are nonlinearities or interactions that are important but were not included in either the \emph{a priori} model or the elastic net model.
 This is not a suggestion to go back and add these variables to our \emph{a priori} model.
-This would amount to severe data snooping and would bias any significance tests performed on the \emph{a priori} model \citep{white2000reality}.
+This would amount to severe data snooping and would bias any significance tests performed on the \emph{a priori} model \citep{white2000reality, gelman2014statistical}.
 The suggestion of missing complexity in the \emph{a priori} model is evidence that the model is misspecified and therefore care should be taken when interpreting even this simple linear model \citep{lyddon2018nonparametric, maldonado1993interpreting}. 
 
 
@@ -363,7 +363,6 @@ The suggestion of missing complexity in the \emph{a priori} model is evidence th
 
   \subfloat[Gaussian process\label{fig:gppredobs}]{\includegraphics[width =0.5\textwidth ]{figs/pub_figs_cv-3.pdf}}
   \subfloat[Random Forest\label{fig:rfpredobs}]{\includegraphics[width = 0.5\textwidth]{figs/pub_figs_cv-4.pdf}}
-  \label{fig:predobs}
   \caption{
     Predicted versus observed litter sizes for a) the \emph{a priori} selected model, b) the elastic net model, c) the Gaussian process model and d) the Random Forest model.
     The black line is the one-one line showing the correct predictions.
@@ -371,15 +370,16 @@ The suggestion of missing complexity in the \emph{a priori} model is evidence th
     We can clearly see that the \emph{a priori} model is not flexible enough to make good predictions resulting in artefacts such as many datapoints being predicted at very low values.
     We can also see in panel (d) that Random Forests are unable to extrapolate beyond the range of the data (no predictions are below the one-one line in the bottom left corner).
   }
+    \label{fig:predobs}
 \end{figure}
 
 We can also attempt to interpret the hyperparameters of our models to try to understand something about the complexity of the system.
-For the elastic net model, the lambda parameter and the number of non-zero coefficients give us some idea of the system's complexity (figure \ref{fig:enethyp}); if very few variables are retained and we get good predictive performance this suggests a simple system.
-Here we have \(\lambda = 0.03\) as the selected hyperparameter and only one coefficient being forced to zero.
+For the elastic net model, the regularization parameter and the number of non-zero coefficients give us some idea of the system's complexity (figure \ref{fig:enethyp}); if very few variables are retained and we get good predictive performance this suggests a simple system.
+Here we have 0.03 as the selected regularization hyperparameter and only one coefficient being forced to zero.
 This gives some evidence that this is a complex system not easily explained by a few covariates.
-Similarly, the length scale, \(\sigma\), in the Gaussian process model is a crude measure of complexity, with small values implying that the functional relationships are highly non linear (figure \ref{fig:gphyp}).
+Similarly, the length scale, sigma, in the Gaussian process model is a crude measure of complexity, with small values implying that the functional relationships are highly non linear (figure \ref{fig:gphyp}).
 
-Finally, the Random Forest model has two hyperparameters (figure \ref{fig:rfhyp}); he number of randomly selected covariates to be examined at each split in each tree and the minimum node size i.e. the maximum number of data points that can be in a leaf node of a tree.
+Finally, the Random Forest model has two hyperparameters (figure \ref{fig:rfhyp}); the number of randomly selected covariates to be examined at each split in each tree and the minimum node size i.e. the maximum number of data points that can be in a leaf node of a tree.
 The minimum node size protects against overfitting and gives an indication of how much noise relative to signal there is.
 Here, the smallest value of minimum node size tested gets elected which implies there is not much noise in the data relative to signal.
 The selected value for the number of randomly selected covariates was 20.
@@ -426,7 +426,7 @@ Random Forest & GestationLen\_d & 100\tabularnewline
 
 Table \ref{tbl:varimp} shows the top five most important variables as determined by the three models \citep{oppel2009alternative}.
 These importance measures are not in absolute units so they are scaled such that the most important covariate has a value of 100.
-For the regularised linear model, variable importance is given simply by the magnitude of the regression coefficients (i.e.~ignoring the sign) and these raw values might be more useful than the scaled importance values.
+For the regularized linear model, variable importance is given simply by the magnitude of the regression coefficients (i.e.~ignoring the sign) and these raw values might be more useful than the scaled importance values.
 We can see that gestation length comes top for all three models and that latitude and potential evapotranspiration rate in the species' range (PET) are prominent in all three as well.
 Fitting multiple models and searching for consistency is one useful way to increase confidence in results (as in \citet{appelhans2015evaluating}).
 The fact that gestation length is found to be important also highlights the issue of causality; it is not clear which direction causality flows between gestation length and litter size.
@@ -468,7 +468,7 @@ Once some important covariates have been identified, it is useful to examine the
 The simplest way to do this is a partial dependence plot (PDP) \citep{friedman2001greedy}.
 This plot is created by evaluating the model $n \times m$ times, with all but one covariates taking their values in the $n$ datapoints  and the covariate of interested taking $m$ equally spaced values. 
 The mean response for each value of the covariate of interest is then plotted.
-For the regularised linear model all the responses are, by definition, linear so a PDP is not particularly useful but is included (Figure \ref{fig:pdpgestenet}) for reference and comparison.
+For the regularized linear model all the responses are, by definition, linear so a PDP is not particularly useful but is included (Figure \ref{fig:pdpgestenet}) for reference and comparison.
 The PDPs for gestation length for the Gaussian process and Random Forest models are shown in Figures \ref{fig:pdpgestgp} and \ref{fig:pdpgestrf}.
 It can be seen that neither response is linear and are both decreasing for low values of gestation length.
 However, the PDP for the Gaussian process model is increasing at high values of gestation length and is similar to a squared curve.
@@ -652,7 +652,7 @@ This autocorrelation is typically handled with a phylogenetic random effect \cit
 Categorical random effects can be used to model a wide variety of sources of autocorrelation such as multiple samples from a single individual, study site or lab  \citep{harrison2018brief, bolker2009generalized}.
 
 Including random effects within parametric or non-parametric statistical models is entirely possible with flexible modelling packages such as Stan, INLA, TMB or Greta  \citep{stan, INLA, golding2019greta, tmb}.
-As a simple demonstration I fitted a phylogenetic linear model with INLA \citep{INLA} using the \emph{a priori} selected covariates (\(r^2 = 0.72\)) and a phylogenetic linear model using all covariates and strong regularising priors (\(r^2 = 0.74\)).
+As a simple demonstration I fitted a phylogenetic linear model with INLA \citep{INLA} using the \emph{a priori} selected covariates (\(r^2 = 0.72\)) and a phylogenetic linear model using all covariates and strong regularizing priors (\(r^2 = 0.74\)).
 For both models, the species-level phylogenetic terms correlate strongly with the species-level fitted value suggesting the phylogenetic effect is an important component of the models.
 This interpretation is supported by the fact that the out-of-sample $r^2$ values are much higher in the phylogenetic models ($r^2 = 0.72$ and 0.74) than those of the non-phylogenetic models ($r^2 = 0.34$ and 0.53). 
 
@@ -672,8 +672,8 @@ A categorical variable might often be encoded as a full-rank dummy variable (one
 This is not how we would wish the model to behave.
 
 Secondly, we often have many categories and little data per category in a categorical random effect and wish to share information across groups.
-This low number of data points per parameter can be reframed as a regularisation problem.
-The regularisation can be seen explicitly in the Bayesian formulation of random effects models (hierarchical models) where the random parameters are regularised by a zero centered prior, the strength of which is in turn learned from the data \citep{simpson2017penalising}.
+This low number of data points per parameter can be reframed as a regularization problem.
+The regularization can be seen explicitly in the Bayesian formulation of random effects models (hierarchical models) where the random parameters are regularized by a zero centered prior, the strength of which is in turn learned from the data \citep{simpson2017penalising}.
 
 Finally, random effects are often included as a way to control for autocorrelation rather than being part of the desired predictive model.
 For example, if all future predictions are to be for unseen categories of a categorical random effect or if all spatial predictions are to be made far from data, then we might want to construct our model simply so that the model is unbiased by these autocorrelations rather than using them directly in predictions.
@@ -691,14 +691,14 @@ This method also allows a demonstration of categorical random effects.
 If we use genus as a categorical random effect to encapsulate some phylogenetic information, the first issue to is that we must be careful that the software does not automatically encode the data as a full-rank dummy variable.
 While less-than-full-rank form would cause identifiability issues with the intercept in a linear model, the random columns and greedy splitting during tree building means we do not have to worry about identifiability in this context while using Random Forest.
 
-The second issue above was that of regularisation.
-Random Forest is natively regularised by the bootstrap aggregation, and the complexity of the model is further controlled by hyper parameters as in figure \ref{fig:rfhyp}.
+The second issue above was that of regularization.
+Random Forest is natively regularized by the bootstrap aggregation, and the complexity of the model is further controlled by hyper parameters as in figure \ref{fig:rfhyp}.
 The new model can therefore be fitted in the same way as the old model.
 However, given that, in creating the dummy variables, I have added many covariates I increased the range of values considered for the number of randomly selected covariates.
 
 The final consideration above was the case where we expect all predictions to be made on new categories.
 In the case of Random Forest, the above methods are suitable.
-However, given a model that cannot regularise as effectively or if our dataset was quite small we might have wanted to control for genus without including it as a covariate in the model at all.
+However, given a model that cannot regularize as effectively or if our dataset was quite small we might have wanted to control for genus without including it as a covariate in the model at all.
 In this case we can simply weight the data so that each genus is equally represented.
 Alternatively we could weight the data so that each genus is represented proportionally to the number of species in each genus in the full prediction set (all mammals for example).
 Many models in \emph{caret} accept a weight argument so this is a fairly general solution.
@@ -763,7 +763,7 @@ If the aim is to discover some relationships and then formally test them, the be
 This workflow would not occur to an analyst who was unclear about their task.
 
 While the methods here have been generic machine learning methods, there are a number of approaches for combining mechanistic models and non-parametric models.
-These include using a mechanistic model as the mean function of a Gaussian process \citep{rasmussen2004gaussian} or using a mechanistic model as a regularising prior for a non-parametric model \citep{lyddon2018nonparametric}.
+These include using a mechanistic model as the mean function of a Gaussian process \citep{rasmussen2004gaussian} or using a mechanistic model as a regularizing prior for a non-parametric model \citep{lyddon2018nonparametric}.
 These methods have great potential for combining the interpretability of mechanistic models and the interpolative predictive ability of non-parametric machine learning models.
 
 Finally, as with all modelling, interpretation of machine learning models requires human input.
