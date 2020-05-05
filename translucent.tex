@@ -147,7 +147,7 @@ Alternatively, it might be useful to use a highly predictive model to generate h
 
 \subsection{An overview of machine learning}\label{an-overview-of-machine-learning}
 
-Throughout this paper, the working definition of machine learning is any model where the focus is prediction rather than the building models that directly reflect reality.
+Throughout this paper, the working definition of machine learning is any model where the focus is prediction rather than the building of models that directly aim to reflect reality.
 Supervised learning is a subfield of machine learning and is the archetypal modelling found in biology.
 The analyst has some response data and some covariates and the task is to predict the response data.
 Therefore models such as generalised linear models, mixed effects models and time series modelling would come under supervised learning.
@@ -200,7 +200,7 @@ If these hyperparameters are fitted in a hierarchical framework (as is common) t
 
 \paragraph{Non-parametric, non-statistical models}
 These methods encompass many more algorithmic methods \citep{crisci2012review} such as decision trees, ensembles of trees like Random Forests \citep{breiman2001random} and boosted regression trees \citep{elith2008working, friedman2001greedy}, neural networks \citep{neuralnets}, support vector machines \citep{svm} and nearest neighbour \citep{altman1992introduction}.
-Each model has benefits but the variety of machine learning methods is reviewed elsewhere \citep{crisci2012review}.
+Each model has benefits but the variety of non-statistical machine learning methods is reviewed elsewhere \citep{crisci2012review}.
 These methods are not fully probabilistic, and often have large numbers of parameters that do not have uncertainty estimates.
 Uncertainty estimates for predictions typically have to be computed using bootstrapping.
 Regularization is achieved in these models in many different ways but in all cases the aim is the force the model to fit a smoother relationship between covariates and response values.
@@ -213,7 +213,7 @@ Regularization is achieved in these models in many different ways but in all cas
 
 
 A major shift in the statistical analysis of ecological and evolutionary data in recent decades is the acknowledgement that observational, biological data rarely conform to assumptions of independence due to phylogeny \citep{felsenstein1985phylogenies, ives2006statistics}, space \citep{redding2017evaluating, diggle1998model}, time \citep{ives2006statistics} or other categorical, grouping variables \citep{harrison2018brief, bolker2009generalized}.
-This issue of autocorrelation is largely under-appreciated in the machine learning literature and only recently have random effects been explicitly built into typical machine learning models \citep{eo2014tree, hajjem2014mixed, hajjem2017generalized, miller2017gradient}.
+This issue of autocorrelation is largely under-appreciated in the machine learning literature and only recently have random effects been explicitly built into non-statistical machine learning models \citep{eo2014tree, hajjem2014mixed, hajjem2017generalized, miller2017gradient}.
 Most machine learning models make some assumption of independence and estimates of out-of-sample predictive ability can be biased if cross-validation is used without accounting for autocorrelation.
 There are however a number of strategies to mitigate biases caused by autocorrelation and for gaining insight into the random effects themselves.
 These include simple methods such as using random effects as normal covariates or preprocessing the data to reduce autocorrelation \citep{elith2010art}.
@@ -234,7 +234,7 @@ The PanTHERIA database contains mammalian life history traits collected from the
 Overall it contains 5416 species and data on 35 traits, complimented by a further 15 variables calculated by intersecting IUCN shapefiles for each species and remotely sensed geographic data.
 There are large amounts of missing data for many of the life history traits and these gaps were filled with median imputation as this method is both simple and conservative.
 In this illustrative analysis I will use  this dataset to examine potential factors relating to the average litter size (with a \(\log(x+1)\) transform due to the strong left skew and presence of zeroes).
-As each data row represents a species, the data are not independent; species with more recent common ancestors are likely to have similar life history traits.
+As each data row represents a species, the data are not independent; species with more recent common ancestors may have more similar life history traits.
 Most analyses of this type of data \citep{felsenstein1985phylogenies, ives2006statistics, gay2014parasite, pellissier2012shifts, ferguson2014colony} would use phylogenetic regression which includes an estimated phylogeny, converted to a covariance matrix, as a random effect \citep{magnusson2017glmmtmb, caper}.
 Methods for handling non-independence while using machine learning models are demonstrated in the section `Handling non-independent data'.
 
@@ -650,14 +650,14 @@ This interpretation is supported by the fact that the out-of-sample $r^2$ values
 
 
 However, combining random effects with non-parametric, non-statistical models is more difficult.
-While these models are starting to be developed \citep{ngufor2019mixed, hajjem2014mixed, hajjem2017generalized, eo2014tree, miller2017gradient, REEMtree}, they are not available in R packages, are only implemented for a small subset of machine learning algorithms and do not necessarily benefit from the computational improvements implemented in the most up-to-date packages \citep{wright2015ranger, xgboost}.
+While these models are starting to be developed \citep{ngufor2019mixed, hajjem2014mixed, hajjem2017generalized, eo2014tree, miller2017gradient, REEMtree}, they are not available in R packages, are only implemented for a small subset of non-statistical models and do not necessarily benefit from the computational improvements implemented in the most up-to-date packages \citep{wright2015ranger, xgboost}.
 Therefore, generic methods for handling random effects, that can be used with any machine learning algorithm, are useful.
 The na\"{i}ve approach to including random effects within machine learning models would be to simply include them as covariates; categorical random effects as categorical covariates, space or time as continuous variables for example.
 Interpretation of these variables could then be approached using the methods described in the section `variable level properties'.
 However to understand when this approach is or is not appropriate, we have to examine three factors as to why these effects are not just included as fixed effects in typical mixed-effects models.
 
 Firstly, we expect to extrapolate continuous random effects and expect unseen categories during prediction when using categorical random effects.
-Many machine learning models extrapolate poorly, for example tree based models will predict a flat response curve outside the range of the data.
+Many non-statistical machine learning models extrapolate poorly, for example tree based models will predict a flat response curve outside the range of the data.
 For an effect such as space this is undesirable and we would instead typically wish the spatial prediction to return to the mean of the data \citep{rasmussen2004gaussian, hengl2018random}.
 Predicting unseen categories of a categorical variable presents problems as well.
 A categorical variable might often be encoded as a full-rank dummy variable (one dummy variable less than the number of categories) and unseen categories would be implicitly predicted using the fitted value for the first category.
