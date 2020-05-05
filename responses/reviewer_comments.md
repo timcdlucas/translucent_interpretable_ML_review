@@ -77,7 +77,7 @@ The biggest definitional issue is, of course, "machine learning," and despite de
 _Thank you for pointing this out. The aim was to only use machine learning as defined at the beginning. I have checked every use of the words 'machine learning' and specific non-statistical or non-parametric where needed._
 
 The final paragraph of the introduction could better lay out the purpose of the paper.  Currently it jumps into the specific data set and models, but I think a better topic sentence would be along the lines of, "In this review I demonstrate how both traditional and machine-learning models can be interpreted and visualized so as to...", and leave the specifics of the data and models to the next section
-_will do_
+_I have rewritten this paragraph. The topic sentence is now about the purpose of the paper. I have retained a short sentence saying the aim and dataset in the example analysis._
 
 The "Example Analysis" section would be improved if specific problem were described prior to the "Data" subsection.
 

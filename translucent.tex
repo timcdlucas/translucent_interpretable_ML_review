@@ -219,11 +219,9 @@ There are however a number of strategies to mitigate biases caused by autocorrel
 These include simple methods such as using random effects as normal covariates or preprocessing the data to reduce autocorrelation \citep{elith2010art}.
 These methods will be examined in more detail in the body of the review.
 
-In this review I will present an illustrative analysis on the PanTHERIA dataset \citep{jones2009pantheria} which contains mammalian life history traits.
-I fitted four models, with variations, that span the range of interpretability: i) a simple linear model with \emph{a priori} variable selection as is often used in ecology ii) a parametric statistical model, the elastic net \citep{elasticnet} iii) a non-parametric statistical model, Gaussian process regression \citep{rasmussen2004gaussian} and iv) a non-parametric, non-statistical model, Random Forest \citep{breiman2001random}.
-For each of these models I demonstrate how they can be interpreted with methods that are applicable to a wide variety of machine learning models.
-More specifically, I examine how the models can be interpreted at the level of the full model, the individual variable and at the level of the individual prediction.
+In this review I demonstrate how machine-learning models can be interpreted and visualized to understand the global properties of the modeled system, the fitted relationships between covariates and response variables and why a particular prediction was made, using methods that are applicable to a wide variety of machine learning models.
 I then demonstrate methods for handling and interpreting autocorrelation in the data.
+I demonstrate these methods using an illustrative analysis in which I fit predictive models of litter size to the PanTHERIA dataset \citep{jones2009pantheria} which contains mammalian life history traits.
 The full analysis is included as a reproducible R \citep{R} script that reads data directly from online repositories (S1).
 
 \section{Example analysis}\label{example-analysis}
