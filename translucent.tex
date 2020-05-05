@@ -170,6 +170,8 @@ While out-of-sample performance is a measure of goodness-of-fit that is less aff
 This is achieved by regularization.
 Regularization encompasses many techniques that forces the model to be simpler or fit less complicated relationships.
 The strength of regularization is typically controlled by hyperparameters and often the only way to choose these parameters is to try a range of values and then select the values that provide the best out-of-sample performance.
+Finally it is worth noting that there is some differences in nomenclature between the machine learning literature and the statistics literature.
+Notably, covariates are referred to as features, response data are referred to as labels and datapoints are referred to as instances.
 
 \begin{figure*}[t]
 \centering
@@ -228,11 +230,12 @@ The full analysis is included as a reproducible R \citep{R} script that reads da
 
 \subsection{Data}\label{data}
 
+In this illustrative analysis I will examine potential factors relating to the average litter size of mammal species.
 The PanTHERIA database contains mammalian life history traits collected from the published literature \citep{jones2009pantheria}.
 Overall it contains 5416 species and data on 35 traits, complimented by a further 15 variables calculated by intersecting IUCN shapefiles for each species and remotely sensed geographic data.
 There are large amounts of missing data for many of the life history traits and these gaps were filled with median imputation as this method is both simple and conservative.
-In this illustrative analysis I will use  this dataset to examine potential factors relating to the average litter size (with a \(\log(x+1)\) transform due to the strong left skew and presence of zeroes).
-As each data row represents a species, the data are not independent; species with more recent common ancestors may have more similar life history traits.
+As the response variable I use litter size with a \(\log(x+1)\) transform due to the strong left skew and presence of zeroes.
+As each data row represents a species, the data may not be independent; species with more recent common ancestors may have more similar life history traits.
 Most analyses of this type of data \citep{felsenstein1985phylogenies, ives2006statistics, gay2014parasite, pellissier2012shifts, ferguson2014colony} would use phylogenetic regression which includes an estimated phylogeny, converted to a covariance matrix, as a random effect \citep{magnusson2017glmmtmb, caper}.
 Methods for handling non-independence while using machine learning models are demonstrated in the section `Handling non-independent data'.
 
@@ -308,9 +311,15 @@ This can be assessed using scatter plots of observed versus out-of-sample predic
 Random Forests are effective here as they are fast to fit, robust and need relatively little tuning.
 If a Random Forest has poor predictive performance then it is likely that either vital covariates are missing from the dataset or that the response is in fact very noisy.
 The Random Forest model fitted here has fairly good predictive performance (the points in figure \ref{fig:rfpredobs} cluster relatively closely to the one-one line) with an \(r^2\) of 0.68.
-However, it can be seen that certain species, particularly those with very large litters, are predicted quite poorly.
 We can be fairly sure that this trait is not noisy as the evolutionary consequences of litter size are large.
 Therefore we are probably missing some important covariates which is a useful result gained solely by interpreting the model at the global level.
+
+It can be seen that species with very large litters, are predicted quite poorly by all models.
+Machine learning models are known to extrapolate poorly which in practice means that they often predict poorly at the edges of the range of the response variable and at the extremes of any given covariate.
+This is a general issue with non-parametric models and especially an issue with tree-based models like Random Forest.
+Non-parametric models are very reliant on local data i.e.~the values they predict are heavily influenced by the data in similar regions of covariate space.
+However, there is typically less data at the edges of covariate space and so predictive performer is lower.
+Tree based methods are, in addition, unable to make predictions higher or lower than the range of the data which also tends to make their predictive performance of extreme values poor.
 
 \begin{table}[t!]
 \begin{longtable}[c]{@{}ll@{}}
