@@ -948,6 +948,31 @@ plotCV(m3_rf, smooth = FALSE, print = FALSE) +
   ylab('Predicted values')
 
 
+
+#+ enet_marginals
+
+partial(m1_enet, 
+        pred.var = c('X9.1_GestationLen_d'),
+        parallel = TRUE, plot = TRUE)
+
+
+m1_enet_ice <- ice(m1_enet, p_impute, p_impute$y, 'X9.1_GestationLen_d', frac_to_build = 0.1)
+plot(m1_enet_ice)
+
+m1_enet_ice_c <- ice(m1_enet, p_impute, p_impute$y, 'X9.1_GestationLen_d')
+clusterICE(m1_enet_ice_c, nClusters = 20, centered = TRUE)
+clusterICE(m1_enet_ice_c, nClusters = 20, centered = FALSE)
+
+
+
+#+ enet_2d
+
+
+partial(m1_enet, 
+        pred.var = c('X9.1_GestationLen_d', 'X30.2_PET_Mean_mm'),
+        parallel = TRUE, plot = TRUE)
+
+
 #+ session_info
 
 sessionInfo()
