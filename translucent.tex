@@ -390,7 +390,7 @@ Instead it more likely implies that there are many uninformative covariates and 
 
 \section{Variable level properties}\label{variable-level-properties}
 
-The second level at which we can try to interpret the model is that of the individual covariate.
+The second level at which we can try to interpret the model is that of the covariate.
 We can examine variable importance \citep{oppel2009alternative}, importance of interactions between pairs of covariates and start to examine the functional responses of covariates.
 It is important however to remember that these models are not designed for inference; the following methods should be thought of as hypothesis generation and more formal, subsequent tests (on a different dataset) would be needed to confirm relationships between covariates and the response variable.
 
@@ -466,7 +466,7 @@ In contrast, other models such as stepwise regression might put all the variable
 
 Once some important covariates have been identified, it is useful to examine the shape of the relationship between covariate and response.
 The simplest way to do this is a partial dependence plot (PDP) \citep{friedman2001greedy}.
-This plot is created by evaluating the model $n \times m$ times, with all but one covariates taking their values in the $n$ datapoints  and the covariate of interested taking $m$ equally spaced values. 
+This plot is created by evaluating the model $n \times m$ times, with all but one covariates taking their values from the $n$ datapoints  and the covariate of interest taking $m$ equally spaced values. 
 The mean response for each value of the covariate of interest is then plotted.
 For the regularized linear model all the responses are, by definition, linear so a PDP is not particularly useful but is included (Figure \ref{fig:pdpgestenet}) for reference and comparison.
 The PDPs for gestation length for the Gaussian process and Random Forest models are shown in Figures \ref{fig:pdpgestgp} and \ref{fig:pdpgestrf}.
@@ -479,16 +479,17 @@ In contrast, the Random Forest model is flat at high values of gestation length.
 While PDPs are computed as the mean of the response over the dataset, the variable importance measures calculated above are evaluated over all training data.
 There can therefore be a mismatch where a PDP looks flat while the variable importance is high.
 Relatedly, the PDP gives no information on interactions because only one curve is plotted.
-To address these issues we can calculate the interaction importance for each covariate (table \ref{tbl:interimp}).
+To address these issues we can calculate the interaction importance for each covariate .
+Table \ref{tbl:interimp} shows the interaction importance values for the Gaussian process and R.
 This value is given by decomposing the prediction function into contributions from just the focal covariate, contributions from everything except the focal covariate and contributions that rely on both the focal covariate and non-focal covariates together \citep{friedman2008predictive}.
 
 
 Once we have identified covariates with important interactions we can use individual conditional expectation (ICE) plots.
 Like PDPs, ICE plots calculate the predicted response value across a range of the focal covariate.
-However, instead of averaging over the dataset, they plot one curve for each data point (Figure \ref{fig:icegestgp} and \ref{fig:icegestrf}).
+However, instead of averaging over the dataset, they plot one curve for each data point (Figure \ref{fig:icegestenet} -- \ref{fig:icegestrf}).
 In these plots we can start to see that the response curve differs depending on what value the other covariates take.
 As the number of data points increases, these plots can get very busy and so clustering the curves is useful (figure \ref{fig:clusticelatgp} and \ref{fig:clusticelatrf}).
-Here we can clearly see the range of responses that exist for a single covariate, with Gestation length having a negative relationship with litter size in many cases but a flatter relationship in others.
+Here we can clearly see the range of responses that exist for a single covariate, with gestation length having a negative relationship with litter size in many cases but a flatter relationship in others.
 
 
 \begin{table}[t!]
@@ -521,7 +522,7 @@ Gaussian process models and Random Forests implicitly consider deep interactions
 However, if we can identify important two way interactions we can start to interpret these.
 We can find the interaction strength between two features in a similar fashion to finding variable importance.
 We can consider the 2D PDP of two covariates (figures \ref{fig:2dgestlatgp} and  \ref{fig:2dgestlatrf}) and calculate what proportion of the curve is explained by the sum of the two 1D PDPs (e.g.~figure \ref{fig:pdpgestgp}).
-We can therefore take one covariate that we know has strong interactions (``GestationLength\_d'' as seen in table \ref{tbl:interimp}) and calculate the two-way interaction strength between that covariate and all other covariates (table \ref{tbl:specificinter}).
+We can therefore take one covariate that we know has strong interactions (``gestation length'' as seen in table \ref{tbl:interimp}) and calculate the two-way interaction strength between that covariate and all other covariates (table \ref{tbl:specificinter}).
 Finally, once important interactions have been identified, the 2D PDP can be examined to determine the shape of that interaction (figure \ref{fig:2d}).
 Looking at the 2D PDP of gestation length and PET for the Gaussian process model we can see that for most of gestation length we have a U-shaped relationship between PET and litter size.
 However, at low values of gestation length, this U-shaped relationship flattens out and eventually becomes inverted.
@@ -618,7 +619,7 @@ Model interpretation at a single point is a much easier task than interpreting t
 
 However, it is difficult to examine the model at all data points.
 Therefore we must focus our analysis on a few, interesting or important points.
-Points with the highest or lowest predicted values may tell us something about what factors makes these points receive extreme predictions.
+Points with the highest or lowest predicted values may tell us something about what factors made these points receive extreme predictions.
 Alternatively, we might be more interested in a subset of points for an external reason.
 In the PanTHERIA example we might be particularly interested in one taxonomic group.
 Alternatively, we might want to interpret predictions that are going to be used directly in a conservation program for example.
@@ -629,15 +630,15 @@ As we do not need to consider non-linear relationships, this simpler model shoul
 
 In figures \ref{fig:limegp} and \ref{fig:limerf} we can see the outputs of a LIME analysis for the two data points with the highest predicted litter size according to the Gaussian process and Random Forest model.
 The simple model is a ridge regression model with the 10 covariates with highest weights being plotted.
-The explanation fit values given in the plot is the $R^2$ of how well the simple, interpretable model explains the predictions of the more complex models.
-In all cases here the simpler model explains around 60\% of the variation in the predictions of the permuted data.
-It is important to note that as we know the true litter size values for these species we can see that the top-predicted data points are not actually the species with the highest litter size.
-This reminds us not to interpret this LIME analysis as ``what factors imply the highest litter size'' but rather ``why are these particular species predicted as having large litters''.
+The ``explanation fit'' values given in the plot are the $R^2$ of how well the simple, interpretable models explain the predictions of the more complex models.
+In all cases the simpler model explains around 60\% of the variation in the predictions of the permuted data.
+It is important to note that as we know the true litter size values for these species we can see that the top-predicted data points are not actually the species with the highest litter size (figure \ref{fig:obspred}).
+This reminds us not to interpret this LIME analysis as ``what factors imply the biggest litter size'' but rather ``why are these particular species predicted as having large litters''.
 We can however interpret these outputs alongside the variable importance estimates in table \ref{tbl:varimp}.
 
 
 If we examine the species shown in the left pane of figure \ref{fig:limegp} we can see that dispersal age is the most important factor in determining why this species has been predicted as having a large litter size.
-As the bars show negative weights this suggests that it is because the dispersal age of these species is small that they are predicted as having high litter sizes.
+As the bars show negative weights this suggests that it is because the dispersal age of these species is small that they are predicted as having large litter sizes.
 Indeed, both of these species are in the lowest 3\% of dispersal ages amongst the species in this data set.
 Another way of phrasing this (that can be more useful for predictions in the centre of the range of response values) is that if the species had larger values for dispersal age, we would expect them to have smaller predicted litter sizes.
 Similarly, the variables with positive weights indicate that these species have large predicted litter sizes because these covariates are large or that if these covariates were larger, the predicted litter sizes would be larger.
@@ -653,7 +654,7 @@ Categorical random effects can be used to model a wide variety of sources of aut
 
 Including random effects within parametric or non-parametric statistical models is entirely possible with flexible modelling packages such as Stan, INLA, TMB or Greta  \citep{stan, INLA, golding2019greta, tmb}.
 As a simple demonstration I fitted a phylogenetic linear model with INLA \citep{INLA} using the \emph{a priori} selected covariates (\(r^2 = 0.72\)) and a phylogenetic linear model using all covariates and strong regularizing priors (\(r^2 = 0.74\)).
-For both models, the species-level phylogenetic terms correlate strongly with the species-level fitted value suggesting the phylogenetic effect is an important component of the models.
+For both models, the species-level phylogenetic terms correlate strongly with the species-level fitted value suggesting the phylogenetic effects are important components of the models.
 This interpretation is supported by the fact that the out-of-sample $r^2$ values are much higher in the phylogenetic models ($r^2 = 0.72$ and 0.74) than those of the non-phylogenetic models ($r^2 = 0.34$ and 0.53). 
 
 
@@ -688,13 +689,13 @@ One way of including phylogenetic information in an analysis is to treat a taxon
 While this is less principled than properly including the phylogeny, it is simple.
 This method also allows a demonstration of categorical random effects.
 
-If we use genus as a categorical random effect to encapsulate some phylogenetic information, the first issue to is that we must be careful that the software does not automatically encode the data as a full-rank dummy variable.
+If we use genus as a categorical random effect to encapsulate some phylogenetic information, the first issue is that we must be careful that the software does not automatically encode the data as a full-rank dummy variable.
 While less-than-full-rank form would cause identifiability issues with the intercept in a linear model, the random columns and greedy splitting during tree building means we do not have to worry about identifiability in this context while using Random Forest.
 
 The second issue above was that of regularization.
 Random Forest is natively regularized by the bootstrap aggregation, and the complexity of the model is further controlled by hyper parameters as in figure \ref{fig:rfhyp}.
 The new model can therefore be fitted in the same way as the old model.
-However, given that, in creating the dummy variables, I have added many covariates I increased the range of values considered for the number of randomly selected covariates.
+However, given that I added many covariates when creating the dummy variables, I increased the range of values considered for the number of randomly selected covariates.
 
 The final consideration above was the case where we expect all predictions to be made on new categories.
 In the case of Random Forest, the above methods are suitable.
@@ -746,7 +747,7 @@ The accessibility to ecologists of machine learning models and methods for inter
 Packages such as \emph{caret} and the more recent \emph{tidymodels} allow R users to fit many models within a unified interface \citep{caret, tidymodels}.
 \emph{scikit-learn} provides a similar framework for python users.
 These frameworks also provide functions for tuning hyperparameters, splitting data and other tasks vital for effective modelling.
-The specific analyses and vizualisations are possible using a number of R packages such as \emph{iml, icebox} or \emph{pdp} for partial dependance plots and \emph{lime} for LIME analyses \citep{iml, lime, icebox, pdp}.
+The specific analyses and vizualisations are possible using a number of R packages such as \emph{iml, icebox} or \emph{pdp} for partial dependance plots and \emph{lime} for LIME analyses.
 \emph{dalex}, available for python and R, provides pdp, ICE plots and LIME analyses \citep{dalex}.
 
 
@@ -776,7 +777,7 @@ These methods were used to examine global properties of the models, describe the
 Interpreting machine learning models has two major benefits: firstly, predictions from a better understood model can be better defended in practical applications; secondly, machine learning methods can be used for exploratory statistics and hypothesis generation.
 All models lie on a continuum of interpretability and complexity.
 These models are not as easy to interpret as carefully constrained statistical models.
-However this is because they instead allow greater predictive accuracy and allow the analyst to discover relationships they had no hypothesised \emph{a priori}.
+However this is because they instead allow greater predictive accuracy and allow the analyst to discover relationships they had not hypothesised \emph{a priori}.
 The interpretation of these models needs to be done carefully and requires user interaction and exploration in a way that is less vital in interpreting standard statistical models.
 To this end machine learning models tend to be better at exploration and hypothesis generation while more robust statistical methods are still needed to formally test most hypotheses.
 The power here lies in the way a scientist defines their questions and uses machine learning alongside other methods.
