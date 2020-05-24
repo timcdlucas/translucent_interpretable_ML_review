@@ -357,9 +357,9 @@ We can find the interaction strength between two features in a similar fashion t
 We can consider the 2D PDP of two covariates (Figure \ref{fig:2d}) and calculate what proportion of the curve is explained by the sum of the two 1D PDPs (e.g.~Figure \ref{fig:pdp}).
 We can therefore take one covariate that we know has strong interactions (``gestation length'' as seen in table \ref{tbl:interimp}) and calculate the two-way interaction strength between that covariate and all other covariates (table \ref{tbl:specificinter}).
 Finally, once important interactions have been identified, the 2D PDP can be examined to determine the shape of that interaction (Figure \ref{fig:2d}).
-Looking at the 2D PDP of gestation length and PET for the Gaussian process model we can see that for most of gestation length we have a U-shaped relationship between PET and litter size.
-However, at low values of gestation length, this U-shaped relationship flattens out and eventually becomes inverted.
-In the Random Forest model, the relationship appears to be more monotonically decreasing with increased PET while there is again a suggestion of an inverse U-shape relationship at low values of gestation length.
+Looking at the 2D PDP of gestation length and PET for the Gaussian process model we can see that for most values of gestation length we have a decreasing relationship between PET and litter size.
+However, at high values of gestation length the relationship becomes slightly U-shaped.
+In the Random Forest model, there is a decreasing relationship between gestation length and litter size for all values of PET.
 
 \section{Data-point level properties}\label{data-point-level-properties}
 
@@ -730,7 +730,6 @@ Random Forest & AdultForearmLen\_mm & 0.14\tabularnewline
     The final curve is the mean of all $n$ predictions at each value of gestation length.
     The elastic net model can only fit linear relationships, the Gaussian process model fits smooth non-linear relationships while the Random Forest model fits more blocky relationships due to the decision trees that underpins it.
     All three models estimate a broadly decreasing trend.
-    The Gaussian process model estimates a distinct U-shaped relationship while the Random Forest estimates a decreasing and then flat relationship.
 
 
 \subsection{Figure 4}
@@ -749,8 +748,8 @@ Random Forest & AdultForearmLen\_mm & 0.14\tabularnewline
     These plots are created in the same way as the 1D PDP plots except now we are varying two covariates (gestation length and PET).
     As before we evaluate the models at a range of the values for the covariates of interest and at the covariate values from every datapoint and then take the mean.
     In the elastic net model we can see that the relationship is linear in with both covariates and the slopes do not change (i.e. there is no interaction).
-    In the Gaussian process model we can see that for most values of gestation length we have a U-shaped relationship between PET and litter size.
-    However, at low values of gestation length, this U-shaped relationship flattens out.
+    In the Gaussian process model we can see that for most values of gestation length we have a decreasing relationship between PET and litter size.
+    However, at high values of gestation length the relationship becomes slightly U-shaped.
 
 
 \subsection{Figure 6}
@@ -828,12 +827,6 @@ The bars with positive weights indicate that it is because these values are larg
   \centering
   \includegraphics[width = 76.2mm]{figs/pdp_2d_comb-1.png}
   \caption{
-%    2D PDP plot for gestation length and PET in a) the elastic net model, b) the Gaussian process model and c) the Random Forest model.
-%    These plots are created in the same way as the 1D PDP plots except now we are varying two covariates (gestation length and PET).
-    %As before we evaluate the models at a range of the values for the covariates of interest and at the covariate values from every datapoint and then take the mean.
-    %In the elastic net model we can see that the relationship is linear in with both covariates and the slopes do not change (i.e. there is no interaction).
-    %In the Gaussian process model we can see that for most values of gestation length we have a U-shaped relationship between PET and litter size.
-    %However, at low values of gestation length, this U-shaped relationship flattens out.
   }
   \label{fig:2d}
 \end{figure}
