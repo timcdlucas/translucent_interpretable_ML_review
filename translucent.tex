@@ -31,7 +31,7 @@
 \usepackage{microtype}
 \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
-\usepackage{hyperref}
+\usepackage[breaklinks]{hyperref}
 \hypersetup{unicode=true,
             pdftitle={A translucent box: interpretable machine learning in ecology},
             pdfauthor={Tim C. D. Lucas},
@@ -88,7 +88,7 @@
 
 \title{A translucent box: interpretable machine learning in ecology}
 \author{Tim C. D. Lucas\textsuperscript{1}\\
-1. Big Data Institute, University of Oxford\\
+1. Big Data Institute, University of Oxford, Old Road Campus, OX3 7LF, UK\\
 timcdlucas@gmail.com}
 
 \date{}
@@ -188,7 +188,7 @@ These methods will be examined in more detail in the body of the review.
 In this review I demonstrate how machine-learning models can be interpreted and visualized to understand the global properties of the modeled system, the fitted relationships between covariates and response variables and why a particular prediction was made, using methods that are applicable to a wide variety of machine learning models.
 I then demonstrate methods for handling and interpreting autocorrelation in the data.
 I demonstrate these methods using an illustrative analysis in which I fit predictive models of litter size to the PanTHERIA dataset \citep{jones2009pantheria} which contains mammalian life history traits.
-The full analysis is included as a reproducible R \citep{R} script that reads data directly from online repositories (S1).
+The full analysis is included as a reproducible R \citep{R} script that reads data directly from online repositories (DataS1: lucas\_translucent\_full\_analysis.R) and is also available at \url{https://github.com/timcdlucas/translucent_interpretable_ML_review_analysis}, \url{DOI: 10.5281/zenodo.3840994}.
 
 \section{Example analysis}\label{example-analysis}
 
@@ -230,7 +230,7 @@ This approach is also sensible if we care more about prediction than about unbia
 The simplest regularized linear models are ridge regression \citep{ridge}, that includes a penalty on the square of the coefficients, and LASSO \citep{tibshirani1996regression} that penalises the absolute value of the coefficients and therefore more strongly penalises smaller values.
 For the PanTHERIA analysis I fitted an elastic net, a common model that blends both the ridge and the LASSO penalty.
 The total strength of the penalty, and the relative contribution of the two penalties were selected using cross-validation.
-Figure \ref{fig:enethyp} shows how predictive performance varies with hyperparameter values and we can see that the best performing model had mostly a LASSO penalty and an intermediate amount of regularization.
+Figure \ref{fig:hyp}A shows how predictive performance varies with hyperparameter values and we can see that the best performing model had mostly a LASSO penalty and an intermediate amount of regularization.
 
 
 \subsubsection{Non-parametric, statistical models}\label{non-parametric-statistical-models}
@@ -240,7 +240,7 @@ This however still imposes important restrictions as it is difficult to know whi
 In contrast, non-parametric models like Gaussian processes \citep{rasmussen2004gaussian} or splines \citep{splines} require no pre-specification of functional forms and instead the overall flexibility of the model is controlled with a hyperparameter.
 Given their statistical nature, the uncertainty estimates around predictions are a natural part of the model and should be well calibrated even if we extrapolate far from the data.
 For the PanTHERIA analysis I have fitted a Gaussian process model with a radial basis kernel \citep{kernlab}, selecting the scale hyperparameter using cross-validation.
-We can see (figure \ref{fig:gphyp}) that a relatively short scale length, which allows quite non-linear relationships, had the best model performance.
+We can see (Figure \ref{fig:hyp}B) that a relatively short scale length, which allows quite non-linear relationships, had the best model performance.
 
 \subsubsection{Non-parametric, non-statistical models}\label{non-parametric-non-statistical-models}
 
@@ -251,7 +251,7 @@ Random Forests using the ranger  package \citep{wright2015ranger} via \emph{care
 Split rule, which determines how the decision tree splits are chosen, was set to `variance'.
 The maximum number of data points at a leaf (min.node.size), which can be used to prevent overfitting was selected by cross-validation.
 The number of randomly selected covariates to be considered at each split  was also selected by cross-validation.
-We can see that high values of the number of randomly selected covariates and low values of minimum node size had the best performing hyperparameters (figure \ref{fig:rfhyp}).
+We can see that high values of the number of randomly selected covariates and low values of minimum node size had the best performing hyperparameters (Figure \ref{fig:hyp}B).
 
 
 \section{Global properties}\label{global-properties}
@@ -261,7 +261,7 @@ One global property of interest is how predictable the system is.
 This can be assessed using scatter plots of observed versus out-of-sample predictions (Figure \ref{fig:predobs}) as well as metrics such as  \(r^2\) (the proportion of the variance of the held-out observed values explained by the predictions) or the root mean squared error (Table \ref{tbl:allr2}).
 Random Forests are effective here as they are fast to fit, robust and need relatively little tuning.
 If a Random Forest has poor predictive performance then it is likely that either vital covariates are missing from the dataset or that the response is in fact very noisy.
-The Random Forest model fitted here has fairly good predictive performance (the points in figure \ref{fig:rfpredobs} cluster relatively closely to the one-one line) with an \(r^2\) of 0.68.
+The Random Forest model fitted here has fairly good predictive performance (the points in Figure \ref{fig:predobs}C cluster relatively closely to the one-one line) with an \(r^2\) of 0.68.
 We can be fairly sure that this trait is not noisy as the evolutionary consequences of litter size are large.
 Therefore we are probably missing some important covariates which is a useful result gained solely by interpreting the model at the global level.
 
@@ -274,7 +274,7 @@ Tree based methods are, in addition, unable to make predictions higher or lower 
 Analysts should be careful when interpreting predictions or relationships in these areas of model extrapolation. 
 
 We can also use predictive performance of machine learning models to scale our expectations for how well a more statistical or mechanistic model fits the data.
-Here, the linear model with \emph{a priori} variable selection (Figure \ref{fig:aprioripredobs}) is unable to accurately model litter size and performed considerably worse than the other three models.
+Here, the linear model with \emph{a priori} variable selection (Figure \ref{fig:predobs}A) is unable to accurately model litter size and performed considerably worse than the other three models.
 Furthermore, the Gaussian process model and Random Forest model performed considerably better than the elastic net model (Table \ref{tbl:allr2}).
 This suggests that some of the covariates included in the elastic net model, but not in the \emph{a priori} model were useful and that there are nonlinearities or interactions that are important but were not included in either the \emph{a priori} model or the elastic net model.
 This is not a suggestion to go back and add these variables to our \emph{a priori} model.
@@ -283,12 +283,12 @@ The suggestion of missing complexity in the \emph{a priori} model is evidence th
 
 
 We can also attempt to interpret the hyperparameters of our models to try to understand something about the complexity of the system.
-For the elastic net model, the regularization parameter and the number of non-zero coefficients give us some idea of the system's complexity (figure \ref{fig:enethyp}); if very few variables are retained and we get good predictive performance this suggests a simple system.
+For the elastic net model, the regularization parameter and the number of non-zero coefficients give us some idea of the system's complexity (Figure \ref{fig:hyp}A); if very few variables are retained and we get good predictive performance this suggests a simple system.
 Here we have 0.03 as the selected regularization hyperparameter and only one coefficient being forced to zero.
 This gives some evidence that this is a complex system not easily explained by a few covariates.
-Similarly, the length scale, sigma, in the Gaussian process model is a crude measure of complexity, with small values implying that the functional relationships are highly non linear (figure \ref{fig:gphyp}).
+Similarly, the length scale, sigma, in the Gaussian process model is a crude measure of complexity, with small values implying that the functional relationships are highly non linear (Figure \ref{fig:hyp}B).
 
-Finally, the Random Forest model has two hyperparameters (figure \ref{fig:rfhyp}); the number of randomly selected covariates to be examined at each split in each tree and the minimum node size i.e. the maximum number of data points that can be in a leaf node of a tree.
+Finally, the Random Forest model has two hyperparameters (Figure \ref{fig:hyp}C); the number of randomly selected covariates to be examined at each split in each tree and the minimum node size i.e. the maximum number of data points that can be in a leaf node of a tree.
 The minimum node size protects against overfitting and gives an indication of how much noise relative to signal there is.
 Here, the smallest value of minimum node size tested gets elected which implies there is not much noise in the data relative to signal.
 The selected value for the number of randomly selected covariates was 20.
@@ -328,8 +328,8 @@ Once some important covariates have been identified, it is useful to examine the
 The simplest way to do this is a partial dependence plot (PDP) \citep{friedman2001greedy}.
 This plot is created by evaluating the model $n \times m$ times, with all but one covariates taking their values from the $n$ datapoints  and the covariate of interest taking $m$ equally spaced values. 
 The mean response for each value of the covariate of interest is then plotted.
-For the regularized linear model all the responses are, by definition, linear so a PDP is not particularly useful but is included (Figure \ref{fig:pdpgestenet}) for reference and comparison.
-The PDPs for gestation length for the Gaussian process and Random Forest models are shown in Figures \ref{fig:pdpgestgp} and \ref{fig:pdpgestrf}.
+For the regularized linear model all the responses are, by definition, linear so a PDP is not particularly useful but is included (Figure \ref{fig:pdp}A) for reference and comparison.
+The PDPs for gestation length for the Gaussian process and Random Forest models are shown in Figures \ref{fig:pdp}B and \ref{fig:pdp}C.
 It can be seen that neither response is linear and are both decreasing for low values of gestation length.
 However, the PDP for the Gaussian process model is increasing at high values of gestation length and is similar to a squared curve.
 In contrast, the Random Forest model is flat at high values of gestation length.
@@ -346,17 +346,17 @@ This value is given by decomposing the prediction function into contributions fr
 
 Once we have identified covariates with important interactions we can use individual conditional expectation (ICE) plots.
 Like PDPs, ICE plots calculate the predicted response value across a range of the focal covariate.
-However, instead of averaging over the dataset, they plot one curve for each data point (Figure \ref{fig:icegestenet} -- \ref{fig:icegestrf}).
+However, instead of averaging over the dataset, they plot one curve for each data point (Figure \ref{fig:ice}A -- \ref{fig:ice}C).
 In these plots we can start to see that the response curve differs depending on what value the other covariates take.
-As the number of data points increases, these plots can get very busy and so clustering the curves is useful (figure \ref{fig:clusticelatgp} and \ref{fig:clusticelatrf}).
+As the number of data points increases, these plots can get very busy and so clustering the curves is useful (Figure \ref{fig:ice}D and \ref{fig:ice}E).
 Here we can clearly see the range of responses that exist for a single covariate, with gestation length having a negative relationship with litter size in many cases but a flatter relationship in others.
 
 Gaussian process models and Random Forests implicitly consider deep interactions which become increasingly difficult to interpret.
 However, if we can identify important two way interactions we can start to interpret these.
 We can find the interaction strength between two features in a similar fashion to finding variable importance.
-We can consider the 2D PDP of two covariates (figures \ref{fig:2dgestlatgp} and  \ref{fig:2dgestlatrf}) and calculate what proportion of the curve is explained by the sum of the two 1D PDPs (e.g.~figure \ref{fig:pdpgestgp}).
+We can consider the 2D PDP of two covariates (Figure \ref{fig:2d}) and calculate what proportion of the curve is explained by the sum of the two 1D PDPs (e.g.~Figure \ref{fig:pdp}).
 We can therefore take one covariate that we know has strong interactions (``gestation length'' as seen in table \ref{tbl:interimp}) and calculate the two-way interaction strength between that covariate and all other covariates (table \ref{tbl:specificinter}).
-Finally, once important interactions have been identified, the 2D PDP can be examined to determine the shape of that interaction (figure \ref{fig:2d}).
+Finally, once important interactions have been identified, the 2D PDP can be examined to determine the shape of that interaction (Figure \ref{fig:2d}).
 Looking at the 2D PDP of gestation length and PET for the Gaussian process model we can see that for most of gestation length we have a U-shaped relationship between PET and litter size.
 However, at low values of gestation length, this U-shaped relationship flattens out and eventually becomes inverted.
 In the Random Forest model, the relationship appears to be more monotonically decreasing with increased PET while there is again a suggestion of an inverse U-shape relationship at low values of gestation length.
@@ -377,16 +377,16 @@ The method Local Individual Model Evaluation (LIME) examines the behaviour of a 
 Then a simple, interpretable model, such as ridge regression, is fitted to this dataset.
 As we do not need to consider non-linear relationships, this simpler model should accurately describe the behaviour at the local scale.
 
-In figures \ref{fig:limegp} and \ref{fig:limerf} we can see the outputs of a LIME analysis for the two data points with the highest predicted litter size according to the Gaussian process and Random Forest model.
+In Figure \ref{fig:limegp} we can see the outputs of a LIME analysis for the two data points with the highest predicted litter size according to the Gaussian process and Random Forest model.
 The simple model is a ridge regression model with the 10 covariates with highest weights being plotted.
 The ``explanation fit'' values given in the plot are the $R^2$ of how well the simple, interpretable models explain the predictions of the more complex models.
 In all cases the simpler model explains around 60\% of the variation in the predictions of the permuted data.
-It is important to note that as we know the true litter size values for these species we can see that the top-predicted data points are not actually the species with the highest litter size (figure \ref{fig:obspred}).
+It is important to note that as we know the true litter size values for these species we can see that the top-predicted data points are not actually the species with the highest litter size (Figure \ref{fig:predobs}).
 This reminds us not to interpret this LIME analysis as ``what factors imply the biggest litter size'' but rather ``why are these particular species predicted as having large litters''.
 We can however interpret these outputs alongside the variable importance estimates in table \ref{tbl:varimp}.
 
 
-If we examine the species shown in the left pane of figure \ref{fig:limegp} we can see that dispersal age is the most important factor in determining why this species has been predicted as having a large litter size.
+If we examine the species shown in the left pane of Figure \ref{fig:limegp} we can see that dispersal age is the most important factor in determining why this species has been predicted as having a large litter size.
 As the bars show negative weights this suggests that it is because the dispersal age of these species is small that they are predicted as having large litter sizes.
 Indeed, both of these species are in the lowest 3\% of dispersal ages amongst the species in this data set.
 Another way of phrasing this (that can be more useful for predictions in the centre of the range of response values) is that if the species had larger values for dispersal age, we would expect them to have smaller predicted litter sizes.
@@ -442,7 +442,7 @@ If we use genus as a categorical random effect to encapsulate some phylogenetic 
 While less-than-full-rank form would cause identifiability issues with the intercept in a linear model, the random columns and greedy splitting during tree building means we do not have to worry about identifiability in this context while using Random Forest.
 
 The second issue above was that of regularization.
-Random Forest is natively regularized by the bootstrap aggregation, and the complexity of the model is further controlled by hyper parameters as in figure \ref{fig:rfhyp}.
+Random Forest is natively regularized by the bootstrap aggregation, and the complexity of the model is further controlled by hyper parameters as in Figure \ref{fig:hyp}C.
 The new model can therefore be fitted in the same way as the old model.
 However, given that I added many covariates when creating the dummy variables, I increased the range of values considered for the number of randomly selected covariates.
 
@@ -535,7 +535,7 @@ The power here lies in the way a scientist defines their questions and uses mach
 \section{Acknowledgements}
 
 Thanks go to Katrina Ross, Penelope Hancock and the Malaria Atlas Project journal club for comments on earlier drafts of the paper.
-I acknowledge Tristan (no surname given) and an anonymous reviewer for their useful and considered comments.
+I acknowledge Tristan Cordier and an anonymous reviewer for their useful and considered comments.
 I would also like to thank Bure Park nature reserve, Bicester, where I drafted this manuscript on many walks getting my son to sleep.
 TL was supported by grants from the Bill and Melinda Gates Foundation.
 
@@ -766,30 +766,22 @@ The bars with positive weights indicate that it is because these values are larg
 
 \begin{figure}[h!]
   \centering
-  \subfloat[Elastic net model\protect\label{fig:enethyp}]{\includegraphics[width =0.4\textwidth ]{figs/pub_figs_hyp-1.pdf}}  \qquad
-  \subfloat[Gaussian process model\protect\label{fig:gphyp}]{\includegraphics[width = 0.4\textwidth]{figs/pub_figs_hyp-2.pdf}}
-
-  \subfloat[Random Forest model\protect\label{fig:rfhyp}]{\includegraphics[width =0.4\textwidth ]{figs/pub_figs_hyp-3.pdf}}
-  \label{fig:hyp}
+	\includegraphics[width = 152.4mm ]{figs/pub_figs_hyp-1.pdf}  
   \caption{
-    Model performance against hyperparameter values for each model. Each plot shows the hyperparameter(s) along the x-axis and with colour and model performance (bigger is better) on the y axis. A) the elastic net model with the proportion of  LASSO and ridge regularization (0 is ridge regression, 1 is LASSO regression) shown on the x axis and the overall strength of the regularization shown in color (yellow is strong regularization).  B) the Gaussian process model with the scale parameter sigma on the x axis (large values are smoother, more regularized relationships). C) the Random Forest model. mtry on the x axis determines the number of randomly chosen covariates considered for splits at each node (lower values give stronger regularization). The minimum node size (shown with color) controls the size of leaf nodes (higher values are stronger regularization).
+    %Model performance against hyperparameter values for each model. Each plot shows the hyperparameter(s) along the x-axis and with colour and model performance (bigger is better) on the y axis. A) the elastic net model with the proportion of  LASSO and ridge regularization (0 is ridge regression, 1 is LASSO regression) shown on the x axis and the overall strength of the regularization shown in color (yellow is strong regularization).  B) the Gaussian process model with the scale parameter sigma on the x axis (large values are smoother, more regularized relationships). C) the Random Forest model. mtry on the x axis determines the number of randomly chosen covariates considered for splits at each node (lower values give stronger regularization). The minimum node size (shown with color) controls the size of leaf nodes (higher values are stronger regularization).
   }
+  \label{fig:hyp}
 \end{figure}
 
 
 \begin{figure}[h!]
   \centering
-  \subfloat[\emph{a priori} model\label{fig:aprioripredobs}]{\includegraphics[width =0.5\textwidth ]{figs/pub_figs_cv-1.pdf}}
-  \subfloat[Elastic net\label{fig:enetpredobs}]{\includegraphics[width = 0.5\textwidth]{figs/pub_figs_cv-2.pdf}}
-
-  \subfloat[Gaussian process\label{fig:gppredobs}]{\includegraphics[width =0.5\textwidth ]{figs/pub_figs_cv-3.pdf}}
-  \subfloat[Random Forest\label{fig:rfpredobs}]{\includegraphics[width = 0.5\textwidth]{figs/pub_figs_cv-4.pdf}}
-  \caption{
-    Predicted versus observed litter sizes for a) the \emph{a priori} selected model, b) the elastic net model, c) the Gaussian process model and d) the Random Forest model.
-    The black line is the one-one line showing the correct predictions.
-    The models are fitted under five fold cross-validation such that the data being predicted is not used at all during model fitting.
-    We can clearly see that the \emph{a priori} model is not flexible enough to make good predictions resulting in artefacts such as many datapoints being predicted at very low values.
-    We can also see in panel (d) that Random Forests are unable to extrapolate beyond the range of the data (no predictions are below the one-one line in the bottom left corner).
+\includegraphics[width =152.4mm  ]{figs/pub_figs_cv-1.pdf}  \caption{
+    %Predicted versus observed litter sizes for a) the \emph{a priori} selected model, b) the elastic net model, c) the Gaussian process model and d) the Random Forest model.
+    %The black line is the one-one line showing the correct predictions.
+    %The models are fitted under five fold cross-validation such that the data being predicted is not used at all during model fitting.
+    %We can clearly see that the \emph{a priori} model is not flexible enough to make good predictions resulting in artefacts such as many datapoints being predicted at very low values.
+    %We can also see in panel (d) that Random Forests are unable to extrapolate beyond the range of the data (no predictions are below the one-one line in the bottom left corner).
   }
     \label{fig:predobs}
 \end{figure}
@@ -797,59 +789,51 @@ The bars with positive weights indicate that it is because these values are larg
 
 \begin{figure}[h!]
   \centering
-    \subfloat[Elastic net model\protect\label{fig:pdpgestenet}]{\includegraphics[width = 0.33\textwidth ]{figs/enet_marginals-1.pdf}}
-  \subfloat[Gaussian process model\protect\label{fig:pdpgestgp}]{\includegraphics[width = 0.33\textwidth ]{figs/pdp_gest-1.pdf}}
-  \subfloat[Random Forest model\protect\label{fig:pdpgestrf}]{\includegraphics[width = 0.33\textwidth]{figs/pdp_gest-2.pdf}}
-
+    \includegraphics[width = 152.4mm  ]{figs/pdp_pub-1.pdf}  
+  \caption{
+    %PDP plot for gestation length against log litter size in a) the elastic net model, b) the Gaussian process model and c) the Random Forest model.
+    %These plots show the predicted log litter size for each value of gestation length.
+    %Predictions are made at the covariate values of every datapoint, varying gestation length for each.
+    %The final curve is the mean of all $n$ predictions at each value of gestation length.
+    %The elastic net model can only fit linear relationships, the Gaussian process model fits smooth non-linear relationships while the Random Forest model fits more blocky relationships due to the decision trees that underpins it.
+    %All three models estimate a broadly decreasing trend.
+    %The Gaussian process model estimates a distinct U-shaped relationship while the Random Forest estimates a decreasing and then flat relationship.
+  }
   \label{fig:pdp}
-  \caption{
-    PDP plot for gestation length against log litter size in a) the elastic net model, b) the Gaussian process model and c) the Random Forest model.
-    These plots show the predicted log litter size for each value of gestation length.
-    Predictions are made at the covariate values of every datapoint, varying gestation length for each.
-    The final curve is the mean of all $n$ predictions at each value of gestation length.
-    The elastic net model can only fit linear relationships, the Gaussian process model fits smooth non-linear relationships while the Random Forest model fits more blocky relationships due to the decision trees that underpins it.
-    All three models estimate a broadly decreasing trend.
-    The Gaussian process model estimates a distinct U-shaped relationship while the Random Forest estimates a decreasing and then flat relationship.
-  }
 \end{figure}
 
-
+\clearpage
 
 \begin{figure}[h!]
   \centering
-    \subfloat[Elastic net model\protect\label{fig:icegestenet}]{\includegraphics[width =0.33\textwidth ]{figs/enet_marginals-2.pdf}}
-  \subfloat[Gaussian process model\protect\label{fig:icegestgp}]{\includegraphics[width =0.33\textwidth ]{figs/ice-1.pdf}}
-  \subfloat[Random Forest model\protect\label{fig:icegestrf}]{\includegraphics[width = 0.33\textwidth]{figs/ice-2.pdf}}
+    
+    \includegraphics[width = 152.4mm  ]{figs/ice_pub_annotate.pdf}  
 
-  \subfloat[Gaussian process model\protect\label{fig:clusticelatgp}]{\includegraphics[width =0.5\textwidth ]{figs/clustered_ice-2.pdf}}
-  \subfloat[Random Forest model\protect\label{fig:clusticelatrf}]{\includegraphics[width = 0.5\textwidth]{figs/clustered_ice-3.pdf}}
-
-  \label{fig:ice}
   \caption{
-    a-c) ICE plots for gestation length against log litter size in a) the elastic net model, b) the Gaussian process model and c) the Random Forest model.
-    Each grey curve is the relationship between gestation length and litter size evaluated at one the datapoints (only 10\% of datapoints are plotted). 
-    The yellow curves are the median of these curves and are therefore similar to PDPs as seen in Figure 3.
-    The differences in the shapes of the curves are interaction effects; the relationship between gestation length and log litter size changes depending on the values of the other covariates.
-    d-e) Clustered ICE plot for gestation length against normalised litter size in d) the Gaussian process model and e) the Random Forest model.
-    When the number of datapoints used in the ICE plots gets large it becomes difficult to see individual curves.
-    Clustered ICE plots are created by subtracting the mean of each curve and then clustering them using k-means.
-    This normalisation step forces all the linear relationships in (a) to be identical and so the clustered plot is not shown. 
+    %a-c) ICE plots for gestation length against log litter size in a) the elastic net model, b) the Gaussian process model and c) the Random Forest model.
+    %Each grey curve is the relationship between gestation length and litter size evaluated at one the datapoints (only 10\% of datapoints are plotted). 
+    %The yellow curves are the median of these curves and are therefore similar to PDPs as seen in Figure 3.
+    %The differences in the shapes of the curves are interaction effects; the relationship between gestation length and log litter size changes depending on the values of the other covariates.
+    %d-e) Clustered ICE plot for gestation length against normalised litter size in d) the Gaussian process model and e) the Random Forest model.
+    %When the number of datapoints used in the ICE plots gets large it becomes difficult to see individual curves.
+    %Clustered ICE plots are created by subtracting the mean of each curve and then clustering them using k-means.
+    %This normalisation step forces all the linear relationships in (a) to be identical and so the clustered plot is not shown. 
   }
+    \label{fig:ice}
+
 \end{figure}
 
 
 \begin{figure}[h!]
   \centering
-    \subfloat[Elastic net model\protect\label{fig:2dgestlatenet}]{\includegraphics[width =0.33\textwidth ]{figs/enet_2d-1.pdf}}
-  \subfloat[Gaussian process model\protect\label{fig:2dgestlatgp}]{\includegraphics[width =0.33\textwidth ]{figs/pdp_gest_pet-1.pdf}}
-  \subfloat[Random Forest model\protect\label{fig:2dgestlatrf}]{\includegraphics[width = 0.33\textwidth]{figs/pdp_gest_pet-2.pdf}}
+  \includegraphics[width = 76.2mm]{figs/pdp_2d_comb-1.png}
   \caption{
-    2D PDP plot for gestation length and PET in a) the elastic net model, b) the Gaussian process model and c) the Random Forest model.
-    These plots are created in the same way as the 1D PDP plots except now we are varying two covariates (gestation length and PET).
-    As before we evaluate the models at a range of the values for the covariates of interest and at the covariate values from every datapoint and then take the mean.
-    In the elastic net model we can see that the relationship is linear in with both covariates and the slopes do not change (i.e. there is no interaction).
-    In the Gaussian process model we can see that for most values of gestation length we have a U-shaped relationship between PET and litter size.
-    However, at low values of gestation length, this U-shaped relationship flattens out.
+%    2D PDP plot for gestation length and PET in a) the elastic net model, b) the Gaussian process model and c) the Random Forest model.
+%    These plots are created in the same way as the 1D PDP plots except now we are varying two covariates (gestation length and PET).
+    %As before we evaluate the models at a range of the values for the covariates of interest and at the covariate values from every datapoint and then take the mean.
+    %In the elastic net model we can see that the relationship is linear in with both covariates and the slopes do not change (i.e. there is no interaction).
+    %In the Gaussian process model we can see that for most values of gestation length we have a U-shaped relationship between PET and litter size.
+    %However, at low values of gestation length, this U-shaped relationship flattens out.
   }
   \label{fig:2d}
 \end{figure}
@@ -857,16 +841,14 @@ The bars with positive weights indicate that it is because these values are larg
 
 \begin{figure}[h!]
 \centering
-    \subfloat[Gaussian process model\protect\label{fig:limegp}]{\includegraphics[width =0.7\textwidth ]{figs/lime2-1.pdf}}
-    
-  \subfloat[Random Forest model\protect\label{fig:limerf}]{\includegraphics[width =0.7\textwidth ]{figs/lime2-2.pdf}}
+  \includegraphics[width = 152.4mm ]{figs/lime_comb-1.pdf}
 \caption{
-LIME analysis of predictions of five points from the a) the Gaussian process model and b) the Random Forest model.
-The analysis proceeds by taking a datapoint (the case number), permuting the covariate values around that point, evaluating the model at each permuted covariate value and then fitting a simple ridge regression model to this new dataset.
-The explanation fit values is the $R^2$ of how well the simple model explains the predictions of the more complex models.
-The absolute value of each bar indicates how important that variable is for this specific prediction.
-Bars with show negative weights indicates that it is because the value of that covariate is small that high litter sizes are predicted.
-The bars with positive weights indicate that it is because these values are large that high litter sizes are predicted.
+%LIME analysis of predictions of five points from the a) the Gaussian process model and b) the Random Forest model.
+%The analysis proceeds by taking a datapoint (the case number), permuting the covariate values around that point, evaluating the model at each permuted covariate value and then fitting a simple ridge regression model to this new dataset.
+%The explanation fit values is the $R^2$ of how well the simple model explains the predictions of the more complex models.
+%The absolute value of each bar indicates how important that variable is for this specific prediction.
+%Bars with show negative weights indicates that it is because the value of that covariate is small that high litter sizes are predicted.
+%The bars with positive weights indicate that it is because these values are large that high litter sizes are predicted.
 \protect\label{fig:limegp}}
 \end{figure}
 
